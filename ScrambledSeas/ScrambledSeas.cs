@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityModManagerNet;
 using System.Reflection;
+using System.Collections.Generic;
 
 // This is good boilerplate code to paste into all your mods that need to store data in the save file:
 public static class SaveFileHelper
@@ -51,17 +52,18 @@ namespace ScrambledSeas
     static class Main
     {
         public static bool enabled;
-        public static UnityModManager.ModEntry mod;
+        public static UnityModManager.ModEntry.ModLogger logger;
         public static Vector3[] islandDisplacements = new Vector3[23];
         public static Vector3[] islandOrigins = new Vector3[23];
         public static string[] islandNames = new string[23];
+        public static List<Region> regions = new List<Region>();
         public static ScrambledSeasSaveContainer mySaveContainer = new ScrambledSeasSaveContainer();
 
         static bool Load(UnityModManager.ModEntry modEntry)
-        {
+        {   
             var harmony = new Harmony(modEntry.Info.Id);
             harmony.PatchAll(Assembly.GetExecutingAssembly());
-            mod = modEntry;
+            logger = modEntry.Logger;
             modEntry.OnToggle = OnToggle;
             return true;
         }
@@ -211,6 +213,35 @@ namespace ScrambledSeas
         }
     }
 
+    [HarmonyPatch(typeof(RegionBlender), "Update")]
+    static class RegionBlenderPatch
+    {
+        private static float regionUpdateCooldown = 0f;
+
+        private static void Prefix(ref Region ___currentTargetRegion, ref Transform ___player)
+        {
+            if (Main.enabled) {
+                if (regionUpdateCooldown <= 0f) {
+                    regionUpdateCooldown = 100f;
+                    float minDist = 100000000f;
+                    Region closestRegion = null;
+                    foreach (Region region in Main.regions) {
+                        float dist = Vector3.Distance(___player.position, region.transform.position);
+                        if (dist < minDist) {
+                            minDist = dist;
+                            closestRegion = region;
+                        }
+                    }
+                    if (closestRegion != null) {
+                        ___currentTargetRegion = closestRegion;
+                    }
+                } else {
+                    regionUpdateCooldown -= Time.deltaTime;
+                }
+            }
+        }
+    }
+
     public class WorldScrambler
     {
         public static void Scramble()
@@ -220,7 +251,7 @@ namespace ScrambledSeas
             float islandSpread = Main.mySaveContainer.islandSpread;
             float minArchSeparation = Main.mySaveContainer.minArchipelagoSeparation;
             float minIslandSeparation = Main.mySaveContainer.minIslandSeparation;
-            Main.mod.Logger.Log("Scrambler Seed:" + Main.mySaveContainer.worldScramblerSeed);
+            Main.logger.Log("Scrambler Seed:" + Main.mySaveContainer.worldScramblerSeed);
 
             //Randomize locations until we pass test (This must remain deterministic!)
             UnityEngine.Random.InitState(Main.mySaveContainer.worldScramblerSeed);
@@ -255,14 +286,17 @@ namespace ScrambledSeas
                     break;
                 }
             }
-            Main.mod.Logger.Log("Scrambler completion value:" + UnityEngine.Random.Range(0, 1000000));
+            int completionVal = UnityEngine.Random.Range(0, 1000000);
+            Main.logger.Log("Scrambler completion value:" + completionVal);
 
             //Calculate displacement vectors
             string[] regionNames = new string[] { "Region Al'ankh", "Region Emerald", "Region Medi" };
             Vector3[] regionDisplacements = new Vector3[regionNames.Length];
+            Main.regions = new List<Region>();
             for (int i = 0; i < regionNames.Length; i++) {
                 regionDisplacements[i] = archLocs[i] - FloatingOriginManager.instance.ShiftingPosToRealPos(GameObject.Find(regionNames[i]).transform.localPosition);
                 regionDisplacements[i].y = 0f;
+                Main.regions.Add(GameObject.Find(regionNames[i]).GetComponent<Region>());
             }
             for (int i = 0; i < Main.islandOrigins.Length; i++) {
                 Main.islandDisplacements[i] = islandLocs[i] - Main.islandOrigins[i];
