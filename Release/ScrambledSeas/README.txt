@@ -1,5 +1,5 @@
 ### Scrambled Seas mod for Sailwind
-### Version 5.1
+### Version 6.0
 ### Author: Rahakami
 
 This is a randomizer mod, which greatly increases the game difficulty by leaving it up to the player to discover and plot each island.
