@@ -370,8 +370,10 @@ namespace ScrambledSeas
             //Move unpurchased boats
             PurchasableBoat[] boatArray = Object.FindObjectsOfType(typeof(PurchasableBoat)) as PurchasableBoat[];
             foreach (var boat in boatArray) {
-                int homeIsland = ClosestIsland(boat.gameObject.transform.position);
-                boat.gameObject.transform.Translate(Main.islandDisplacements[homeIsland], Space.World);
+                if (!boat.isPurchased()) {
+                    int homeIsland = ClosestIsland(boat.gameObject.transform.position);
+                    boat.gameObject.transform.Translate(Main.islandDisplacements[homeIsland], Space.World);
+                }
             }
 
             //Re-roll seed for gameplay
