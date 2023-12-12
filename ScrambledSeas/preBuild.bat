@@ -1,0 +1,2 @@
+if not exist "F:\SteamLibrary\steamapps\common\Sailwind\Mods\ScrambledSeas" mkdir "F:\SteamLibrary\steamapps\common\Sailwind\Mods\ScrambledSeas"
+del /q "F:\SteamLibrary\steamapps\common\Sailwind\Mods\ScrambledSeas\ScrambledSeas.dll"

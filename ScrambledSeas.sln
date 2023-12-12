@@ -1,25 +1,27 @@
-﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.1758
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32516.85
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScrambledSeas", "ScrambledSeas\ScrambledSeas.csproj", "{ABF1FA58-CE72-4E26-B94B-E5DECF8850C7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScrambledSeas", "ScrambledSeas\ScrambledSeas.csproj", "{C32EB563-09D3-4FA6-8D25-3C5CFF8AAD79}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		BepInEx|Any CPU = BepInEx|Any CPU
 		Debug|Any CPU = Debug|Any CPU
-		Release|Any CPU = Release|Any CPU
+		UMM|Any CPU = UMM|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{ABF1FA58-CE72-4E26-B94B-E5DECF8850C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{ABF1FA58-CE72-4E26-B94B-E5DECF8850C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{ABF1FA58-CE72-4E26-B94B-E5DECF8850C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{ABF1FA58-CE72-4E26-B94B-E5DECF8850C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C32EB563-09D3-4FA6-8D25-3C5CFF8AAD79}.BepInEx|Any CPU.ActiveCfg = BepInEx|Any CPU
+		{C32EB563-09D3-4FA6-8D25-3C5CFF8AAD79}.BepInEx|Any CPU.Build.0 = BepInEx|Any CPU
+		{C32EB563-09D3-4FA6-8D25-3C5CFF8AAD79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C32EB563-09D3-4FA6-8D25-3C5CFF8AAD79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C32EB563-09D3-4FA6-8D25-3C5CFF8AAD79}.UMM|Any CPU.ActiveCfg = UMM|Any CPU
+		{C32EB563-09D3-4FA6-8D25-3C5CFF8AAD79}.UMM|Any CPU.Build.0 = UMM|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {93CA5F81-FE71-4D68-9325-E40E122D1C2B}
+		SolutionGuid = {9EEF7DFA-D5CC-4E15-BEE0-3FAE68ECD36F}
 	EndGlobalSection
 EndGlobal

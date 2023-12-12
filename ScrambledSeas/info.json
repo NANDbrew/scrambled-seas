@@ -1,0 +1,9 @@
+{
+    "id": "ScrambledSeas",
+    "DisplayName": "ScrambledSeas",
+    "author": "Rahakami. Fixed by App24",
+    "Version": "6.0.1",
+    "ManagerVersion": "0.24.0.0",
+    "AssemblyName": "ScrambledSeas.dll",
+    "EntryMethod": "ScrambledSeas.Main.Load"
+}
