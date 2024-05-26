@@ -52,10 +52,10 @@ namespace ScrambledSeas
             float minArchSeparation = Main.saveContainer.minArchipelagoSeparation;
             float minIslandSeparation = Main.saveContainer.minIslandSeparation;
             //Convert lat/lon to unity coords
-            float archXMin = Main.saveContainer.worldLonMin * 9000f + 27000f;
-            float archXMax = Main.saveContainer.worldLonMax * 9000f - 27000f;
-            float archZMin = (Main.saveContainer.worldLatMin - 36f) * 9000f + 27000f;
-            float archZMax = (Main.saveContainer.worldLatMax - 36f) * 9000f - 27000f;
+            float archXMin = Main.saveContainer.worldLonMin * 9000f + 32000f;
+            float archXMax = Main.saveContainer.worldLonMax * 9000f - 12000f;
+            float archZMin = (Main.saveContainer.worldLatMin - 36f) * 9000f + 46000f;
+            float archZMax = (Main.saveContainer.worldLatMax - 36f) * 9000f - 26000f;
 
             //Randomize locations until we pass test (This must remain deterministic!)
 #if UMM
@@ -178,7 +178,11 @@ namespace ScrambledSeas
             //foreach (var name in islandNames) {
             //    if (!string.IsNullOrEmpty(name)) {
             //        Vector3 latlon = FloatingOriginManager.instance.GetGlobeCoords(GameObject.Find(name).transform);
-            //        Main.logger.Log(name +","+ latlon.x +","+ latlon.z);
+#if UMM
+                    // Main.logger.Log(name +","+ latlon.x +","+ latlon.z);
+#elif BepInEx
+                    // Main.logSource.LogInfo(name + "," + latlon.x + "," + latlon.z);
+#endif
             //    }
             //}
         }
