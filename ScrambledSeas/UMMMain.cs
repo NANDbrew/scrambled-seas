@@ -14,6 +14,11 @@ namespace ScrambledSeas
 
         public static ScrambledSeasSaveContainer saveContainer = new ScrambledSeasSaveContainer();
 
+        public static Log(string msg)
+        {
+            Main.logger.Log(msg);
+        }
+
         private static bool Load(UnityModManager.ModEntry modEntry)
         {
             var harmony = new Harmony(modEntry.Info.Id);

@@ -10,10 +10,11 @@
         public int minArchipelagoSeparation { get; set; } = 30000;
         public int minIslandSeparation { get; set; } = 2000;
         //These defaults change if WorldBorder changes
-        public int worldLonMin { get; set; } = -12;
-        public int worldLonMax { get; set; } = 32;
-        public int worldLatMin { get; set; } = 26;
-        public int worldLatMax { get; set; } = 46;
+        public static int border_offset_deg { get; set; } = 2;
+        public int worldLonMin { get; set; } = -12 + border_offset_deg;
+        public int worldLonMax { get; set; } = 32 - border_offset_deg;
+        public int worldLatMin { get; set; } = 26 + border_offset_deg;
+        public int worldLatMax { get; set; } = 46 - border_offset_deg;
     }
 
 

@@ -1,4 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using OVRSimpleJSON;
+using SailwindModdingHelper;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 namespace ScrambledSeas
@@ -52,17 +56,15 @@ namespace ScrambledSeas
             float minArchSeparation = Main.saveContainer.minArchipelagoSeparation;
             float minIslandSeparation = Main.saveContainer.minIslandSeparation;
             //Convert lat/lon to unity coords
-            float archXMin = Main.saveContainer.worldLonMin * 9000f + 32000f;
-            float archXMax = Main.saveContainer.worldLonMax * 9000f - 12000f;
-            float archZMin = (Main.saveContainer.worldLatMin - 36f) * 9000f + 46000f;
-            float archZMax = (Main.saveContainer.worldLatMax - 36f) * 9000f - 26000f;
+            float archXMin = Main.saveContainer.worldLonMin * 9000f;
+            float archXMax = Main.saveContainer.worldLonMax * 9000f;
+            float archZMin = (Main.saveContainer.worldLatMin - 36f) * 9000f;
+            float archZMax = (Main.saveContainer.worldLatMax - 36f) * 9000f;
 
             //Randomize locations until we pass test (This must remain deterministic!)
-#if UMM
-            Main.logger.Log("Scrambler Seed:" + Main.saveContainer.worldScramblerSeed);
-#elif BepInEx
-            Main.logSource.LogInfo("Scrambler Seed:" + Main.saveContainer.worldScramblerSeed);
-#endif
+            
+            Main.Log("Scrambler Seed:" + Main.saveContainer.worldScramblerSeed);
+
             UnityEngine.Random.InitState(Main.saveContainer.worldScramblerSeed);
             Vector3[] archLocs;
             while (true)
@@ -77,6 +79,7 @@ namespace ScrambledSeas
                     break;
                 }
             }
+
             Vector3[][] islandLocs = new Vector3[nArchipelagos][];
             {
                 int i = 0;
@@ -95,11 +98,8 @@ namespace ScrambledSeas
             }
 
             int completionVal = UnityEngine.Random.Range(0, 1000000);
-#if UMM
-            Main.logger.Log("Scrambler completion value:" + completionVal);
-#elif BepInEx
-            Main.logSource.LogInfo("Scrambler completion value:" + completionVal);
-#endif
+
+            Main.Log("Scrambler completion value:" + completionVal);
 
             //Calculate archipelago displacement vectors
             Vector3[] regionDisplacements = new Vector3[nArchipelagos];
@@ -147,14 +147,14 @@ namespace ScrambledSeas
                 GameObject.Find(kv.Key).transform.Translate(regionDisplacements[kv.Value], Space.World);
             }
             //Move recovery ports
-            RecoveryPort[] recoveryArray = Object.FindObjectsOfType(typeof(RecoveryPort)) as RecoveryPort[];
+            RecoveryPort[] recoveryArray = UnityEngine.Object.FindObjectsOfType(typeof(RecoveryPort)) as RecoveryPort[];
             foreach (var recovery in recoveryArray)
             {
                 int homeIsland = ClosestIsland(recovery.gameObject.transform.position);
                 recovery.gameObject.transform.Translate(islandDisplacements[homeIsland], Space.World);
             }
             //Move unpurchased boats
-            PurchasableBoat[] boatArray = Object.FindObjectsOfType(typeof(PurchasableBoat)) as PurchasableBoat[];
+            PurchasableBoat[] boatArray = UnityEngine.Object.FindObjectsOfType(typeof(PurchasableBoat)) as PurchasableBoat[];
             foreach (var boat in boatArray)
             {
                 if (!boat.isPurchased())
@@ -175,16 +175,48 @@ namespace ScrambledSeas
             }
 
             // //Debug
-            //foreach (var name in islandNames) {
-            //    if (!string.IsNullOrEmpty(name)) {
-            //        Vector3 latlon = FloatingOriginManager.instance.GetGlobeCoords(GameObject.Find(name).transform);
-#if UMM
-                    // Main.logger.Log(name +","+ latlon.x +","+ latlon.z);
-#elif BepInEx
-                    // Main.logSource.LogInfo(name + "," + latlon.x + "," + latlon.z);
-#endif
+            if (Main.saveCoordsToJSON_Enabled.Value)
+            {
+
+                SailwindMapExport mapExportJSON = new SailwindMapExport();
+
+                foreach (var name in islandNames)
+                {
+                    if (!string.IsNullOrEmpty(name))
+                    {
+                        Vector3 latlon = FloatingOriginManager.instance.GetGlobeCoords(GameObject.Find(name).transform);
+                        Main.Log(name + "," + latlon.x + "," + latlon.z);
+                        mapExportJSON.points.Add(new point(name, latlon));
+                        Main.Log("count " + mapExportJSON.points.Count);
+
+                    }
+                }
+
+                string jsonString = "";
+
+                try
+                {
+                    jsonString = JsonUtility.ToJson(mapExportJSON);
+                }
+                catch (Exception ex)
+                {
+                    Main.Log(ex.Message);
+                }
+                
+                Main.Log(jsonString);
+                File.WriteAllText(Path.Combine(Main.instance.Info.GetFolderLocation(), $"scramble_{SaveSlots.currentSlot}.json"), jsonString);
+            }
+
+
+            //for (int i = 0; i < archLocs.Length; i++)
+            //{
+            //    Main.Log("arch: #" + i + ",   " + archLocs[i].x + ",   " + archLocs[i].z);
+            //    if (Main.saveCoordsToJSON_Enabled.Value)
+            //    {
+            //        File.AppendAllText(Path.Combine(Main.instance.Info.GetFolderLocation(), $"scramble_{SaveSlots.currentSlot}.txt"), $"arch: {i}| {archLocs[i].x}, {archLocs[i].z}" + Environment.NewLine);
             //    }
             //}
+
         }
 
         private static bool CheckScramble(Vector3[] locations, float minDist)

@@ -1,7 +1,9 @@
 ﻿#if BepInEx
 using BepInEx;
+using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
+using SailwindModdingHelper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,11 +16,15 @@ using UnityEngine;
 namespace ScrambledSeas
 {
     [BepInPlugin(GUID, NAME, VERSION)]
+    [BepInDependency(SailwindModdingHelperMain.GUID, "2.0.0")]
     public class Main : BaseUnityPlugin
     {
         public const string GUID = "com.app24.scrambledseas";
         public const string NAME = "Scrambled Seas";
         public const string VERSION = "6.0.1";
+
+        internal static ConfigEntry<bool> saveCoordsToJSON_Enabled;
+
 
         public readonly static bool pluginEnabled = true;
 
@@ -34,7 +40,13 @@ namespace ScrambledSeas
         {
             instance = this;
             Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), GUID);
+            saveCoordsToJSON_Enabled = Config.Bind("Settings", "saveCoordsToJSON", true, "save islands coords to JSON file");
             logSource = Logger;
+        }
+        
+        public static void Log(string msg)
+        {
+            Main.logSource.LogInfo(msg);
         }
     }
 }
