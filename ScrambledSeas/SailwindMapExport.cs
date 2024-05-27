@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Policy;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -12,8 +13,8 @@ namespace ScrambledSeas
     [Serializable]
     public class line
     {
-        [SerializeField]
-        public string description;
+        [JsonInclude]
+        public string description { get; set; }
         public line()
         {
             this.description = "line";
@@ -23,8 +24,8 @@ namespace ScrambledSeas
     [Serializable]
     public class path
     {
-        [SerializeField]
-        public string description;
+        [JsonInclude]
+        public string description { get; set; }
         public path()
         {
             this.description = "path";
@@ -34,18 +35,18 @@ namespace ScrambledSeas
     [Serializable]
     public class point
     {
-        [SerializeField]
-        public string description = "point";
-        [SerializeField]
-        public List<float> pos;
-        [SerializeField]
-        public string colour;
-        [SerializeField]
-        public int day = 0;
-        [SerializeField]
-        public int time = 0;
-        [SerializeField]
-        public string winddir = "NE";
+        [JsonInclude]
+        public string description { get; set; }
+        [JsonInclude]
+        public List<float> pos { get; set; }
+        [JsonInclude]
+        public string colour { get; set; }
+        [JsonInclude]
+        public int day { get; set; }
+        [JsonInclude]
+        public int time { get; set; }
+        [JsonInclude]
+        public string winddir { get; set; }
         public point(string description, Vector3 pos)
         {
             this.description = description;
@@ -63,8 +64,8 @@ namespace ScrambledSeas
     [Serializable]
     public class goal
     {
-        [SerializeField]
-        public string description;
+        [JsonInclude]
+        public string description { get; set; }
 
         public goal()
         {
@@ -76,18 +77,18 @@ namespace ScrambledSeas
     public class SailwindMapExport
     {
 
-        [SerializeField]
-        public List<line> lines;
-        [SerializeField]
-        public List<path> paths;
-        [SerializeField]
-        public List<point> points;
-        [SerializeField]
-        public List<goal> goal;
-        [SerializeField]
-        public string name;
-        [SerializeField]
-        public List<float> ft;
+        [JsonInclude]
+        public List<line> lines { get; set; }
+        [JsonInclude]
+        public List<path> paths { get; set; }
+        [JsonInclude]
+        public List<point> points { get; set; }
+        [JsonInclude]
+        public List<goal> goal { get; set; }
+        [JsonInclude]
+        public string name { get; set; }
+        [JsonInclude]
+        public List<float> ft { get; set; }
 
 
         public SailwindMapExport()

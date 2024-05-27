@@ -2,8 +2,14 @@
 using SailwindModdingHelper;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Runtime.CompilerServices;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Xml.Linq;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace ScrambledSeas
 {
@@ -177,34 +183,93 @@ namespace ScrambledSeas
             // //Debug
             if (Main.saveCoordsToJSON_Enabled.Value)
             {
-
-                SailwindMapExport mapExportJSON = new SailwindMapExport();
-
-                foreach (var name in islandNames)
-                {
-                    if (!string.IsNullOrEmpty(name))
-                    {
-                        Vector3 latlon = FloatingOriginManager.instance.GetGlobeCoords(GameObject.Find(name).transform);
-                        Main.Log(name + "," + latlon.x + "," + latlon.z);
-                        mapExportJSON.points.Add(new point(name, latlon));
-                        Main.Log("count " + mapExportJSON.points.Count);
-
-                    }
-                }
-
-                string jsonString = "";
-
                 try
                 {
-                    jsonString = JsonUtility.ToJson(mapExportJSON);
+                    JSONObject json = new JSONObject();
+                    
+
+                    JSONNode empty = new JSONArray();
+                    json.Add("lines", empty);
+                    json.Add("path", empty);
+                    
+                    JSONNode points = new JSONArray();
+
+                    Dictionary<string,string> arch_colors = new Dictionary<string,string>();
+                    arch_colors.Add("A", "yellowpoint");
+                    arch_colors.Add("E", "greenpoint");
+                    arch_colors.Add("M", "greenpoint");
+                    arch_colors.Add("Lagoon", "orangepoint");
+
+                    foreach (var name in islandNames)
+                    {
+                        if (!string.IsNullOrEmpty(name))
+                        {
+                            // 0      1 2 3
+                            // island 1 A (gold rock)
+                            string[] name_array = name.Split(' ');
+                            string point_color;
+                            string island_name = "";
+                            bool skip = false;
+
+                            if (arch_colors.ContainsKey(name_array[2]))
+                            {
+                                point_color = arch_colors[name_array[2]];
+                            }
+                            else
+                            {
+                                point_color = "bulepoint";
+                                if (name_array[2] == "rock")
+                                {
+                                    island_name = "Rock Of Despair";
+                                    skip = true;
+                                }
+                            }
+
+                            if (!skip)
+                            {
+                                // search (island name)
+                                Match island = Regex.Match(name, "(\\(.*\\))");
+                                if (island.Success)
+                                {
+                                    island_name = island.Value.Trim(new Char[] { ' ', '(', ')' });
+                                }
+                                else
+                                {
+                                    island_name = name_array[3];
+                                }
+                            }
+                            island_name = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(island_name.ToLower());
+
+                            Vector3 latlon = FloatingOriginManager.instance.GetGlobeCoords(GameObject.Find(name).transform);
+                            Main.Log(name + "," + latlon.x + "," + latlon.z);
+                            JSONObject point = new JSONObject();
+                            point.Add("description", new JSONString(island_name));
+                            JSONArray pos = new JSONArray();
+                            pos.Add(new JSONNumber(latlon.x));
+                            pos.Add(new JSONNumber(latlon.z));
+                            point.Add("pos",pos);
+                            point.Add("colour", point_color);
+                            point.Add("day", 0);
+                            point.Add("time", 0);
+                            point.Add("winddir", "NE");                            
+                            points.Add(point);
+                        }
+                    }
+
+                    json.Add("points", points);
+                    json.Add("goals", empty);
+
+                    string jsonString = json.ToString();
+
+                    Main.Log(jsonString);
+                    File.WriteAllText(Path.Combine(Main.instance.Info.GetFolderLocation(), $"scramble_{SaveSlots.currentSlot}.json"), jsonString);
                 }
-                catch (Exception ex)
+                catch(Exception ex)
                 {
-                    Main.Log(ex.Message);
-                }
                 
-                Main.Log(jsonString);
-                File.WriteAllText(Path.Combine(Main.instance.Info.GetFolderLocation(), $"scramble_{SaveSlots.currentSlot}.json"), jsonString);
+                    Main.Log(ex.Message);
+                    Main.Log(ex.InnerException.Message);
+                }
             }
 
 
