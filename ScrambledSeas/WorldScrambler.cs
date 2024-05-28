@@ -62,13 +62,15 @@ namespace ScrambledSeas
             float minArchSeparation = Main.saveContainer.minArchipelagoSeparation;
             float minIslandSeparation = Main.saveContainer.minIslandSeparation;
             //Convert lat/lon to unity coords
-            float archXMin = Main.saveContainer.worldLonMin * 9000f;
-            float archXMax = Main.saveContainer.worldLonMax * 9000f;
-            float archZMin = (Main.saveContainer.worldLatMin - 36f) * 9000f;
-            float archZMax = (Main.saveContainer.worldLatMax - 36f) * 9000f;
+
+            float border_offset = 27000f; // 270 mile
+            float archXMin = Main.saveContainer.worldLonMin * 9000f + border_offset;
+            float archXMax = Main.saveContainer.worldLonMax * 9000f - border_offset;
+            float archZMin = (Main.saveContainer.worldLatMin - 36f) * 9000f + border_offset;
+            float archZMax = (Main.saveContainer.worldLatMax - 36f) * 9000f - border_offset;
 
             //Randomize locations until we pass test (This must remain deterministic!)
-            
+
             Main.Log("Scrambler Seed:" + Main.saveContainer.worldScramblerSeed);
 
             UnityEngine.Random.InitState(Main.saveContainer.worldScramblerSeed);
@@ -197,7 +199,7 @@ namespace ScrambledSeas
                     Dictionary<string,string> arch_colors = new Dictionary<string,string>();
                     arch_colors.Add("A", "yellowpoint");
                     arch_colors.Add("E", "greenpoint");
-                    arch_colors.Add("M", "greenpoint");
+                    arch_colors.Add("M", "bluepoint");
                     arch_colors.Add("Lagoon", "orangepoint");
 
                     foreach (var name in islandNames)
@@ -217,7 +219,7 @@ namespace ScrambledSeas
                             }
                             else
                             {
-                                point_color = "bulepoint";
+                                point_color = "bluepoint";
                                 if (name_array[2] == "rock")
                                 {
                                     island_name = "Rock Of Despair";

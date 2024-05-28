@@ -47,15 +47,11 @@
     <Reference Include="0Harmony">
       <HintPath>G:\SteamLibrary\steamapps\common\Sailwind\BepInEx\core\0Harmony.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL" />
     <Reference Include="SailwindModdingHelper">
       <HintPath>G:\SteamLibrary\steamapps\common\Sailwind\BepInEx\plugins\SailwindModdingHelper\SailwindModdingHelper.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL" />
-    <Reference Include="System.Text.Encodings.Web, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL" />
-    <Reference Include="System.Text.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -126,7 +122,6 @@
   <ItemGroup>
     <Compile Include="Extensions.cs" />
     <Compile Include="BepInExMain.cs" />
-    <Compile Include="SailwindMapExport.cs" />
     <Compile Include="UMMMain.cs" />
     <Compile Include="Patches.cs" />
     <Compile Include="SaveFileHelper.cs" />
