@@ -19,9 +19,9 @@ namespace ScrambledSeas
     [BepInDependency(SailwindModdingHelperMain.GUID, "2.0.0")]
     public class Main : BaseUnityPlugin
     {
-        public const string GUID = "com.app24.scrambledseas";
-        public const string NAME = "Scrambled Seas";
-        public const string VERSION = "6.0.1";
+        public const string GUID = "com.vitalijbeam.scrambledseas";
+        public const string NAME = "Scrambled Seas Fork";
+        public const string VERSION = "6.0.2";
 
         internal static ConfigEntry<bool> saveCoordsToJSON_Enabled;
 
