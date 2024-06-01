@@ -23,6 +23,8 @@ namespace ScrambledSeas
         public const string NAME = "Scrambled Seas Fork";
         public const string VERSION = "6.0.2";
 
+        internal static ConfigEntry<bool> random_Enabled;
+        internal static ConfigEntry<bool> hideDestinationCoords_Enabled;
         internal static ConfigEntry<bool> saveCoordsToJSON_Enabled;
 
 
@@ -40,6 +42,8 @@ namespace ScrambledSeas
         {
             instance = this;
             Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), GUID);
+            random_Enabled = Config.Bind("Settings", "randomEN", true, "enable random");
+            hideDestinationCoords_Enabled = Config.Bind("Settings", "hideDestinationCoords", true, "hide cestination coords in missions");
             saveCoordsToJSON_Enabled = Config.Bind("Settings", "saveCoordsToJSON", true, "save islands coords to JSON file");
             logSource = Logger;
         }

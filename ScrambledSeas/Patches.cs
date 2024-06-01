@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using static OVRPlugin;
 
 namespace ScrambledSeas
 {
@@ -19,7 +20,11 @@ namespace ScrambledSeas
                 if (Main.pluginEnabled && __instance.islandIndex > 0)
                 {
                     WorldScrambler.islandNames[__instance.islandIndex - 1] = __instance.gameObject.name;
-                    WorldScrambler.islandOrigins[__instance.islandIndex - 1] = __instance.gameObject.transform.localPosition;
+                    WorldScrambler.islandOrigins[__instance.islandIndex - 1] = __instance.GetPosition();
+                    //WorldScrambler.islandOriginPos[__instance.islandIndex - 1] = __instance.gameObject.transform.localPosition; ; //gameObject.transform.localPosition;
+                    Main.Log("isl name" + __instance.gameObject.name + " ovr " + (bool)__instance.overrideCenter);
+                    //Main.Log("isl lpos x:" + __instance.gameObject.transform.localPosition.x / 9000.0f + " isl lpos z: " + ((__instance.gameObject.transform.localPosition.z / 9000.0f)+36.0f));
+                    Main.Log("isl pos x:" + __instance.GetPosition().x / 9000.0f + " isl pos z: " + ((__instance.GetPosition().z / 9000.0f)+36.0f));
                 }
             }
         }
@@ -75,20 +80,21 @@ namespace ScrambledSeas
 
                     ___animsPlaying++;
                     Transform transform = null;
-                    if (___currentRegion == 0)
+                    switch(___currentRegion)
                     {
-                        transform = ___startApos;
-                        GameState.newGameRegion = PortRegion.alankh;
-                    }
-                    else if (___currentRegion == 1)
-                    {
-                        transform = ___startEpos;
-                        GameState.newGameRegion = PortRegion.emerald;
-                    }
-                    else
-                    {
-                        transform = ___startMpos;
-                        GameState.newGameRegion = PortRegion.medi;
+                        default:
+                        case 0:
+                            transform = ___startApos;
+                            GameState.newGameRegion = PortRegion.alankh;
+                            break;
+                        case 1:
+                            transform = ___startEpos;
+                            GameState.newGameRegion = PortRegion.emerald;
+                            break;
+                        case 2:
+                            transform = ___startMpos;
+                            GameState.newGameRegion = PortRegion.medi;
+                            break;
                     }
 
                     __instance.InvokePrivateMethod("DisableIslandMenu");
@@ -218,28 +224,125 @@ namespace ScrambledSeas
             }
         }
 
-        [HarmonyPatch(typeof(PlayerReputation), "GetMaxDistance")]
-        private static class ReputationPatch
-        {
-            private static void Postfix(ref float __result)
-            {
-                //Islands tend to be farther apart in this mod. Ensure that the returned value is at least 300 miles
-                if (Main.pluginEnabled && __result < 300f)
-                {
-                    __result = 300f;
-                }
-            }
-        }
+        //[HarmonyPatch(typeof(PlayerReputation), "GetMaxDistance")]
+        //private static class ReputationPatch
+        //{
+        //    private static void Postfix(ref float __result)
+        //    {
+        //        //Islands tend to be farther apart in this mod. Ensure that the returned value is at least 300 miles
+        //        if (Main.pluginEnabled && __result < 400f)
+        //        {
+        //            __result = 400f;
+        //        }
+        //    }
+        //}
+
+        //[HarmonyPatch(typeof(PlayerMissions), "CompleteMission")]
+        //private static class CompleteMissionPatch
+        //{
+        //    private static void Prefix(ref int ___missionIndex)
+        //    {
+        //        Main.Log("CompleteMissionPatch" + PlayerMissions.missions.Length + " " + ___missionIndex);
+
+        //        PlayerMissions.missions[___missionIndex].EndMission();
+
+        //        if (Main.pluginEnabled)
+        //        {
+        //            WorldScrambler.marketVisited[PlayerMissions.missions[___missionIndex].destinationPort.portIndex] = true;
+        //            NotificationUi.instance.ShowNotification("Mission complete:\n" + PlayerMissions.missions[___missionIndex].missionName + " visited:" + WorldScrambler.marketVisited[PlayerMissions.missions[___missionIndex].destinationPort.portIndex]);
+        //        }
+        //        else
+        //        {
+        //            NotificationUi.instance.ShowNotification("Mission complete:\n" + PlayerMissions.missions[___missionIndex].missionName);
+        //        }
+        //        UISoundPlayer.instance.PlayWritingSound();
+
+        //        PlayerMissions.missions[___missionIndex] = null;
+        //    }
+        //}
 
         [HarmonyPatch(typeof(MissionDetailsUI), "UpdateMap")]
         private static class MissionMapPatch
         {
-            private static void Postfix(ref Renderer ___mapRenderer, ref TextMesh ___locationText)
+            private static void Postfix(ref Mission ___currentMission, ref Renderer ___mapRenderer, ref TextMesh ___locationText)
             {
                 if (Main.pluginEnabled)
                 {
-                    ___mapRenderer.gameObject.SetActive(false);
-                    ___locationText.text = "Map Unavailable\n\nWelcome to ScrambledSeas :)";
+                    //___mapRenderer.gameObject.SetActive(false);
+                    //___locationText.text = "Map Unavailable\n\nWelcome to ScrambledSeas :)";
+
+                    //        bool flag = false;
+                    //        bool flag2 = false;
+                    //        if ((!currentMission.originPort.oceanMapLocation && !currentMission.originPort.localMapLocation) || (!currentMission.destinationPort.oceanMapLocation && !currentMission.destinationPort.localMapLocation))
+                    //        {
+                    //            flag2 = true;
+                    //        }
+
+                    //        if (currentMission.originPort.localMap != currentMission.destinationPort.localMap && (currentMission.originPort.oceanMapLocation == null || currentMission.destinationPort.oceanMapLocation == null))
+                    //        {
+                    //            flag2 = true;
+                    //        }
+
+                    //if (flag2)
+                    //{
+
+
+                    ___mapRenderer.gameObject.SetActive(value: false);
+                    //if (!Main.hideDestinationCoords_Enabled.Value && WorldScrambler.marketVisited[___currentMission.destinationPort.portIndex])
+                    //{
+                        Vector3 globeCoords = FloatingOriginManager.instance.GetGlobeCoords(___currentMission.destinationPort.transform);
+                        float num = globeCoords.x;
+                        float num2 = globeCoords.z; // Mathf.RoundToInt(globeCoords.z);
+                        string text = ((num < 0) ? "W" : "E");
+                        string text2 = ((num2 < 0) ? "S" : "N");
+                        ___locationText.text = "(map unavailable)"+ WorldScrambler.marketVisited[___currentMission.destinationPort.portIndex] + "\n\napproximate location:\n" + num2.ToString("0.00") + " " + text2 + ", " + num.ToString("0.00") + " " + text;
+                    //}
+                    //else
+                    //{
+                    //    ___locationText.text = "(map unavailable)\n\nyou need to find \ndestination port by youself\n";
+                    //}
+                    //return;
+                    //}
+
+                    //if (currentMission.UseOceanMap())
+                    //{
+                    //    flag = true;
+                    //    SetMapTexture(oceanMap);
+                    //}
+                    //else if (currentMission.originPort.localMap == LocalMap.alankh)
+                    //{
+                    //    SetMapTexture(alankhMap);
+                    //}
+                    //else if (currentMission.originPort.localMap == LocalMap.emerald)
+                    //{
+                    //    SetMapTexture(emeraldMap);
+                    //}
+                    //else if (currentMission.originPort.localMap == LocalMap.medi)
+                    //{
+                    //    SetMapTexture(mediMap);
+                    //}
+                    //else
+                    //{
+                    //    if (currentMission.originPort.localMap != LocalMap.lagoon)
+                    //    {
+                    //        return;
+                    //    }
+
+                    //    SetMapTexture(lagoonMap);
+                    //}
+
+                    //if (flag)
+                    //{
+                    //    routeLine.SetPosition(0, currentMission.originPort.oceanMapLocation.localPosition);
+                    //    routeLine.SetPosition(1, currentMission.destinationPort.oceanMapLocation.localPosition);
+                    //    destinationMarker.localPosition = currentMission.destinationPort.oceanMapLocation.localPosition;
+                    //}
+                    //else
+                    //{
+                    //    routeLine.SetPosition(0, currentMission.originPort.localMapLocation.localPosition);
+                    //    routeLine.SetPosition(1, currentMission.destinationPort.localMapLocation.localPosition);
+                    //    destinationMarker.localPosition = currentMission.destinationPort.localMapLocation.localPosition;
+                    //}
                 }
             }
         }
