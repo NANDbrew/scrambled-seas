@@ -237,30 +237,6 @@ namespace ScrambledSeas
         //    }
         //}
 
-        //[HarmonyPatch(typeof(PlayerMissions), "CompleteMission")]
-        //private static class CompleteMissionPatch
-        //{
-        //    private static void Prefix(ref int ___missionIndex)
-        //    {
-        //        Main.Log("CompleteMissionPatch" + PlayerMissions.missions.Length + " " + ___missionIndex);
-
-        //        PlayerMissions.missions[___missionIndex].EndMission();
-
-        //        if (Main.pluginEnabled)
-        //        {
-        //            WorldScrambler.marketVisited[PlayerMissions.missions[___missionIndex].destinationPort.portIndex] = true;
-        //            NotificationUi.instance.ShowNotification("Mission complete:\n" + PlayerMissions.missions[___missionIndex].missionName + " visited:" + WorldScrambler.marketVisited[PlayerMissions.missions[___missionIndex].destinationPort.portIndex]);
-        //        }
-        //        else
-        //        {
-        //            NotificationUi.instance.ShowNotification("Mission complete:\n" + PlayerMissions.missions[___missionIndex].missionName);
-        //        }
-        //        UISoundPlayer.instance.PlayWritingSound();
-
-        //        PlayerMissions.missions[___missionIndex] = null;
-        //    }
-        //}
-
         [HarmonyPatch(typeof(MissionDetailsUI), "UpdateMap")]
         private static class MissionMapPatch
         {
@@ -289,18 +265,20 @@ namespace ScrambledSeas
 
                     ___mapRenderer.gameObject.SetActive(value: false);
                     //if (!Main.hideDestinationCoords_Enabled.Value && WorldScrambler.marketVisited[___currentMission.destinationPort.portIndex])
-                    //{
+                    if (!Main.hideDestinationCoords_Enabled.Value)
+                    {
                         Vector3 globeCoords = FloatingOriginManager.instance.GetGlobeCoords(___currentMission.destinationPort.transform);
                         float num = globeCoords.x;
                         float num2 = globeCoords.z; // Mathf.RoundToInt(globeCoords.z);
                         string text = ((num < 0) ? "W" : "E");
                         string text2 = ((num2 < 0) ? "S" : "N");
-                        ___locationText.text = "(map unavailable)"+ WorldScrambler.marketVisited[___currentMission.destinationPort.portIndex] + "\n\napproximate location:\n" + num2.ToString("0.00") + " " + text2 + ", " + num.ToString("0.00") + " " + text;
-                    //}
-                    //else
-                    //{
-                    //    ___locationText.text = "(map unavailable)\n\nyou need to find \ndestination port by youself\n";
-                    //}
+                        //___locationText.text = "(map unavailable) (visited " + WorldScrambler.marketVisited[___currentMission.destinationPort.portIndex] + ")\n\napproximate location:\n" + num2.ToString("0.00") + " " + text2 + ", " + num.ToString("0.00") + " " + text;
+                        ___locationText.text = "(map unavailable)\n\napproximate location:\n" + num2.ToString("0.00") + " " + text2 + ", " + num.ToString("0.00") + " " + text;
+                    }
+                    else
+                    {
+                        ___locationText.text = "(map unavailable)\n\nyou need to find \ndestination port by youself\n";
+                    }
                     //return;
                     //}
 
