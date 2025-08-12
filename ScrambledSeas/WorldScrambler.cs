@@ -24,10 +24,10 @@ namespace ScrambledSeas
         public static Vector3[] islandDisplacements = new Vector3[nArchipelagos * nIslandsPer];
         public static Vector3[] islandOrigins = new Vector3[nArchipelagos * nIslandsPer];
         public static string[] islandNames = new string[nArchipelagos * nIslandsPer];
-        public static List<Region> regions = new List<Region>();
-
+        public static Dictionary<int, Region> regions = new Dictionary<int, Region>();
+        public static List<RecoveryPort> recoveryArray = new List<RecoveryPort>();
         public static Dictionary<int, bool> marketVisited = new Dictionary<int,bool>();
-
+        public static List<PurchasableBoat> boatArray = new List<PurchasableBoat>();
         public static void Scramble()
         {
             //These constants need to be updated when new islands/regions are added to game
@@ -39,7 +39,7 @@ namespace ScrambledSeas
             Transform islandEastwindTransform = Refs.islands[eastwindIndx];
             IslandMarket eastwindMarket = null;
             Vector3 eastwindMarketOffset = Vector3.zero;
-            IslandMarket[] markets = UnityEngine.Object.FindObjectsOfType(typeof(IslandMarket)) as IslandMarket[];
+/*            IslandMarket[] markets = UnityEngine.Object.FindObjectsOfType(typeof(IslandMarket)) as IslandMarket[];
 
             foreach(IslandMarket m in markets)
             {
@@ -48,8 +48,8 @@ namespace ScrambledSeas
                     eastwindMarket = m;
                     break;
                 }
-            }
-
+            }*/
+/*            eastwindMarket = Port.ports[eastwindIndx].GetComponent<IslandMarket>();
             if (eastwindMarket != null)
             {
                 Main.Log("Save Eastwind market offset");
@@ -62,7 +62,7 @@ namespace ScrambledSeas
 
                 Main.Log("offset: x:" + eastwindMarketOffset.x/9000.0f + " z: " + (eastwindMarketOffset.z/9000.0f));
 
-            }
+            }*/
 
 
             // Al Ankh
@@ -145,14 +145,19 @@ namespace ScrambledSeas
             int completionVal = UnityEngine.Random.Range(0, 1000000);
 
             Main.Log("Scrambler completion value:" + completionVal);
-
+            //Cache regions for RegionBlenderPatch
+            regions = new Dictionary<int, Region>();
+            foreach (var kv in regionToName)
+            {
+                regions.Add(kv.Key, GameObject.Find(kv.Value).GetComponent<Region>());
+            }
             if (Main.random_Enabled.Value)
             {
                 //Calculate archipelago displacement vectors
                 Vector3[] regionDisplacements = new Vector3[nArchipelagos];
                 foreach (var kv in regionToName)
                 {
-                    regionDisplacements[kv.Key] = archLocs[kv.Key] - FloatingOriginManager.instance.ShiftingPosToRealPos(GameObject.Find(kv.Value).transform.localPosition);
+                    regionDisplacements[kv.Key] = archLocs[kv.Key] - FloatingOriginManager.instance.ShiftingPosToRealPos(regions[kv.Key].transform.localPosition);
                     regionDisplacements[kv.Key].y = 0f;
                 }
                 //Calculate island displacement vectors
@@ -179,14 +184,15 @@ namespace ScrambledSeas
                 //Move regions
                 foreach (var kv in regionToName)
                 {
-                    GameObject.Find(kv.Value).transform.Translate(regionDisplacements[kv.Key], Space.World);
+                    regions[kv.Key].transform.Translate(regionDisplacements[kv.Key], Space.World);
                 }
                 //Move islands
                 for (int i = 0; i < islandDisplacements.Length; i++)
                 {
-                    if (!string.IsNullOrEmpty(islandNames[i]))
+                    if (i + 1 >= Refs.islands.Length) break;
+                    if (Refs.islands[i + 1] != null)
                     {
-                        GameObject.Find(islandNames[i]).transform.Translate(islandDisplacements[i], Space.World);
+                        Refs.islands[i + 1].Translate(islandDisplacements[i], Space.World);
                     }
                 }
                 //Move bottom planes:
@@ -196,17 +202,13 @@ namespace ScrambledSeas
                 }
             }            
             //Move recovery ports
-            IslandHorizon[] islands = UnityEngine.Object.FindObjectsOfType(typeof(IslandHorizon)) as IslandHorizon[];
-            RecoveryPort[] recoveryArray = UnityEngine.Object.FindObjectsOfType(typeof(RecoveryPort)) as RecoveryPort[];
-
-            for (int i = 0; i < islands.Length; i++)
+            for (int i = 0; i < Refs.islands.Length; i++)
             {
-                IslandHorizon island = islands[i];
+                var island = Refs.islands[i];
                 if (island == null) continue;
                 Vector3 pos = FloatingOriginManager.instance.GetGlobeCoords(island.transform);
-                Main.Log("i: " + i+ " island: " + island.islandIndex + " name: " + island.name + " x: " + pos.x + " z: " + pos.z);
+                Main.Log("i: " + i+ " island: " + i + " name: " + island.name + " x: " + pos.x + " z: " + pos.z);
             }
-
             if (Main.random_Enabled.Value)
             {
                 foreach (var recovery in recoveryArray)
@@ -217,36 +219,34 @@ namespace ScrambledSeas
             }
 
             Main.Log("check Markets positions");
-            foreach (IslandMarket mr in markets)
+            for (int i = 0; i < Port.ports.Length; i++)
             {
+                if (Port.ports[i] == null) continue;
+                Port port = Port.ports[i];
                 Main.Log("---");
-                Vector3 pos = FloatingOriginManager.instance.GetGlobeCoords(mr.gameObject.transform);
+                Vector3 pos = FloatingOriginManager.instance.GetGlobeCoords(port.gameObject.transform);
                 Main.Log("market pos: x:" + pos.x + " z: " + pos.z);
-                Port port = mr.GetPort();
-                if(port == null) continue;
                 pos = FloatingOriginManager.instance.GetGlobeCoords(port.transform);
-                Main.Log("port pos: " + mr.GetPortName() + " pos x:" + pos.x + " z: " + pos.z);
+                Main.Log("port pos: " + port.GetPortName() + " pos x:" + pos.x + " z: " + pos.z);
 
                 // make a mark for this that it not visited for now;
                 marketVisited.Add(port.portIndex, false);
 
-                if (mr.GetPortName() == "Eastwind")
+/*                if (port.portIndex == eastwindIndx)
                 {
                     Main.Log("Move Eastwind market to correct position");
-                    mr.gameObject.transform.SetPositionAndRotation(Refs.islands[19].position, new Quaternion());
-                    mr.gameObject.transform.Translate(eastwindMarketOffset, Space.World);
+                    port.gameObject.transform.SetPositionAndRotation(Refs.islands[19].position, new Quaternion());
+                    port.gameObject.transform.Translate(eastwindMarketOffset, Space.World);
                     pos = FloatingOriginManager.instance.GetGlobeCoords(Refs.islands[19]);
                     Main.Log("move market to " + pos.x + " " + pos.z);
-                    pos = FloatingOriginManager.instance.GetGlobeCoords(mr.gameObject.transform);
+                    pos = FloatingOriginManager.instance.GetGlobeCoords(port.gameObject.transform);
                     Main.Log("market new pos " + pos.x + " " + pos.z);
-                }
+                }*/
             }
 
             if (Main.random_Enabled.Value)
             {
-
                 //Move unpurchased boats
-                PurchasableBoat[] boatArray = UnityEngine.Object.FindObjectsOfType(typeof(PurchasableBoat)) as PurchasableBoat[];
                 foreach (var boat in boatArray)
                 {
                     if (!boat.isPurchased())
@@ -260,12 +260,7 @@ namespace ScrambledSeas
             //Re-roll seed for gameplay
             UnityEngine.Random.InitState((int)System.DateTime.Now.Ticks);
 
-            //Cache regions for RegionBlenderPatch
-            regions = new List<Region>();
-            foreach (var kv in regionToName)
-            {
-                regions.Add(GameObject.Find(kv.Value).GetComponent<Region>());
-            }
+
 
             // //Debug
             if (Main.saveCoordsToJSON_Enabled.Value)
@@ -336,7 +331,8 @@ namespace ScrambledSeas
                             }
                             island_name = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(island_name.ToLower());
 
-                            Vector3 latlon = FloatingOriginManager.instance.GetGlobeCoords(GameObject.Find(name).transform);
+                            //Vector3 latlon = FloatingOriginManager.instance.GetGlobeCoords(GameObject.Find(name).transform);
+                            Vector3 latlon = FloatingOriginManager.instance.GetGlobeCoords(Refs.islands[Int32.Parse(name_array[1])]);
                             Main.Log(name + "," + latlon.x + "," + latlon.z);
                             JSONObject point = new JSONObject();
                             point.Add("description", new JSONString(island_name));

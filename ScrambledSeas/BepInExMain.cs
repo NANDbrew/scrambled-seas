@@ -32,7 +32,7 @@ namespace ScrambledSeas
         internal static ConfigEntry<float> archipelagoScale;
         public static bool borderExpander;
 
-        public readonly static bool pluginEnabled = true;
+        public static bool pluginEnabled = true;
 
         public ScrambledSeasSaveContainer _saveContainer = new ScrambledSeasSaveContainer();
 
@@ -47,7 +47,7 @@ namespace ScrambledSeas
             instance = this;
             Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), GUID);
             random_Enabled = Config.Bind("Settings", "randomEN", true, "enable random");
-            hideDestinationCoords_Enabled = Config.Bind("Settings", "hideDestinationCoords", true, "hide cestination coords in missions");
+            hideDestinationCoords_Enabled = Config.Bind("Settings", "hideDestinationCoords", true, "hide destination coords in mission screen");
             saveCoordsToJSON_Enabled = Config.Bind("Settings", "saveCoordsToJSON", true, "save islands coords to JSON file");
 
             borderExpander = BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.nandbrew.borderexpander");

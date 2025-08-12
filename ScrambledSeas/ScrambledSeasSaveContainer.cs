@@ -1,4 +1,6 @@
-﻿namespace ScrambledSeas
+﻿using UnityEngine;
+
+namespace ScrambledSeas
 {
     // This contains all the variables we will need to store in the save file. 
     // Default values are defined for saves that haven't seen this mod yet.
@@ -14,7 +16,8 @@
         public int worldLonMax { get; set; } = 32;
         public int worldLatMin { get; set; } = 26;
         public int worldLatMax { get; set; } = 46;
+
+        public Vector3[] archLocs { get; set; }
+        public Vector3[] islandLocs { get; set; }
     }
-
-
 }

@@ -28,6 +28,22 @@ namespace ScrambledSeas
                 }
             }
         }
+        [HarmonyPatch(typeof(PurchasableBoat), "Awake")]
+        private static class BoatAwakePatch
+        {
+            private static void Prefix(PurchasableBoat __instance)
+            {
+                WorldScrambler.boatArray.Add(__instance);
+            }
+        }
+        [HarmonyPatch(typeof(Recovery), "RegisterPort")]
+        private static class RecoveryPortPatch
+        {
+            private static void Prefix(RecoveryPort port)
+            {
+                WorldScrambler.recoveryArray.Add(port);
+            }
+        }
 
         [HarmonyPatch(typeof(SaveLoadManager), "SaveModData")]
         private static class SavePatch
@@ -47,7 +63,7 @@ namespace ScrambledSeas
         {
             private static void Postfix()
             {
-                if (Main.pluginEnabled)
+                if (GameState.modData != null && GameState.modData.ContainsKey("ScrambledSeas"))
                 {
                     //Load entire ScrambledSeasSaveContainer from save file
                     Main.saveContainer = SaveFileHelper.Load<ScrambledSeasSaveContainer>("ScrambledSeas");
@@ -59,6 +75,13 @@ namespace ScrambledSeas
                     }
                     //Re-generate world for the saved randomizer params
                     WorldScrambler.Scramble();
+                    NotificationUi.instance.ShowNotification("Scrambled Seas:\nLoaded scrambled save", 5f);
+
+                }
+                else
+                {
+                    Main.pluginEnabled = false;
+                    NotificationUi.instance.ShowNotification("Scrambled Seas:\nThis save is unscrambled", 5f);
                 }
             }
         }
@@ -287,7 +310,7 @@ namespace ScrambledSeas
                     }
                     else
                     {
-                        ___locationText.text = "(map unavailable)\n\nyou need to find \ndestination port by youself\n";
+                        ___locationText.text = "(map unavailable)\n\nlocation unknown\n";
                     }
                     //return;
                     //}
@@ -349,7 +372,7 @@ namespace ScrambledSeas
                         regionUpdateCooldown = 100f;
                         float minDist = 100000000f;
                         Region closestRegion = null;
-                        foreach (Region region in WorldScrambler.regions)
+                        foreach (Region region in WorldScrambler.regions.Values)
                         {
                             float dist = Vector3.Distance(___player.position, region.transform.position);
                             if (dist < minDist)
