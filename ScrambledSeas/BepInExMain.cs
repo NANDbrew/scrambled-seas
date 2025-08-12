@@ -3,7 +3,7 @@ using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
-using SailwindModdingHelper;
+//using SailwindModdingHelper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,17 +16,21 @@ using UnityEngine;
 namespace ScrambledSeas
 {
     [BepInPlugin(GUID, NAME, VERSION)]
-    [BepInDependency(SailwindModdingHelperMain.GUID, "2.0.0")]
+    //[BepInDependency(SailwindModdingHelperMain.GUID, "2.0.0")]
+    [BepInDependency("com.nandbrew.borderexpander", BepInDependency.DependencyFlags.SoftDependency)]
     public class Main : BaseUnityPlugin
     {
-        public const string GUID = "com.vitalijbeam.scrambledseas";
+        public const string GUID = "com.nandbrew.scrambledseas";
         public const string NAME = "Scrambled Seas Fork";
-        public const string VERSION = "6.0.2";
+        public const string VERSION = "6.1.0";
 
         internal static ConfigEntry<bool> random_Enabled;
         internal static ConfigEntry<bool> hideDestinationCoords_Enabled;
         internal static ConfigEntry<bool> saveCoordsToJSON_Enabled;
 
+        internal static ConfigEntry<float> worldScale;
+        internal static ConfigEntry<float> archipelagoScale;
+        public static bool borderExpander;
 
         public readonly static bool pluginEnabled = true;
 
@@ -45,6 +49,14 @@ namespace ScrambledSeas
             random_Enabled = Config.Bind("Settings", "randomEN", true, "enable random");
             hideDestinationCoords_Enabled = Config.Bind("Settings", "hideDestinationCoords", true, "hide cestination coords in missions");
             saveCoordsToJSON_Enabled = Config.Bind("Settings", "saveCoordsToJSON", true, "save islands coords to JSON file");
+
+            borderExpander = BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.nandbrew.borderexpander");
+            if (borderExpander)
+            {
+                worldScale = Config.Bind("World", "World Scale", 1.0f, new ConfigDescription("The scale of the world. 1.0 covers 12°W to 32°E and 16°N to 56°N", new AcceptableValueRange<float>(0.1f, 4.0f)));
+                archipelagoScale = Config.Bind("World", "Archipelago Scale", 1.0f, new ConfigDescription("The scale of archipelago size and spacing. 1.0 is standard Scrambled Seas (not vanilla)", new AcceptableValueRange<float>(0.1f, 4.0f)));
+            }
+
             logSource = Logger;
         }
         

@@ -70,6 +70,16 @@ namespace ScrambledSeas
             {
                 if (Main.pluginEnabled)
                 {
+                    // adjust world limits if Border Expander mod is present
+                    if (Main.borderExpander)
+                    {
+                        Main.saveContainer.worldLonMin = (int)(-12 * Main.worldScale.Value);
+                        Main.saveContainer.worldLonMax = (int)(32 * Main.worldScale.Value);
+                        Main.saveContainer.worldLatMin = (int)(26 - 10 * Main.worldScale.Value);
+                        Main.saveContainer.worldLatMax = (int)Mathf.Min(70, (46 + 10 * Main.worldScale.Value));
+                        Main.saveContainer.islandSpread = (int)(10000 * Main.archipelagoScale.Value);
+                        Main.saveContainer.minArchipelagoSeparation = (int)(30000 * Main.worldScale.Value);
+                    }
                     //Create a randomized world with a new seed
                     Main.saveContainer.worldScramblerSeed = (int)System.DateTime.Now.Ticks;
                     WorldScrambler.Scramble();
@@ -332,7 +342,7 @@ namespace ScrambledSeas
 
             private static void Prefix(ref Region ___currentTargetRegion, ref Transform ___player)
             {
-                if (Main.pluginEnabled)
+                if (Main.pluginEnabled && !Main.borderExpander)
                 {
                     if (regionUpdateCooldown <= 0f)
                     {

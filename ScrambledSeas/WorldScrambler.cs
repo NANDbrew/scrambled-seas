@@ -1,6 +1,5 @@
 ﻿using OculusSampleFramework;
 using OVRSimpleJSON;
-using SailwindModdingHelper;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -68,15 +67,15 @@ namespace ScrambledSeas
 
             // Al Ankh
             regionToName.Add(0, "Region Al'ankh");
-            regionToIslandIdxs.Add(0, new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8 });
+            regionToIslandIdxs.Add(0, new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, });
             bottomToRegion.Add("bottom plane A", 0);
             // Emerald
             regionToName.Add(1, "Region Emerald (new smaller)");
-            regionToIslandIdxs.Add(1, new List<int>() { 9, 10, 11, 12, 13, 22 });
+            regionToIslandIdxs.Add(1, new List<int>() { 9, 10, 11, 12, 13, 22, 37, 38, 39 });
             bottomToRegion.Add("bottom plane E", 1);
             // Aestrin
             regionToName.Add(2, "Region Medi");
-            regionToIslandIdxs.Add(2, new List<int>() { 15, 16, 17, 19, 21, 23 });
+            regionToIslandIdxs.Add(2, new List<int>() { 15, 16, 17, 19, 21, 23, 33, 34, 35, 36 });
 
             bottomToRegion.Add("bottom plane M", 2);
             // Oasis
@@ -88,6 +87,10 @@ namespace ScrambledSeas
             // Fire Town Lagoon
             regionToName.Add(6, "Region Emerald Lagoon");
             regionToIslandIdxs.Add(6, new List<int>() { 26, 27, 28, 29, 30, 31 });
+            // Rock of Despair
+            regionToIslandIdxs.Add(7, new List<int>() { 30 });
+            // Rock of Despair
+            regionToIslandIdxs.Add(8, new List<int>() { 32 });
             bottomToRegion.Add("bottom plane chronos", 5);
 
             //Convert stored ints to floats
@@ -291,11 +294,20 @@ namespace ScrambledSeas
                             // 0      1 2 3
                             // island 1 A (gold rock)
                             string[] name_array = name.Split(' ');
-                            string point_color;
+                            string point_color = "bluepoint";
                             string island_name = "";
                             bool skip = false;
 
-                            if (arch_colors.ContainsKey(name_array[2]))
+                            if (name_array.Length < 3)
+                            {
+                                if (name_array[1] == "36")
+                                {
+                                    point_color = "bluepoint";
+                                    island_name = "island 36";
+                                    skip = true;
+                                }
+                            }
+                            else if (arch_colors.ContainsKey(name_array[2]))
                             {
                                 point_color = arch_colors[name_array[2]];
                             }
@@ -346,7 +358,7 @@ namespace ScrambledSeas
                     string jsonString = json.ToString();
 
                     Main.Log(jsonString);
-                    File.WriteAllText(Path.Combine(Main.instance.Info.GetFolderLocation(), $"scramble_{SaveSlots.currentSlot}.json"), jsonString);
+                    File.WriteAllText(Path.Combine(Directory.GetParent(Main.instance.Info.Location).FullName, $"scramble_{SaveSlots.currentSlot}.json"), jsonString);
                 }
                 catch(Exception ex)
                 {
