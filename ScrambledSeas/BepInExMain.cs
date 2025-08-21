@@ -27,8 +27,8 @@ namespace ScrambledSeas
         internal static ConfigEntry<bool> random_Enabled;
         internal static ConfigEntry<bool> hideDestinationCoords_Enabled;
         internal static ConfigEntry<bool> saveCoordsToJSON_Enabled;
+        internal static ConfigEntry<bool> eastwindFix;
 
-        internal static ConfigEntry<float> worldScale;
         public static bool borderExpander;
 
         public static bool pluginEnabled = true;
@@ -49,13 +49,10 @@ namespace ScrambledSeas
             random_Enabled = Config.Bind("Settings", "randomEN", true, "enable random");
             hideDestinationCoords_Enabled = Config.Bind("Settings", "hideDestinationCoords", true, "hide destination coords in mission screen");
             saveCoordsToJSON_Enabled = Config.Bind("Settings", "saveCoordsToJSON", true, "save islands coords to JSON file");
+            eastwindFix = Config.Bind("World", "Eastwind Fix", true, new ConfigDescription("fix eastwind market position"));
 
             borderExpander = BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.nandbrew.borderexpander");
-/*            if (borderExpander)
-            {
-                worldScale = Config.Bind("World", "World Scale", 1.0f, new ConfigDescription("The scale of the world. 1.0 covers 12°W to 32°E and 16°N to 56°N", new AcceptableValueRange<float>(0.1f, 4.0f)));
-                archipelagoScale = Config.Bind("World", "Archipelago Scale", 1.0f, new ConfigDescription("The scale of archipelago size and spacing. 1.0 is standard Scrambled Seas (not vanilla)", new AcceptableValueRange<float>(0.1f, 4.0f)));
-            }*/
+
 
             AssetTools.LoadAssetBundles();
         }
