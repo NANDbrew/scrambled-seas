@@ -65,18 +65,24 @@ namespace ScrambledSeas
             {
                 if (GameState.modData != null && GameState.modData.ContainsKey("ScrambledSeas"))
                 {
+                    Main.pluginEnabled = true;
+
                     //Load entire ScrambledSeasSaveContainer from save file
                     Main.saveContainer = SaveFileHelper.Load<ScrambledSeasSaveContainer>("ScrambledSeas");
 
-                    if (Main.saveContainer.version < 60)
+                    if (Main.saveContainer.version < WorldScrambler.version)
                     { //TODO: update min version if save compatibility breaks again
                         NotificationUi.instance.ShowNotification("ERROR: This save is not\ncompatiblewith this version\nof Scrambled Seas");
                         throw new System.InvalidOperationException("ERROR: This save is not compatible with this version of Scrambled Seas");
                     }
+
                     //Re-generate world for the saved randomizer params
                     WorldScrambler.Scramble();
                     NotificationUi.instance.ShowNotification("Scrambled Seas:\nLoaded scrambled save", 5f);
-
+                    if (Main.saveContainer.borderExpander == 1 && !Main.borderExpander)
+                    {
+                        NotificationUi.instance.ShowNotification("WARNING: This save was made\nwith Border Expander.\nSome islands may be inaccessible", 10f);
+                    }
                 }
                 else
                 {
@@ -91,17 +97,20 @@ namespace ScrambledSeas
         {
             private static bool Prefix(StartMenu __instance, ref bool ___fPressed, ref Transform ___playerObserver, ref GameObject ___playerController, ref int ___animsPlaying, ref int ___currentRegion, ref Transform ___startApos, ref Transform ___startEpos, ref Transform ___startMpos)
             {
+                Main.pluginEnabled = Main.random_Enabled.Value;
+
                 if (Main.pluginEnabled)
                 {
                     // adjust world limits if Border Expander mod is present
                     if (Main.borderExpander)
                     {
-                        Main.saveContainer.worldLonMin = (int)(-12 * Main.worldScale.Value);
+                        /*Main.saveContainer.worldLonMin = (int)(-12 * Main.worldScale.Value);
                         Main.saveContainer.worldLonMax = (int)(32 * Main.worldScale.Value);
                         Main.saveContainer.worldLatMin = (int)(26 - 10 * Main.worldScale.Value);
                         Main.saveContainer.worldLatMax = (int)Mathf.Min(70, (46 + 10 * Main.worldScale.Value));
                         Main.saveContainer.islandSpread = (int)(10000 * Main.archipelagoScale.Value);
-                        Main.saveContainer.minArchipelagoSeparation = (int)(30000 * Main.worldScale.Value);
+                        Main.saveContainer.minArchipelagoSeparation = (int)(30000 * Main.worldScale.Value);*/
+                        Main.saveContainer.borderExpander = 1;
                     }
                     //Create a randomized world with a new seed
                     Main.saveContainer.worldScramblerSeed = (int)System.DateTime.Now.Ticks;
@@ -232,12 +241,12 @@ namespace ScrambledSeas
                     if (__instance.region == PortRegion.emerald)
                     {
                         startOffset = WorldScrambler.islandDisplacements[10];
-                        PlayerGold.currency[1] += 48;
+                        PlayerGold.currency[1] += Mathf.RoundToInt(48 * CurrencyMarket.instance.GetExchangeRate(0, 1, false));
                     }
                     if (__instance.region == PortRegion.medi)
                     {
                         startOffset = WorldScrambler.islandDisplacements[20];
-                        PlayerGold.currency[2] += 48;
+                        PlayerGold.currency[2] += Mathf.RoundToInt(48 * CurrencyMarket.instance.GetExchangeRate(0, 2, false));
                     }
                     //Move starter set items to new island location
                     GameObject mapObject = null;
@@ -391,6 +400,57 @@ namespace ScrambledSeas
                         regionUpdateCooldown -= Time.deltaTime;
                     }
                 }
+            }
+        }
+
+        [HarmonyPatch(typeof(StartMenu), "Awake")]
+        private static class StartMenuPatch
+        {
+            private static void Postfix(GameObject ___chooseIslandUI)
+            {
+                var scramblerUI = UnityEngine.GameObject.Instantiate(AssetTools.bundle.LoadAsset<GameObject>("Assets/ScrambledSeas/ScramblerUI.prefab"), ___chooseIslandUI.transform).transform;
+                var oldCheckbox = scramblerUI.Find("checkbox").GetComponent<GPButtonSettingsCheckbo>();
+                var newCheckBox = oldCheckbox.gameObject.AddComponent<GPButtonCheckBox>();
+                newCheckBox.text = oldCheckbox.text;
+                newCheckBox.type = 0;
+                Component.Destroy(oldCheckbox);
+                newCheckBox.Initialize();
+
+                var oldCheckbox2 = scramblerUI.Find("checkbox (1)").GetComponent<GPButtonSettingsCheckbo>();
+                var newCheckBox2 = oldCheckbox2.gameObject.AddComponent<GPButtonCheckBox>();
+                newCheckBox2.text = oldCheckbox2.text;
+                newCheckBox2.type = 1;
+                Component.Destroy(oldCheckbox2);
+                newCheckBox2.Initialize();
+
+                var oldSlider1 = scramblerUI.Find("slider world scale").GetComponent<GPButtonSliderVolume>();
+
+                var oldSlider2 = scramblerUI.Find("slider arch scale").GetComponent<GPButtonSliderVolume>();
+
+                if (!Main.borderExpander)
+                {
+                    oldSlider1.gameObject.SetActive(false);
+                    oldSlider2.gameObject.SetActive(false);
+                    scramblerUI.Find("text (2)").gameObject.SetActive(false);
+                    scramblerUI.transform.Translate(0f, -0.15f, 0f, Space.Self);
+                }
+                else
+                {
+                    var newSlider1 = oldSlider1.gameObject.AddComponent<GPButtonSliderScale>();
+                    newSlider1.text = oldSlider1.text;
+                    newSlider1.extraText = oldSlider1.extraText;
+                    newSlider1.bar = oldSlider1.bar;
+                    Component.Destroy(oldSlider1);
+                    newSlider1.Initialize();
+
+                    var newSlider2 = oldSlider2.gameObject.AddComponent<GPButtonSliderScale>();
+                    newSlider2.text = oldSlider2.text;
+                    newSlider2.extraText = oldSlider2.extraText;
+                    newSlider2.bar = oldSlider2.bar;
+                    Component.Destroy(oldSlider2);
+                    newSlider2.Initialize();
+                }
+
             }
         }
     }

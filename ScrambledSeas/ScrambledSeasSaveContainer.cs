@@ -19,5 +19,6 @@ namespace ScrambledSeas
 
         public Vector3[] archLocs { get; set; }
         public Vector3[] islandLocs { get; set; }
+        public int borderExpander {  get; set; } = 0;
     }
 }
