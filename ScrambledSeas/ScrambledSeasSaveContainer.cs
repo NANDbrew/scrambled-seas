@@ -18,7 +18,7 @@ namespace ScrambledSeas
         public int worldLatMin { get; set; } = 26;
         public int worldLatMax { get; set; } = 46;
 
-        public Dictionary<int, Vector3> archDisps { get; set; }
+        public Vector3[] archDisps { get; set; }
         public Vector3[] islandDisps { get; set; }
         public int borderExpander {  get; set; } = 0;
     }

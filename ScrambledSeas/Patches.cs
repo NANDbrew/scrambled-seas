@@ -77,7 +77,7 @@ namespace ScrambledSeas
                     }
 
                     //Re-generate world for the saved randomizer params
-                    WorldScrambler.Load();
+                    WorldScrambler.Move();
                     NotificationUi.instance.ShowNotification("Scrambled Seas:\nLoaded scrambled save", 5f);
                     if (Main.saveContainer.borderExpander == 1 && !Main.borderExpander)
                     {

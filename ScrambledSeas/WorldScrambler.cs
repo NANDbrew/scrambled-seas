@@ -38,6 +38,9 @@ namespace ScrambledSeas
 
         private static int eastwindIndx = 19;
         private static Vector3 eastwindMarketOffset = Vector3.zero;
+
+        private static bool setupRan = false;
+
         public static void Setup()
         {
             if (Main.eastwindFix.Value)
@@ -105,9 +108,11 @@ namespace ScrambledSeas
             {
                 regions.Add(kv.Key, GameObject.Find(kv.Value).GetComponent<Region>());
             }
+            setupRan = true;
         }
         public static void Scramble()
         {
+            if (!setupRan) Setup();
             #region scrambling
             //Convert stored ints to floats
             float islandSpread = Main.saveContainer.islandSpread;
@@ -191,10 +196,10 @@ namespace ScrambledSeas
             #endregion
 
             // write displacements to save
-            Dictionary<int, Vector3> regionDispList = new Dictionary<int, Vector3>();
+            Vector3[] regionDispList = new Vector3[regionToIslandIdxs.Count];
             foreach (var kv in regionToName)
             {
-                regionDispList.Add(kv.Key, regionDisplacements[kv.Key]);
+                regionDispList[kv.Key] = regionDisplacements[kv.Key];
             }
             Main.saveContainer.archDisps = regionDispList;
             List<Vector3> isleDispList = new List<Vector3>();
@@ -205,21 +210,13 @@ namespace ScrambledSeas
             }
             Main.saveContainer.islandDisps = isleDispList.ToArray();
 
-            Move(regionDisplacements, islandDisplacements);
+            Move();
         }
 
-        public static void Load()
+        public static void Move()
         {
-            var regionArray = new Vector3[regions.Count];
-            for (int i = 0;i < regions.Count;i++)
-            {
-                Main.saveContainer.archDisps.TryGetValue(i, out regionArray[i]);
-            }
-            Move(regionArray, Main.saveContainer.islandDisps);
-        }
-
-        public static void Move(Vector3[] regionOffsets, Vector3[] islandOffsets)
-        {
+            var regionOffsets = Main.saveContainer.archDisps;
+            var islandOffsets = Main.saveContainer.islandDisps;
             #region moving code
             //Move regions
             foreach (var kv in regionToName)
@@ -296,6 +293,7 @@ namespace ScrambledSeas
             }
             //Re-roll seed for gameplay
             UnityEngine.Random.InitState((int)System.DateTime.Now.Ticks);
+            SaveCoordsToJSON();
             #endregion
         }
         public static void SaveCoordsToJSON()
