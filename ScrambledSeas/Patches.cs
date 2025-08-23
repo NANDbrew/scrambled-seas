@@ -77,6 +77,23 @@ namespace ScrambledSeas
                     }
 
                     //Re-generate world for the saved randomizer params
+
+                    if (Main.saveContainer.islandOffsets.Length < Refs.islands.Length && Main.saveContainer.worldScramblerSeed != 0)
+                    {
+                        var savedArchOffsets = Main.saveContainer.archOffsets;
+                        var savedIsleOffsets = Main.saveContainer.islandOffsets;
+                        WorldScrambler.Scramble();
+                        for (int i = 0; i < savedArchOffsets.Length; i++)
+                        {
+                            Main.saveContainer.archOffsets[i] = savedArchOffsets[i];
+                        }
+                        for (int i = 0; i < savedIsleOffsets.Length; i++)
+                        {
+                            Main.saveContainer.archOffsets[i] = savedIsleOffsets[i];
+                        }
+                        Main.Log("Re-scrambled " + (Refs.islands.Length - savedIsleOffsets.Length) + " islands");
+                    }
+
                     WorldScrambler.Move();
                     NotificationUi.instance.ShowNotification("Scrambled Seas:\nLoaded scrambled save", 5f);
                     if (Main.saveContainer.borderExpander == 1 && !Main.borderExpander)
@@ -115,6 +132,7 @@ namespace ScrambledSeas
                     //Create a randomized world with a new seed
                     Main.saveContainer.worldScramblerSeed = (int)System.DateTime.Now.Ticks;
                     WorldScrambler.Scramble();
+                    WorldScrambler.Move();
                     //Move player start positions to new island locations
                     ___startApos.position += WorldScrambler.islandDisplacements[2];
                     ___startEpos.position += WorldScrambler.islandDisplacements[10];

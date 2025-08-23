@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using OVRSimpleJSON;
+using System.IO;
+using UnityEngine;
 
 namespace ScrambledSeas
 {
@@ -10,6 +12,22 @@ namespace ScrambledSeas
         public static T Load<T>(this string modName) where T : new()
         {
             string xmlStr;
+
+            if (Main.saveScrambleExternal.Value)
+            {
+                string path = Path.Combine(Directory.GetParent(Main.instance.Info.Location).FullName, $"scramble_{SaveSlots.currentSlot}.xml");
+                if (File.Exists(path))
+                {
+                    xmlStr = File.ReadAllText(path);
+                    Debug.Log("Proceeding to parse save data from file for " + modName);
+                    System.Xml.Serialization.XmlSerializer xmlSerializer = new System.Xml.Serialization.XmlSerializer(typeof(T));
+                    using (System.IO.StringReader textReader = new System.IO.StringReader(xmlStr))
+                    {
+                        return (T)xmlSerializer.Deserialize(textReader);
+                    }
+                }
+            }
+
             if (GameState.modData != null && GameState.modData.TryGetValue(modName, out xmlStr))
             {
                 Debug.Log("Proceeding to parse save data for " + modName);
@@ -33,6 +51,11 @@ namespace ScrambledSeas
                 xmlSerializer.Serialize(textWriter, toSerialize);
                 GameState.modData[modName] = textWriter.ToString();
                 Debug.Log("Packed save data for " + modName);
+
+                if (Main.saveScrambleExternal.Value)
+                {
+                    File.WriteAllText(Path.Combine(Directory.GetParent(Main.instance.Info.Location).FullName, $"scramble_{SaveSlots.currentSlot}.xml"), textWriter.ToString());
+                }
             }
         }
     }

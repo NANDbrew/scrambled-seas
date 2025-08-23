@@ -92,9 +92,10 @@ namespace ScrambledSeas
             // Happy Bay
             regionToIslandIdxs.Add(4, new List<int>() { 18 });
             // Chronos
+            regionToName.Add(5, "Region Medi East");
             regionToIslandIdxs.Add(5, new List<int>() { 25 });
             bottomToRegion.Add("bottom plane chronos", 5);
-            // Fire Town Lagoon
+            // Fire Fish Lagoon
             regionToName.Add(6, "Region Emerald Lagoon");
             regionToIslandIdxs.Add(6, new List<int>() { 26, 27, 28, 29, 30, 31 });
             // Rock of Despair
@@ -201,27 +202,34 @@ namespace ScrambledSeas
             {
                 regionDispList[kv.Key] = regionDisplacements[kv.Key];
             }
-            Main.saveContainer.archDisps = regionDispList;
+            Main.saveContainer.archOffsets = regionDispList;
             List<Vector3> isleDispList = new List<Vector3>();
             for (int i = 0; i < islandDisplacements.Length; i++)
             {
                 if (i + 1 >= Refs.islands.Length) break;
                 isleDispList.Add(islandDisplacements[i]);
             }
-            Main.saveContainer.islandDisps = isleDispList.ToArray();
-
-            Move();
+            Main.saveContainer.islandOffsets = isleDispList.ToArray();
         }
 
         public static void Move()
         {
-            var regionOffsets = Main.saveContainer.archDisps;
-            var islandOffsets = Main.saveContainer.islandDisps;
+            if (!setupRan) Setup();
+
+            var regionOffsets = Main.saveContainer.archOffsets;
+            var islandOffsets = Main.saveContainer.islandOffsets;
             #region moving code
             //Move regions
             foreach (var kv in regionToName)
             {
                 regions[kv.Key].transform.Translate(regionOffsets[kv.Key], Space.World);
+                if (Main.saveContainer.borderExpander == 1)
+                {
+                    if (kv.Key != 5)
+                    {
+                        regions[kv.Key].transform.localScale *= Main.saveContainer.islandSpread / 10000;
+                    }
+                }
             }
             //Move islands
             for (int i = 0; i < islandOffsets.Length; i++)
@@ -291,10 +299,21 @@ namespace ScrambledSeas
                     boat.gameObject.transform.Translate(islandOffsets[homeIsland], Space.World);
                 }
             }
+            #endregion
             //Re-roll seed for gameplay
             UnityEngine.Random.InitState((int)System.DateTime.Now.Ticks);
+            
             SaveCoordsToJSON();
-            #endregion
+
+            if (Main.saveScrambleExternal.Value)
+            {
+                Main.saveContainer.archDescriptions = "archOffsets are meters from vanilla position. x is longitude, z is latitude. Regions: 0 = Al'ankh, 1 = Emerald, 2 = Aestrin, 6 = FireFish";
+                Main.saveContainer.islandDescriptions = "islandOffsets are meters from vanilla position. x is longitude, z is latitude.\nIslands: ";
+                for (int i = 0; i < Refs.islands.Length; i++) 
+                {
+                    Main.saveContainer.islandDescriptions += islandNames[i] + ", ";//i + " = " + islandNames[i] + ", ";
+                }
+            }
         }
         public static void SaveCoordsToJSON()
         { 

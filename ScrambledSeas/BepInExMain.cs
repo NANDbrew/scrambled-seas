@@ -28,6 +28,7 @@ namespace ScrambledSeas
         internal static ConfigEntry<bool> hideDestinationCoords_Enabled;
         internal static ConfigEntry<bool> saveCoordsToJSON_Enabled;
         internal static ConfigEntry<bool> eastwindFix;
+        internal static ConfigEntry<bool> saveScrambleExternal;
 
         public static bool borderExpander;
 
@@ -50,9 +51,9 @@ namespace ScrambledSeas
             hideDestinationCoords_Enabled = Config.Bind("Settings", "hideDestinationCoords", true, "hide destination coords in mission screen");
             saveCoordsToJSON_Enabled = Config.Bind("Settings", "saveCoordsToJSON", true, "save islands coords to JSON file");
             eastwindFix = Config.Bind("World", "Eastwind Fix", true, new ConfigDescription("fix eastwind market position"));
+            saveScrambleExternal = Config.Bind("Settings", "Save External", false, new ConfigDescription("save and load island/archipelago offsets to xml file to allow manual editing"));
 
             borderExpander = BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.nandbrew.borderexpander");
-
 
             AssetTools.LoadAssetBundles();
         }

@@ -18,8 +18,10 @@ namespace ScrambledSeas
         public int worldLatMin { get; set; } = 26;
         public int worldLatMax { get; set; } = 46;
 
-        public Vector3[] archDisps { get; set; }
-        public Vector3[] islandDisps { get; set; }
-        public int borderExpander {  get; set; } = 0;
+        public int borderExpander { get; set; } = 0;
+        public string archDescriptions { get; set; }
+        public Vector3[] archOffsets { get; set; } = new Vector3[0];
+        public string islandDescriptions { get; set; }
+        public Vector3[] islandOffsets { get; set; } = new Vector3[0];
     }
 }
