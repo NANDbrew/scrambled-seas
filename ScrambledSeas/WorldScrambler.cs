@@ -17,7 +17,7 @@ namespace ScrambledSeas
     internal static class WorldScrambler
     {
         //Update this with every version
-        public const int version = 61;
+        public const int version = 60;
         //These 2 constants should be future proof. Changing them will break save compatibility
         public const int nArchipelagos = 15;
         public const int nIslandsPer = 15;
