@@ -21,8 +21,8 @@ namespace ScrambledSeas
     public class Main : BaseUnityPlugin
     {
         public const string GUID = "com.nandbrew.scrambledseas";
-        public const string NAME = "Scrambled Seas Fork";
-        public const string VERSION = "6.1.0";
+        public const string NAME = "Scrambled Seas: NAND edition";
+        public const string VERSION = "7.0.0";
 
         internal static ConfigEntry<bool> random_Enabled;
         internal static ConfigEntry<bool> hideDestinationCoords_Enabled;
@@ -47,11 +47,11 @@ namespace ScrambledSeas
             instance = this;
             logSource = Logger;
             Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), GUID);
-            random_Enabled = Config.Bind("Settings", "randomEN", true, "enable random");
-            hideDestinationCoords_Enabled = Config.Bind("Settings", "hideDestinationCoords", true, "hide destination coords in mission screen");
-            saveCoordsToJSON_Enabled = Config.Bind("Settings", "saveCoordsToJSON", true, "save islands coords to JSON file");
+            random_Enabled = Config.Bind("Settings", "randomEN", true, "enable random.\nalso controlled by checkbox in 'new game' menu");
+            hideDestinationCoords_Enabled = Config.Bind("Settings", "hideDestinationCoords", true, "hide destination coords in mission screen.\nalso controlled by checkbox in 'new game' menu");
+            saveCoordsToJSON_Enabled = Config.Bind("Settings", "saveCoordsToJSON", true, "save islands coords to JSON file for online map");
             eastwindFix = Config.Bind("World", "Eastwind Fix", true, new ConfigDescription("fix eastwind market position"));
-            saveScrambleExternal = Config.Bind("Settings", "Save External", false, new ConfigDescription("save and load island/archipelago offsets to xml file to allow manual editing"));
+            saveScrambleExternal = Config.Bind("Settings", "ExternalSave", false, new ConfigDescription("save and load island/archipelago offsets to xml file to allow manual editing"));
 
             borderExpander = BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.nandbrew.borderexpander");
 

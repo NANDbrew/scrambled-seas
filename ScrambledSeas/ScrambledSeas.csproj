@@ -134,7 +134,8 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy /y "ScrambledSeas.dll" "C:\Program Files (x86)\Steam\steamapps\common\Sailwind\BepInEx\plugins"</PostBuildEvent>
+    <PostBuildEvent>mkdir "C:\Program Files (x86)\Steam\steamapps\common\Sailwind\BepInEx\plugins\ScrambledSeas"
+xcopy /y "ScrambledSeas.dll" "C:\Program Files (x86)\Steam\steamapps\common\Sailwind\BepInEx\plugins\ScrambledSeas"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>
