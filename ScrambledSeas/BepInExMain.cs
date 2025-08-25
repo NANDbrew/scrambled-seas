@@ -22,7 +22,7 @@ namespace ScrambledSeas
     {
         public const string GUID = "com.nandbrew.scrambledseas";
         public const string NAME = "Scrambled Seas: NAND edition";
-        public const string VERSION = "7.0.0";
+        public const string VERSION = "7.0.1";
 
         internal static ConfigEntry<bool> random_Enabled;
         internal static ConfigEntry<bool> hideDestinationCoords_Enabled;
