@@ -458,6 +458,7 @@ namespace ScrambledSeas
                     newSlider1.text = oldSlider1.text;
                     newSlider1.extraText = oldSlider1.extraText;
                     newSlider1.bar = oldSlider1.bar;
+                    newSlider1.type = 0;
                     Component.Destroy(oldSlider1);
                     newSlider1.Initialize();
 
@@ -465,6 +466,7 @@ namespace ScrambledSeas
                     newSlider2.text = oldSlider2.text;
                     newSlider2.extraText = oldSlider2.extraText;
                     newSlider2.bar = oldSlider2.bar;
+                    newSlider2.type = 1;
                     Component.Destroy(oldSlider2);
                     newSlider2.Initialize();
                 }

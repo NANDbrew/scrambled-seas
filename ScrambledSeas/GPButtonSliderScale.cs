@@ -11,7 +11,7 @@ namespace ScrambledSeas
 
     internal class GPButtonSliderScale : GoPointerButton
     {
-        int type = 0;
+        public int type = 0;
         public TextMesh text;
 
         public string bar;
