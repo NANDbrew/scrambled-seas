@@ -47,6 +47,9 @@
     <Reference Include="0Harmony">
       <HintPath>G:\SteamLibrary\steamapps\common\Sailwind\BepInEx\core\0Harmony.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="SailwindModdingHelper">
       <HintPath>G:\SteamLibrary\steamapps\common\Sailwind\BepInEx\plugins\SailwindModdingHelper\SailwindModdingHelper.dll</HintPath>
     </Reference>
@@ -125,13 +128,16 @@
     <Compile Include="BepInExMain.cs" />
     <Compile Include="GPButtonCheckBox.cs" />
     <Compile Include="GPButtonSliderScale.cs" />
+    <Compile Include="RegionDefinition.cs" />
     <Compile Include="UMMMain.cs" />
     <Compile Include="Patches.cs" />
     <Compile Include="SaveFileHelper.cs" />
     <Compile Include="ScrambledSeasSaveContainer.cs" />
     <Compile Include="WorldScrambler.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>mkdir "C:\Program Files (x86)\Steam\steamapps\common\Sailwind\BepInEx\plugins\ScrambledSeas"

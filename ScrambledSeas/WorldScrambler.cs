@@ -1,5 +1,7 @@
-﻿using OculusSampleFramework;
+﻿using JetBrains.Annotations;
+using OculusSampleFramework;
 using OVRSimpleJSON;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -8,7 +10,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Xml.Linq;
 using UnityEngine;
 using UnityEngine.Profiling;
 
@@ -16,6 +17,7 @@ namespace ScrambledSeas
 {
     internal static class WorldScrambler
     {
+        static string path;
         //Update this with every version
         public const int version = 60;
         //These 2 constants should be future proof. Changing them will break save compatibility
@@ -30,17 +32,13 @@ namespace ScrambledSeas
         public static List<RecoveryPort> recoveryArray = new List<RecoveryPort>();
         public static Dictionary<int, bool> marketVisited = new Dictionary<int,bool>();
         public static List<PurchasableBoat> boatArray = new List<PurchasableBoat>();
-
-        //These constants need to be updated when new islands/regions are added to game
-        private static Dictionary<int, string> regionToName = new Dictionary<int, string>();
-        private static Dictionary<int, List<int>> regionToIslandIdxs = new Dictionary<int, List<int>>();
-        private static Dictionary<string, int> bottomToRegion = new Dictionary<string, int>();
+        static List<RegionDefinition> regionDefs = new List<RegionDefinition>();
 
         private static int eastwindIndx = 19;
         private static Vector3 eastwindMarketOffset = Vector3.zero;
 
         private static bool setupRan = false;
-
+        
         public static void Setup()
         {
             if (Main.eastwindFix.Value)
@@ -61,54 +59,89 @@ namespace ScrambledSeas
                 eastwindMarket = Port.ports[eastwindIndx].GetComponent<IslandMarket>();
                 if (eastwindMarket != null)
                 {
-                    Main.Log("Save Eastwind market offset");
+                    //Main.Log("Save Eastwind market offset");
                     Vector3 pos = FloatingOriginManager.instance.GetGlobeCoords(eastwindMarket.gameObject.transform);
-                    Main.Log("market: x:" + pos.x + " z: " + pos.z);
+                    //Main.Log("market: x:" + pos.x + " z: " + pos.z);
                     pos = FloatingOriginManager.instance.GetGlobeCoords(islandEastwindTransform);
-                    Main.Log("island: x:" + pos.x + " z: " + pos.z);
+                    //Main.Log("island: x:" + pos.x + " z: " + pos.z);
 
                     eastwindMarketOffset = eastwindMarket.gameObject.transform.position - islandEastwindTransform.position;
 
-                    Main.Log("offset: x:" + eastwindMarketOffset.x / 9000.0f + " z: " + (eastwindMarketOffset.z / 9000.0f));
+                    //Main.Log("offset: x:" + eastwindMarketOffset.x / 9000.0f + " z: " + (eastwindMarketOffset.z / 9000.0f));
 
                 }
             }
 
-            // Al Ankh
-            regionToName.Add(0, "Region Al'ankh");
-            regionToIslandIdxs.Add(0, new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, });
-            bottomToRegion.Add("bottom plane A", 0);
-            // Emerald
-            regionToName.Add(1, "Region Emerald (new smaller)");
-            regionToIslandIdxs.Add(1, new List<int>() { 9, 10, 11, 12, 13, 22, 37, 38, 39 });
-            bottomToRegion.Add("bottom plane E", 1);
-            // Aestrin
-            regionToName.Add(2, "Region Medi");
-            regionToIslandIdxs.Add(2, new List<int>() { 15, 16, 17, 19, 21, 23, 33, 34, 35, 36 });
-
-            bottomToRegion.Add("bottom plane M", 2);
-            // Oasis
-            regionToIslandIdxs.Add(3, new List<int>() { 20 });
-            // Happy Bay
-            regionToIslandIdxs.Add(4, new List<int>() { 18 });
-            // Chronos
-            regionToName.Add(5, "Region Medi East");
-            regionToIslandIdxs.Add(5, new List<int>() { 25 });
-            bottomToRegion.Add("bottom plane chronos", 5);
-            // Fire Fish Lagoon
-            regionToName.Add(6, "Region Emerald Lagoon");
-            regionToIslandIdxs.Add(6, new List<int>() { 26, 27, 28, 29, 30, 31 });
-            // Rock of Despair
-            regionToIslandIdxs.Add(7, new List<int>() { 30 });
-            // Hideout
-            regionToIslandIdxs.Add(8, new List<int>() { 32 });
-
-            //Cache regions for RegionBlenderPatch
-            regions = new Dictionary<int, Region>();
-            foreach (var kv in regionToName)
+            path = Path.Combine(Directory.GetParent(Main.instance.Info.Location).FullName, $"regions.json");
+            if (File.Exists(path))
             {
-                regions.Add(kv.Key, GameObject.Find(kv.Value).GetComponent<Region>());
+                regionDefs = JsonConvert.DeserializeObject<List<RegionDefinition>>(File.ReadAllText(path));
             }
+            else
+            {
+                regionDefs = GenerateDefs();
+            }
+            //Cache regions for RegionBlenderPatch
+            var foundRegions = GameObject.FindObjectsOfType<Region>();
+            regions = new Dictionary<int, Region>();
+            int maxKey = 0;
+            foreach (var region in foundRegions)
+            {
+                if (region.transform.position.magnitude < 10)
+                {
+                    continue;
+                }
+                bool found = false;
+                foreach (var regionDef in regionDefs)
+                {
+                    if (regionDef.objectName == region.name && !regions.ContainsValue(region))
+                    {
+                        regions.Add(regionDef.index, region);
+                        found = true;
+                        break;
+                    }
+                }
+                if (found == false)
+                {
+                    if (maxKey < regionDefs.Last().index) maxKey = regionDefs.Last().index;
+                    regions.Add(maxKey + 1, region);
+                    regionDefs.Add(new RegionDefinition { objectName = region.name, index = maxKey + 1, islands = new List<int>() });
+                }
+            }
+
+            for (int i = 0; i < Refs.islands.Length; i++)
+            {
+                if (Refs.islands[i] == null) continue;
+                bool found = false;
+                foreach (var region in regionDefs)
+                {
+                    if (region.islands.Contains(i))
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                if (found == false)
+                {
+                    var closestRegion = ClosestRegion(Refs.islands[i]);
+                    RegionDefinition found2 = null;
+                    foreach (var regionDef in regionDefs)
+                    {
+                        if (regionDef.index == closestRegion)
+                        {
+                            found2 = regionDef;
+                            break;
+                        }
+                    }
+                    if (found2 == null)
+                    {
+                        found2 = new RegionDefinition { index = closestRegion, islands = new List<int>() };
+                        regionDefs.Add(found2);
+                    }
+                    found2.islands.Add(i);
+                }
+            }
+
             setupRan = true;
         }
         public static void Scramble()
@@ -168,48 +201,54 @@ namespace ScrambledSeas
 
             Main.Log("Scrambler completion value:" + completionVal);
 
-            //Calculate archipelago displacement vectors
-            foreach (var kv in regionToName)
+            foreach (var region in regionDefs)
             {
-                regionDisplacements[kv.Key] = archLocs[kv.Key] - FloatingOriginManager.instance.ShiftingPosToRealPos(regions[kv.Key].transform.localPosition);
-                regionDisplacements[kv.Key].y = 0f;
-            }
-            //Calculate island displacement vectors
-            foreach (var kv in regionToIslandIdxs)
-            {
-                int regionIdx = kv.Key;
-                List<int> islandIdxs = kv.Value;
-                if (regionDisplacements[regionIdx] == null && islandIdxs.Count == 1)
+                //Calculate archipelago displacement vectors
+                if (region.objectName == string.Empty)
                 {
-                    regionDisplacements[regionIdx] = archLocs[kv.Key] - islandOrigins[islandIdxs[0] - 1];
-                    regionDisplacements[regionIdx].y = 0f;
-                    islandDisplacements[islandIdxs[0] - 1] = regionDisplacements[regionIdx];
+                    regionDisplacements[region.index] = archLocs[region.index] - islandOrigins[region.islands[0] - 1];
                 }
                 else
                 {
-                    for (int i = 0; i < islandIdxs.Count; i++)
-                    {
-                        islandDisplacements[islandIdxs[i] - 1] = islandLocs[regionIdx][i] - islandOrigins[islandIdxs[i] - 1];
-                        islandDisplacements[islandIdxs[i] - 1].y = 0f;
-                    }
+                    regionDisplacements[region.index] = archLocs[region.index] - FloatingOriginManager.instance.ShiftingPosToRealPos(regions[region.index].transform.localPosition);
+                }
+                regionDisplacements[region.index].y = 0f;
+
+                //Calculate island displacement vectors
+                for (int i = 0; i < region.islands.Count; i++)
+                {
+                    islandDisplacements[region.islands[i] - 1] = islandLocs[region.index][i] - islandOrigins[region.islands[i] - 1];
+                    islandDisplacements[region.islands[i] - 1].y = 0f;
                 }
             }
+
             #endregion
 
             // write displacements to save
-            Vector3[] regionDispList = new Vector3[regionToIslandIdxs.Count];
-            foreach (var kv in regionToName)
-            {
-                regionDispList[kv.Key] = regionDisplacements[kv.Key];
-            }
-            Main.saveContainer.archOffsets = regionDispList;
+            Vector3[] regionDispList = new Vector3[regionDefs.Count];
             List<Vector3> isleDispList = new List<Vector3>();
+            foreach (var region in regionDefs)
+            {
+                if (region.objectName != string.Empty)
+                {
+                    regionDispList[region.index] = regionDisplacements[region.index];
+                }
+               /* foreach (var island in region.Islands)
+                {
+                    isleDispList.Add(islandDisplacements[island]);
+                }*/
+            }
+
+            Main.saveContainer.archOffsets = regionDispList;
             for (int i = 0; i < islandDisplacements.Length; i++)
             {
                 if (i + 1 >= Refs.islands.Length) break;
                 isleDispList.Add(islandDisplacements[i]);
             }
             Main.saveContainer.islandOffsets = isleDispList.ToArray();
+            //Re-roll seed for gameplay
+            UnityEngine.Random.InitState((int)System.DateTime.Now.Ticks);
+
         }
 
         public static void Move()
@@ -219,18 +258,29 @@ namespace ScrambledSeas
             var regionOffsets = Main.saveContainer.archOffsets;
             var islandOffsets = Main.saveContainer.islandOffsets;
             #region moving code
-            //Move regions
-            foreach (var kv in regionToName)
+
+            foreach (var region in regionDefs)
             {
-                regions[kv.Key].transform.Translate(regionOffsets[kv.Key], Space.World);
-                if (Main.saveContainer.borderExpander == 1)
+                int regionId = region.index;
+                //Move regions
+                if (regions.ContainsKey(region.index))
                 {
-                    if (kv.Key != 5)
+                    regions[regionId].transform.Translate(regionOffsets[regionId], Space.World);
+                    if (Main.saveContainer.borderExpander == 1)
                     {
-                        regions[kv.Key].transform.localScale *= Main.saveContainer.islandSpread / 10000;
+                        if (regionId != 5) // skip chronos region
+                        {
+                            regions[regionId].transform.localScale *= Main.saveContainer.islandSpread / 10000;
+                        }
                     }
                 }
+                //Move bottom planes
+                if (region.bottomPlane != string.Empty)
+                {
+                    GameObject.Find(region.bottomPlane).transform.Translate(regionOffsets[regionId], Space.World);
+                }
             }
+
             //Move islands
             for (int i = 0; i < islandOffsets.Length; i++)
             {
@@ -240,11 +290,7 @@ namespace ScrambledSeas
                     Refs.islands[i + 1].Translate(islandOffsets[i], Space.World);
                 }
             }
-            //Move bottom planes:
-            foreach (var kv in bottomToRegion)
-            {
-                GameObject.Find(kv.Key).transform.Translate(regionOffsets[kv.Value], Space.World);
-            }
+
 
             //Move recovery ports
             for (int i = 0; i < Refs.islands.Length; i++)
@@ -300,14 +346,13 @@ namespace ScrambledSeas
                 }
             }
             #endregion
-            //Re-roll seed for gameplay
-            UnityEngine.Random.InitState((int)System.DateTime.Now.Ticks);
-            
-            SaveCoordsToJSON();
-
+            if (Main.saveCoordsToJSON_Enabled.Value)
+            {
+                SaveCoordsToJSON($"scramble_{SaveSlots.currentSlot}");
+            }
             if (Main.saveScrambleExternal.Value)
             {
-                Main.saveContainer.archDescriptions = "archOffsets are meters from vanilla position. x is longitude, z is latitude. Regions: 0 = Al'ankh, 1 = Emerald, 2 = Aestrin, 6 = FireFish";
+                Main.saveContainer.archDescriptions = "archOffsets are meters from vanilla position. x is longitude, z is latitude. Regions: 0 = Al'ankh, 1 = Emerald, 2 = Aestrin, 3 = Oasis, 6 = FireFish";
                 Main.saveContainer.islandDescriptions = "islandOffsets are meters from vanilla position. x is longitude, z is latitude.\nIslands: ";
                 for (int i = 0; i < Refs.islands.Length; i++) 
                 {
@@ -315,118 +360,116 @@ namespace ScrambledSeas
                 }
             }
         }
-        public static void SaveCoordsToJSON()
+        public static void SaveCoordsToJSON(string fileName)
         { 
-            // //Debug
-            if (Main.saveCoordsToJSON_Enabled.Value)
+            try
             {
-                try
+                JSONObject json = new JSONObject();
+                    
+                JSONNode empty = new JSONArray();
+                json.Add("lines", empty);
+                json.Add("path", empty);
+                    
+                JSONNode points = new JSONArray();
+
+                Dictionary<string,string> arch_colors = new Dictionary<string,string>();
+                arch_colors.Add("A", "yellowpoint");
+                arch_colors.Add("E", "greenpoint");
+                arch_colors.Add("M", "bluepoint");
+                arch_colors.Add("Lagoon", "orangepoint");
+
+                foreach (var name in islandNames)
                 {
-                    JSONObject json = new JSONObject();
-                    
-                    JSONNode empty = new JSONArray();
-                    json.Add("lines", empty);
-                    json.Add("path", empty);
-                    
-                    JSONNode points = new JSONArray();
-
-                    Dictionary<string,string> arch_colors = new Dictionary<string,string>();
-                    arch_colors.Add("A", "yellowpoint");
-                    arch_colors.Add("E", "greenpoint");
-                    arch_colors.Add("M", "bluepoint");
-                    arch_colors.Add("Lagoon", "orangepoint");
-
-                    foreach (var name in islandNames)
+                    if (!string.IsNullOrEmpty(name))
                     {
-                        if (!string.IsNullOrEmpty(name))
-                        {
-                            // 0      1 2 3
-                            // island 1 A (gold rock)
-                            string[] name_array = name.Split(' ');
-                            string point_color = "bluepoint";
-                            string island_name = "";
-                            bool skip = false;
+                        // 0      1 2 3
+                        // island 1 A (gold rock)
+                        string[] name_array = name.Split(' ');
+                        string point_color = "bluepoint";
+                        string island_name = "";
+                        bool skip = false;
 
-                            if (name_array.Length < 3)
+                        if (name_array.Length < 3)
+                        {
+/*                            if (name_array[1] == "36")
                             {
-                                if (name_array[1] == "36")
-                                {
-                                    point_color = "bluepoint";
-                                    island_name = "island 36";
-                                    skip = true;
-                                }
+                                point_color = "bluepoint";
+                                island_name = "island 36";
+                                skip = true;
                             }
-                            else if (arch_colors.ContainsKey(name_array[2]))
+*//*                                else if (name_array[1] == "42")
                             {
-                                point_color = arch_colors[name_array[2]];
+                                point_color = "yellowpoint";
+                                island_name = "island 42";
+                                skip = true;
+                            }*//*
+                            else
+                            {*/
+                                island_name = name;
+                                skip = true;
+                            //}
+                        }
+                        else if (arch_colors.ContainsKey(name_array[2]))
+                        {
+                            point_color = arch_colors[name_array[2]];
+                        }
+                        else
+                        {
+                            point_color = "bluepoint";
+                            if (name_array[2] == "rock")
+                            {
+                                island_name = "Rock Of Despair";
+                                skip = true;
+                            }
+                        }
+
+                        if (!skip)
+                        {
+                            // search (island name)
+                            Match island = Regex.Match(name, "(\\(.*\\))");
+                            if (island.Success)
+                            {
+                                island_name = island.Value.Trim(new Char[] { ' ', '(', ')' });
                             }
                             else
                             {
-                                point_color = "bluepoint";
-                                if (name_array[2] == "rock")
-                                {
-                                    island_name = "Rock Of Despair";
-                                    skip = true;
-                                }
+                                island_name = name_array[3];
                             }
-
-                            if (!skip)
-                            {
-                                // search (island name)
-                                Match island = Regex.Match(name, "(\\(.*\\))");
-                                if (island.Success)
-                                {
-                                    island_name = island.Value.Trim(new Char[] { ' ', '(', ')' });
-                                }
-                                else
-                                {
-                                    island_name = name_array[3];
-                                }
-                            }
-                            island_name = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(island_name.ToLower());
-
-                            //Vector3 latlon = FloatingOriginManager.instance.GetGlobeCoords(GameObject.Find(name).transform);
-                            Vector3 latlon = FloatingOriginManager.instance.GetGlobeCoords(Refs.islands[Int32.Parse(name_array[1])]);
-                            Main.Log(name + "," + latlon.x + "," + latlon.z);
-                            JSONObject point = new JSONObject();
-                            point.Add("description", new JSONString(island_name));
-                            JSONArray pos = new JSONArray();
-                            pos.Add(new JSONNumber(latlon.x));
-                            pos.Add(new JSONNumber(latlon.z));
-                            point.Add("pos",pos);
-                            point.Add("colour", point_color);
-                            point.Add("day", 0);
-                            point.Add("time", 0);
-                            point.Add("winddir", "NE");                            
-                            points.Add(point);
                         }
+                        island_name = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(island_name.ToLower());
+
+                        //Vector3 latlon = FloatingOriginManager.instance.GetGlobeCoords(GameObject.Find(name).transform);
+                        Vector3 latlon = FloatingOriginManager.instance.GetGlobeCoords(Refs.islands[Int32.Parse(name_array[1])]);
+                        Main.Log(name + "," + latlon.x + "," + latlon.z);
+                        JSONObject point = new JSONObject();
+                        point.Add("description", new JSONString(island_name));
+                        JSONArray pos = new JSONArray();
+                        pos.Add(new JSONNumber(latlon.x));
+                        pos.Add(new JSONNumber(latlon.z));
+                        point.Add("pos",pos);
+                        point.Add("colour", point_color);
+                        point.Add("day", 0);
+                        point.Add("time", 0);
+                        point.Add("winddir", "NE");                            
+                        points.Add(point);
                     }
-
-                    json.Add("points", points);
-                    json.Add("goals", empty);
-
-                    string jsonString = json.ToString();
-
-                    Main.Log(jsonString);
-                    File.WriteAllText(Path.Combine(Directory.GetParent(Main.instance.Info.Location).FullName, $"scramble_{SaveSlots.currentSlot}.json"), jsonString);
                 }
-                catch(Exception ex)
-                {
-                
-                    Main.Log(ex.Message);
-                    Main.Log(ex.InnerException.Message);
-                }
+
+                json.Add("points", points);
+                json.Add("goals", empty);
+
+                string jsonString = json.ToString();
+
+                Main.Log(jsonString);
+                File.WriteAllText(Path.Combine(Directory.GetParent(Main.instance.Info.Location).FullName, $"{fileName}.json"), jsonString);
+                //Main.saveCoordsToJSON_Instant.Value = false;
             }
-
-
-            //for (int i = 0; i < archLocs.Length; i++)
-            //{
-            //    Main.Log("arch: #" + i + ",   " + archLocs[i].x + ",   " + archLocs[i].z);
-            //    if (Main.saveCoordsToJSON_Enabled.Value)
-            //    {
-            //        File.AppendAllText(Path.Combine(Main.instance.Info.GetFolderLocation(), $"scramble_{SaveSlots.currentSlot}.txt"), $"arch: {i}| {archLocs[i].x}, {archLocs[i].z}" + Environment.NewLine);
-            //    }
-            //}
+            catch(Exception ex)
+            {
+                
+                Main.Log(ex.Message);
+                Main.Log(ex.InnerException.Message);
+            }
 
         }
 
@@ -469,7 +512,85 @@ namespace ScrambledSeas
             }
             return idx;
         }
+
+        private static int ClosestRegion(Transform transform)
+        {
+            float minD = 999999f;
+            int idx = -1;
+            foreach (var region in regions)
+            {
+                float d = FlatDistance(transform.position, region.Value.transform.position);
+                if (d < minD)
+                {
+                    minD = d;
+                    idx = region.Key;
+                }
+
+            }
+            return idx;
+        }
+        private static List<RegionDefinition> GenerateDefs()
+        {
+            List<RegionDefinition> regionDefinitions = new List<RegionDefinition>();
+            //These constants need to be updated when new islands/regions are added to game
+            Dictionary<int, string> regionToName = new Dictionary<int, string>();
+            Dictionary<int, List<int>> regionToIslandIdxs = new Dictionary<int, List<int>>();
+            Dictionary<string, int> bottomToRegion = new Dictionary<string, int>();
+            // Al Ankh
+            regionToName.Add(0, "Region Al'ankh");
+            regionToIslandIdxs.Add(0, new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 40 });
+            bottomToRegion.Add("bottom plane A", 0);
+            // Emerald
+            regionToName.Add(1, "Region Emerald (new smaller)");
+            regionToIslandIdxs.Add(1, new List<int>() { 9, 10, 11, 12, 13, 22, 37, 38, 39 });
+            bottomToRegion.Add("bottom plane E", 1);
+            // Aestrin
+            regionToName.Add(2, "Region Medi");
+            regionToIslandIdxs.Add(2, new List<int>() { 15, 16, 17, 19, 21, 23, 33, 34, 35, 36 });
+
+            bottomToRegion.Add("bottom plane M", 2);
+            // Oasis
+            regionToIslandIdxs.Add(3, new List<int>() { 20, 41, 42 });
+            // Happy Bay
+            regionToIslandIdxs.Add(4, new List<int>() { 18 });
+            // Chronos
+            regionToName.Add(5, "Region Medi East");
+            regionToIslandIdxs.Add(5, new List<int>() { 25 });
+            bottomToRegion.Add("bottom plane chronos", 5);
+            // Fire Fish Lagoon
+            regionToName.Add(6, "Region Emerald Lagoon");
+            regionToIslandIdxs.Add(6, new List<int>() { 26, 27, 28, 29, 30, 31 });
+            // Rock of Despair
+            regionToIslandIdxs.Add(7, new List<int>() { 30 });
+            // Hideout
+            regionToIslandIdxs.Add(8, new List<int>() { 32 });
+
+            #region def export
+            foreach (var kv in regionToIslandIdxs)
+            {
+                regionDefinitions.Add(new RegionDefinition { index = kv.Key, islands = kv.Value });
+            }
+            foreach (var kv in regionToName)
+            {
+                regionDefinitions[kv.Key].objectName = kv.Value;
+            }
+            foreach (var kv in bottomToRegion)
+            {
+                regionDefinitions[kv.Value].bottomPlane = kv.Key;
+            }
+            string json = JsonConvert.SerializeObject(regionDefinitions);
+            File.WriteAllText(path, json);
+            return regionDefinitions;
+            #endregion
+        }
+        private static void ExportDefs(List<RegionDefinition> regionDefinitions)
+        {
+            string json = JsonConvert.SerializeObject(regionDefinitions);
+            File.WriteAllText(path, json);
+
+        }
     }
+
 
 
 }

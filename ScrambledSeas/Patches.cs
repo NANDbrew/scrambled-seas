@@ -78,7 +78,7 @@ namespace ScrambledSeas
 
                     //Re-generate world for the saved randomizer params
 
-/*                    if (Main.saveContainer.islandOffsets.Length + 1 < Refs.islands.Length && Main.saveContainer.worldScramblerSeed != 0)
+                    if (Main.saveContainer.islandOffsets.Length + 1 < Refs.islands.Length && Main.saveContainer.worldScramblerSeed != 0)
                     {
                         var savedArchOffsets = Main.saveContainer.archOffsets;
                         var savedIsleOffsets = Main.saveContainer.islandOffsets;
@@ -89,10 +89,10 @@ namespace ScrambledSeas
                         }
                         for (int i = 0; i < savedIsleOffsets.Length; i++)
                         {
-                            Main.saveContainer.archOffsets[i] = savedIsleOffsets[i];
+                            Main.saveContainer.islandOffsets[i] = savedIsleOffsets[i];
                         }
                         Main.Log("Re-scrambled " + (Refs.islands.Length - savedIsleOffsets.Length) + " islands");
-                    }*/
+                    }
 
                     WorldScrambler.Move();
                     NotificationUi.instance.ShowNotification("Scrambled Seas:\nLoaded scrambled save", 5f);
@@ -105,6 +105,8 @@ namespace ScrambledSeas
                 {
                     Main.pluginEnabled = false;
                     NotificationUi.instance.ShowNotification("Scrambled Seas:\nThis save is unscrambled", 5f);
+                    WorldScrambler.SaveCoordsToJSON("islandCoords");
+
                 }
             }
         }
