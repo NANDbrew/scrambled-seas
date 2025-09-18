@@ -1,7 +1,7 @@
 ﻿using JetBrains.Annotations;
 using OculusSampleFramework;
 using OVRSimpleJSON;
-using Newtonsoft.Json;
+//using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -75,11 +75,13 @@ namespace ScrambledSeas
             path = Path.Combine(Directory.GetParent(Main.instance.Info.Location).FullName, $"regions.json");
             if (File.Exists(path))
             {
-                regionDefs = JsonConvert.DeserializeObject<List<RegionDefinition>>(File.ReadAllText(path));
+                //regionDefs = JsonConvert.DeserializeObject<List<RegionDefinition>>(File.ReadAllText(path));
+                regionDefs = ReadRegionDefs(path);
             }
             else
             {
                 regionDefs = GenerateDefs();
+                WriteRegionDefs(regionDefs);
             }
             //Cache regions for RegionBlenderPatch
             var foundRegions = GameObject.FindObjectsOfType<Region>();
@@ -314,11 +316,11 @@ namespace ScrambledSeas
                 {
                     if (Port.ports[i] == null) continue;
                     Port port = Port.ports[i];
-                    Main.Log("---");
+                    //Main.Log("---");
                     Vector3 pos = FloatingOriginManager.instance.GetGlobeCoords(port.gameObject.transform);
-                    Main.Log("market pos: x:" + pos.x + " z: " + pos.z);
+                    //Main.Log("market pos: x:" + pos.x + " z: " + pos.z);
                     pos = FloatingOriginManager.instance.GetGlobeCoords(port.transform);
-                    Main.Log("port pos: " + port.GetPortName() + " pos x:" + pos.x + " z: " + pos.z);
+                    //Main.Log("port pos: " + port.GetPortName() + " pos x:" + pos.x + " z: " + pos.z);
 
                     // make a mark for this that it not visited for now;
                     marketVisited.Add(port.portIndex, false);
@@ -460,7 +462,7 @@ namespace ScrambledSeas
 
                 string jsonString = json.ToString();
 
-                Main.Log(jsonString);
+                //Main.Log(jsonString);
                 File.WriteAllText(Path.Combine(Directory.GetParent(Main.instance.Info.Location).FullName, $"{fileName}.json"), jsonString);
                 //Main.saveCoordsToJSON_Instant.Value = false;
             }
@@ -578,16 +580,73 @@ namespace ScrambledSeas
             {
                 regionDefinitions[kv.Value].bottomPlane = kv.Key;
             }
-            string json = JsonConvert.SerializeObject(regionDefinitions);
-            File.WriteAllText(path, json);
-            return regionDefinitions;
+            //string json = JsonConvert.SerializeObject(regionDefinitions);
+            //File.WriteAllText(path, json);
+
+
+
+
             #endregion
+            return regionDefinitions;
         }
-        private static void ExportDefs(List<RegionDefinition> regionDefinitions)
+/*        private static void ExportDefs(List<RegionDefinition> regionDefinitions)
         {
             string json = JsonConvert.SerializeObject(regionDefinitions);
             File.WriteAllText(path, json);
 
+        }*/
+
+        public static void WriteRegionDefs(List<RegionDefinition> regions)
+        {
+            JSONArray arr = new JSONArray();
+            foreach (var reg in regions)
+            {
+                JSONObject obj2 = new JSONObject();
+                obj2.Add("index", new JSONNumber(reg.index));
+                obj2.Add("objectName", new JSONString(reg.objectName));
+                obj2.Add("bottomPlane", new JSONString(reg.bottomPlane));
+                JSONArray islands = new JSONArray();
+                foreach (int isle in reg.islands)
+                {
+                    islands.Add(new JSONNumber(isle));
+                }
+                obj2.Add("islands", islands);
+                arr.Add(obj2);
+            }
+            //Debug.Log(arr.ToString());
+            string json2 = arr.ToString();
+            File.WriteAllText(Path.Combine(Directory.GetParent(Main.instance.Info.Location).FullName, $"regions.json"), arr.ToString());
+        }
+        public static List<RegionDefinition> ReadRegionDefs(string path)
+        {
+            if (!File.Exists(path)) { Debug.LogError("missing file"); return null; }
+
+            List<RegionDefinition> output = new List<RegionDefinition>();
+            string json = File.ReadAllText(path);
+            var blah = JSON.Parse(json).AsArray;
+            foreach (var b in blah)
+            {
+                var reg = new RegionDefinition();
+                var f = b.Value.Linq;
+                foreach (var f2 in f)
+                {
+                    if (f2.Key == "index") reg.index = f2.Value;
+                    else if (f2.Key == "objectName") reg.objectName = f2.Value;
+                    else if (f2.Key == "bottomPlane") reg.bottomPlane = f2.Value;
+                    else if (f2.Key == "islands")
+                    {
+                        List<int> ints = new List<int>();
+                        foreach (var f3 in f2.Value.Children)
+                        {
+                            ints.Add(f3.AsInt);
+                        }
+                        reg.islands = ints;
+                    }
+                }
+                output.Add(reg);
+            }
+
+            return output;
         }
     }
 
