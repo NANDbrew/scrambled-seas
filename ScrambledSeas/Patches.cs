@@ -286,18 +286,21 @@ namespace ScrambledSeas
             }
         }
 
-        //[HarmonyPatch(typeof(PlayerReputation), "GetMaxDistance")]
-        //private static class ReputationPatch
-        //{
-        //    private static void Postfix(ref float __result)
-        //    {
-        //        //Islands tend to be farther apart in this mod. Ensure that the returned value is at least 300 miles
-        //        if (Main.pluginEnabled && __result < 400f)
-        //        {
-        //            __result = 400f;
-        //        }
-        //    }
-        //}
+        [HarmonyPatch(typeof(PlayerReputation), "GetMaxDistance")]
+        private static class ReputationPatch
+        {
+            private static void Postfix(ref float __result)
+            {
+                //Islands tend to be farther apart in this mod. Ensure that the returned value is at least 300 miles
+                if (Main.pluginEnabled)
+                {
+                    float maxDist = __result;
+                    maxDist *= Main.saveContainer.islandSpread / 3000;
+                    maxDist *= Main.saveContainer.minArchipelagoSeparation / 30000;
+                    __result = maxDist;
+                }
+            }
+        }
 
         [HarmonyPatch(typeof(MissionDetailsUI), "UpdateMap")]
         private static class MissionMapPatch
@@ -306,27 +309,8 @@ namespace ScrambledSeas
             {
                 if (Main.pluginEnabled)
                 {
-                    //___mapRenderer.gameObject.SetActive(false);
-                    //___locationText.text = "Map Unavailable\n\nWelcome to ScrambledSeas :)";
-
-                    //        bool flag = false;
-                    //        bool flag2 = false;
-                    //        if ((!currentMission.originPort.oceanMapLocation && !currentMission.originPort.localMapLocation) || (!currentMission.destinationPort.oceanMapLocation && !currentMission.destinationPort.localMapLocation))
-                    //        {
-                    //            flag2 = true;
-                    //        }
-
-                    //        if (currentMission.originPort.localMap != currentMission.destinationPort.localMap && (currentMission.originPort.oceanMapLocation == null || currentMission.destinationPort.oceanMapLocation == null))
-                    //        {
-                    //            flag2 = true;
-                    //        }
-
-                    //if (flag2)
-                    //{
-
 
                     ___mapRenderer.gameObject.SetActive(value: false);
-                    //if (!Main.hideDestinationCoords_Enabled.Value && WorldScrambler.marketVisited[___currentMission.destinationPort.portIndex])
                     if (!Main.hideDestinationCoords_Enabled.Value)
                     {
                         Vector3 globeCoords = FloatingOriginManager.instance.GetGlobeCoords(___currentMission.destinationPort.transform);
@@ -341,48 +325,7 @@ namespace ScrambledSeas
                     {
                         ___locationText.text = "(map unavailable)\n\nlocation unknown\n";
                     }
-                    //return;
-                    //}
-
-                    //if (currentMission.UseOceanMap())
-                    //{
-                    //    flag = true;
-                    //    SetMapTexture(oceanMap);
-                    //}
-                    //else if (currentMission.originPort.localMap == LocalMap.alankh)
-                    //{
-                    //    SetMapTexture(alankhMap);
-                    //}
-                    //else if (currentMission.originPort.localMap == LocalMap.emerald)
-                    //{
-                    //    SetMapTexture(emeraldMap);
-                    //}
-                    //else if (currentMission.originPort.localMap == LocalMap.medi)
-                    //{
-                    //    SetMapTexture(mediMap);
-                    //}
-                    //else
-                    //{
-                    //    if (currentMission.originPort.localMap != LocalMap.lagoon)
-                    //    {
-                    //        return;
-                    //    }
-
-                    //    SetMapTexture(lagoonMap);
-                    //}
-
-                    //if (flag)
-                    //{
-                    //    routeLine.SetPosition(0, currentMission.originPort.oceanMapLocation.localPosition);
-                    //    routeLine.SetPosition(1, currentMission.destinationPort.oceanMapLocation.localPosition);
-                    //    destinationMarker.localPosition = currentMission.destinationPort.oceanMapLocation.localPosition;
-                    //}
-                    //else
-                    //{
-                    //    routeLine.SetPosition(0, currentMission.originPort.localMapLocation.localPosition);
-                    //    routeLine.SetPosition(1, currentMission.destinationPort.localMapLocation.localPosition);
-                    //    destinationMarker.localPosition = currentMission.destinationPort.localMapLocation.localPosition;
-                    //}
+                    
                 }
             }
         }
