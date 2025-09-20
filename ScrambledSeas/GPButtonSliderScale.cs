@@ -79,6 +79,7 @@ namespace ScrambledSeas
             {
                 //Main.archipelagoScale.Value = val;
                 Main.saveContainer.islandSpread = (int)(10000 * val);
+                Main.saveContainer.minIslandSeparation = (int)(Mathf.Max(1500 * val));
             }
             extraText.text = Math.Round(val, 2).ToString() + "x";
 

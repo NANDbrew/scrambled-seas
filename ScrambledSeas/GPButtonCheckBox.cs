@@ -16,6 +16,8 @@ namespace ScrambledSeas
 
         public bool on;
 
+        public GameObject extraToggle;
+
         public Material offMat;
 
         private Material onMat;
@@ -72,6 +74,10 @@ namespace ScrambledSeas
             else if (type == 1)
             {
                 Main.hideDestinationCoords_Enabled.Value = on;
+            }
+            if (extraToggle != null)
+            {
+                extraToggle.SetActive(on);
             }
         }
 

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using static OVRPlugin;
+using static UnityEngine.GraphicsBuffer;
 
 namespace ScrambledSeas
 {
@@ -210,6 +211,7 @@ namespace ScrambledSeas
                 Traverse.Create(instance).Field("animsPlaying").SetValue(animsPlaying - 1);
                 yield return new WaitForSeconds(1f);
                 GameState.justStarted = false;
+
                 yield break;
             }
         }
@@ -294,10 +296,15 @@ namespace ScrambledSeas
                 //Islands tend to be farther apart in this mod. Ensure that the returned value is at least 300 miles
                 if (Main.pluginEnabled)
                 {
-                    float maxDist = __result;
-                    maxDist *= Main.saveContainer.islandSpread / 3000;
-                    maxDist *= Main.saveContainer.minArchipelagoSeparation / 30000;
-                    __result = maxDist;
+                    float islandSpread = Main.saveContainer.islandSpread;
+                    float minArchDist = Main.saveContainer.minArchipelagoSeparation;
+                    float maxDist = 150;
+                    Debug.Log("maxDist starts at " +  maxDist);
+                    maxDist *= islandSpread / 3000;
+                    Debug.Log("maxDist operation 1: " + maxDist);
+                    maxDist *= minArchDist / 30000;
+                    Debug.Log("max dist operation 2: " + maxDist);
+                    __result = Mathf.Max(100, maxDist);
                 }
             }
         }
@@ -311,7 +318,7 @@ namespace ScrambledSeas
                 {
 
                     ___mapRenderer.gameObject.SetActive(value: false);
-                    if (!Main.hideDestinationCoords_Enabled.Value)
+                    if (Main.destinationHint.Value == DestinationHint.Coords)
                     {
                         Vector3 globeCoords = FloatingOriginManager.instance.GetGlobeCoords(___currentMission.destinationPort.transform);
                         float num = globeCoords.x;
@@ -321,12 +328,27 @@ namespace ScrambledSeas
                         //___locationText.text = "(map unavailable) (visited " + WorldScrambler.marketVisited[___currentMission.destinationPort.portIndex] + ")\n\napproximate location:\n" + num2.ToString("0.00") + " " + text2 + ", " + num.ToString("0.00") + " " + text;
                         ___locationText.text = "(map unavailable)\n\napproximate location:\n" + num2.ToString("0.00") + " " + text2 + ", " + num.ToString("0.00") + " " + text;
                     }
+                    else if (Main.destinationHint.Value == DestinationHint.Heading)
+                    {
+                        Vector2 origin = new Vector2(___currentMission.originPort.transform.position.x, ___currentMission.originPort.transform.position.z);
+                        Vector2 destination = new Vector2(___currentMission.destinationPort.transform.position.x, ___currentMission.destinationPort.transform.position.z);
+                        //float heading = Vector3.SignedAngle(___currentMission.originPort.transform.position, ___currentMission.destinationPort.transform.position, Vector3.up);
+                        float heading = Vector2.SignedAngle((origin - destination).normalized, Vector2.down);
+                        if (heading < 0f) heading += 360;                        //___locationText.text = "(map unavailable)\n\nheading: " + heading.ToString();
+                        string text = "(map unavailable)\n\napproximate location:\n" +
+                                ___currentMission.distance.ToString("0") + " miles\n" +
+                                RadRefinements.CompassRose.GetCardinalDirection(heading, Main.cardinalPrecisionLevel.Value).ToLower() +
+                                "\n";
+
+                        ___locationText.text = text;
+                    }
                     else
                     {
                         ___locationText.text = "(map unavailable)\n\nlocation unknown\n";
                     }
                     
                 }
+
             }
         }
 
@@ -376,19 +398,20 @@ namespace ScrambledSeas
                 var newCheckBox = oldCheckbox.gameObject.AddComponent<GPButtonCheckBox>();
                 newCheckBox.text = oldCheckbox.text;
                 newCheckBox.type = 0;
+                newCheckBox.extraToggle = scramblerUI.Find("sliders").gameObject;
                 Component.Destroy(oldCheckbox);
                 newCheckBox.Initialize();
 
-                var oldCheckbox2 = scramblerUI.Find("checkbox (1)").GetComponent<GPButtonSettingsCheckbo>();
+/*                var oldCheckbox2 = scramblerUI.Find("checkbox (1)").GetComponent<GPButtonSettingsCheckbo>();
                 var newCheckBox2 = oldCheckbox2.gameObject.AddComponent<GPButtonCheckBox>();
                 newCheckBox2.text = oldCheckbox2.text;
                 newCheckBox2.type = 1;
                 Component.Destroy(oldCheckbox2);
-                newCheckBox2.Initialize();
+                newCheckBox2.Initialize();*/
 
-                var oldSlider1 = scramblerUI.Find("slider world scale").GetComponent<GPButtonSliderVolume>();
+                var oldSlider1 = scramblerUI.Find("sliders/slider world scale").GetComponent<GPButtonSliderVolume>();
 
-                var oldSlider2 = scramblerUI.Find("slider arch scale").GetComponent<GPButtonSliderVolume>();
+                var oldSlider2 = scramblerUI.Find("sliders/slider arch scale").GetComponent<GPButtonSliderVolume>();
 
                 if (!Main.borderExpander)
                 {
@@ -418,5 +441,6 @@ namespace ScrambledSeas
 
             }
         }
+
     }
 }

@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using UnityEngine;
+using static OVRHaptics;
 
 namespace ScrambledSeas
 {
@@ -22,14 +23,16 @@ namespace ScrambledSeas
     {
         public const string GUID = "com.nandbrew.scrambledseas";
         public const string NAME = "Scrambled Seas: NAND edition";
-        public const string VERSION = "7.1.1";
+        public const string VERSION = "7.1.2";
 
         internal static ConfigEntry<bool> random_Enabled;
         internal static ConfigEntry<bool> hideDestinationCoords_Enabled;
         internal static ConfigEntry<bool> saveCoordsToJSON_Enabled;
         internal static ConfigEntry<bool> eastwindFix;
         internal static ConfigEntry<bool> saveScrambleExternal;
+        internal static ConfigEntry<DestinationHint> destinationHint;
         //internal static ConfigEntry<bool> saveCoordsToJSON_Instant;
+        internal static ConfigEntry<int> cardinalPrecisionLevel;
 
         public static bool borderExpander;
 
@@ -53,10 +56,10 @@ namespace ScrambledSeas
             saveCoordsToJSON_Enabled = Config.Bind("Settings", "saveCoordsToJSON", true, "save islands coords to JSON file for online map\nwrites the file when a save is started or loaded");
             eastwindFix = Config.Bind("World", "Eastwind Fix", true, new ConfigDescription("fix eastwind market position"));
             saveScrambleExternal = Config.Bind("Settings", "ExternalSave", false, new ConfigDescription("save and load island/archipelago offsets to xml file to allow manual editing"));
-
+            destinationHint = Config.Bind("Settings", "Destination Hint", DestinationHint.None, new ConfigDescription(""));
             //saveCoordsToJSON_Instant = Config.Bind("Utilities", "saveCoordsToJSON_Instant", false, "instantly save islands coords to islandCoords.json for online map\nsaves immediately, even in start menu");
             //saveCoordsToJSON_Instant.SettingChanged += (sender, args) => WorldScrambler.SaveCoordsToJSON("islandCoords");
-
+            cardinalPrecisionLevel = Config.Bind("Settings", "Number of ordinal directions", 16, new ConfigDescription("Number of ordinal heading directions given in the mission screen.", new AcceptableValueList<int>(8, 16, 32)));
             borderExpander = BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.nandbrew.borderexpander");
 
             AssetTools.LoadAssetBundles();
@@ -66,6 +69,12 @@ namespace ScrambledSeas
         {
             Main.logSource.LogInfo(msg);
         }
+    }
+    internal enum DestinationHint
+    {
+        None = 0,
+        Heading = 1,
+        Coords = 2,
     }
 }
 #endif

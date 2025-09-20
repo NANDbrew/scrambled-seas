@@ -354,7 +354,7 @@ namespace ScrambledSeas
             }
             if (Main.saveScrambleExternal.Value)
             {
-                Main.saveContainer.archDescriptions = "archOffsets are meters from vanilla position. x is longitude, z is latitude. Regions: 0 = Al'ankh, 1 = Emerald, 2 = Aestrin, 3 = Oasis, 6 = FireFish";
+                Main.saveContainer.archDescriptions = "archOffsets are meters from vanilla position. x is east, z is north. Regions: 0 = Al'ankh, 1 = Emerald, 2 = Aestrin, 3 = Oasis, 6 = FireFish";
                 Main.saveContainer.islandDescriptions = "islandOffsets are meters from vanilla position. x is longitude, z is latitude.\nIslands: ";
                 for (int i = 0; i < Refs.islands.Length; i++) 
                 {
@@ -439,9 +439,10 @@ namespace ScrambledSeas
                             }
                         }
                         island_name = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(island_name.ToLower());
-
+                        var isle = Refs.islands[Int32.Parse(name_array[1])].GetComponent<IslandHorizon>();
+                        Transform center = isle.overrideCenter != null ? isle.overrideCenter.transform : isle.transform;
                         //Vector3 latlon = FloatingOriginManager.instance.GetGlobeCoords(GameObject.Find(name).transform);
-                        Vector3 latlon = FloatingOriginManager.instance.GetGlobeCoords(Refs.islands[Int32.Parse(name_array[1])]);
+                        Vector3 latlon = FloatingOriginManager.instance.GetGlobeCoords(center);
                         Main.Log(name + "," + latlon.x + "," + latlon.z);
                         JSONObject point = new JSONObject();
                         point.Add("description", new JSONString(island_name));
