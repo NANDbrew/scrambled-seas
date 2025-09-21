@@ -23,7 +23,7 @@ namespace ScrambledSeas
     {
         public const string GUID = "com.nandbrew.scrambledseas";
         public const string NAME = "Scrambled Seas: NAND edition";
-        public const string VERSION = "7.1.2";
+        public const string VERSION = "7.1.3";
 
         internal static ConfigEntry<bool> random_Enabled;
         internal static ConfigEntry<bool> hideDestinationCoords_Enabled;
@@ -57,8 +57,6 @@ namespace ScrambledSeas
             eastwindFix = Config.Bind("World", "Eastwind Fix", true, new ConfigDescription("fix eastwind market position"));
             saveScrambleExternal = Config.Bind("Settings", "ExternalSave", false, new ConfigDescription("save and load island/archipelago offsets to xml file to allow manual editing"));
             destinationHint = Config.Bind("Settings", "Destination Hint", DestinationHint.None, new ConfigDescription(""));
-            //saveCoordsToJSON_Instant = Config.Bind("Utilities", "saveCoordsToJSON_Instant", false, "instantly save islands coords to islandCoords.json for online map\nsaves immediately, even in start menu");
-            //saveCoordsToJSON_Instant.SettingChanged += (sender, args) => WorldScrambler.SaveCoordsToJSON("islandCoords");
             cardinalPrecisionLevel = Config.Bind("Settings", "Number of ordinal directions", 16, new ConfigDescription("Number of ordinal heading directions given in the mission screen.", new AcceptableValueList<int>(8, 16, 32)));
             borderExpander = BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.nandbrew.borderexpander");
 

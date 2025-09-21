@@ -417,7 +417,7 @@ namespace ScrambledSeas
                 {
                     oldSlider1.gameObject.SetActive(false);
                     oldSlider2.gameObject.SetActive(false);
-                    scramblerUI.Find("text (2)").gameObject.SetActive(false);
+                    scramblerUI.Find("sliders/text (2)").gameObject.SetActive(false);
                     scramblerUI.transform.Translate(0f, -0.15f, 0f, Space.Self);
                 }
                 else
