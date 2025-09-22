@@ -149,6 +149,10 @@ namespace ScrambledSeas
         public static void Scramble()
         {
             if (!setupRan) Setup();
+            if (Main.borderExpander)
+            {
+                Main.saveContainer.borderExpander = 1;
+            }
             #region scrambling
             //Convert stored ints to floats
             float islandSpread = Main.saveContainer.islandSpread;

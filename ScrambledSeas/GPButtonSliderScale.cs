@@ -24,6 +24,8 @@ namespace ScrambledSeas
         public void Initialize()
         {
             //bar = text.text[0].ToString();
+            if (type == 0) max = Main.borderExpander ? 4 : 1;
+            else if (type == 1) max = Main.borderExpander ? 4 : 3;
             SetFromValue(1f);
         }
         public void SetFromValue(float value)
@@ -68,15 +70,19 @@ namespace ScrambledSeas
             val = (float)Math.Round(val, 1);
             if (type == 0)
             {
+                int maxLat = Main.borderExpander ? 70 : 46;
+                //if (!Main.borderExpander && val > 1) val = 1;
                 Main.saveContainer.worldLonMin = (int)(-12 * val);
                 Main.saveContainer.worldLonMax = (int)(32 * val);
                 Main.saveContainer.worldLatMin = (int)(26 - 10 * val);
-                Main.saveContainer.worldLatMax = (int)Mathf.Min(70, (46 + 10 * val));
+                Main.saveContainer.worldLatMax = (int)Mathf.Min(maxLat, (46 + 10 * val));
                 Main.saveContainer.minArchipelagoSeparation = (int)(30000 * val);
                 //Main.worldScale.Value = val;
             }
             else if (type == 1)
             {
+                //if (!Main.borderExpander && val > 3) val = 3;
+
                 //Main.archipelagoScale.Value = val;
                 Main.saveContainer.islandSpread = (int)(10000 * val);
                 Main.saveContainer.minIslandSeparation = (int)(Mathf.Max(1500 * val));

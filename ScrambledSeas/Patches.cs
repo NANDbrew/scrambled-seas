@@ -121,25 +121,41 @@ namespace ScrambledSeas
 
                 if (Main.pluginEnabled)
                 {
-                    // adjust world limits if Border Expander mod is present
-                    if (Main.borderExpander)
+                    Vector3 startAoffset = ___startApos.position - Refs.islands[3].position;
+                    Vector3 startEoffset = ___startEpos.position - Refs.islands[11].position;
+                    Vector3 startMoffset = ___startMpos.position - Refs.islands[21].position;
+
+                    if (Main.loadExternal)
                     {
-                        /*Main.saveContainer.worldLonMin = (int)(-12 * Main.worldScale.Value);
-                        Main.saveContainer.worldLonMax = (int)(32 * Main.worldScale.Value);
-                        Main.saveContainer.worldLatMin = (int)(26 - 10 * Main.worldScale.Value);
-                        Main.saveContainer.worldLatMax = (int)Mathf.Min(70, (46 + 10 * Main.worldScale.Value));
-                        Main.saveContainer.islandSpread = (int)(10000 * Main.archipelagoScale.Value);
-                        Main.saveContainer.minArchipelagoSeparation = (int)(30000 * Main.worldScale.Value);*/
-                        Main.saveContainer.borderExpander = 1;
+                        ScrambledSeasSaveContainer loaded = SaveFileHelper.Load<ScrambledSeasSaveContainer>("ScrambledSeas");
+                        if (loaded.version == 0)
+                        {
+                            NotificationUi.instance.ShowNotification("failed to load scramble");
+                            return false;
+                        }
+                        Main.saveContainer = loaded;
+
+/*                        if (Main.saveContainer.worldScramblerSeed != 0)
+                        {
+                            WorldScrambler.Scramble();
+                        }*/
                     }
-                    //Create a randomized world with a new seed
-                    Main.saveContainer.worldScramblerSeed = (int)System.DateTime.Now.Ticks;
-                    WorldScrambler.Scramble();
+                    else
+                    { 
+                        //Create a randomized world with a new seed
+                        Main.saveContainer.worldScramblerSeed = (int)System.DateTime.Now.Ticks;
+                        WorldScrambler.Scramble();
+
+                    }
                     WorldScrambler.Move();
                     //Move player start positions to new island locations
-                    ___startApos.position += WorldScrambler.islandDisplacements[2];
-                    ___startEpos.position += WorldScrambler.islandDisplacements[10];
-                    ___startMpos.position += WorldScrambler.islandDisplacements[20];
+                    //___startApos.position += WorldScrambler.islandDisplacements[2];
+                    //___startEpos.position += WorldScrambler.islandDisplacements[10];
+                    //___startMpos.position += WorldScrambler.islandDisplacements[20];
+
+                    ___startApos.position = startAoffset + Refs.islands[3].position;
+                    ___startEpos.position = startAoffset + Refs.islands[11].position;
+                    ___startMpos.position = startAoffset + Refs.islands[21].position;
 
                     ___animsPlaying++;
                     Transform transform = null;
@@ -388,58 +404,73 @@ namespace ScrambledSeas
             }
         }
 
-        [HarmonyPatch(typeof(StartMenu), "Awake")]
-        private static class StartMenuPatch
+        [HarmonyPatch(typeof(StartMenu))]
+        internal static class StartMenuPatch
         {
+            internal static Transform scramblerUI;
+            [HarmonyPatch("Awake")]
+            [HarmonyPostfix]
             private static void Postfix(GameObject ___chooseIslandUI)
             {
-                var scramblerUI = UnityEngine.GameObject.Instantiate(AssetTools.bundle.LoadAsset<GameObject>("Assets/ScrambledSeas/ScramblerUI.prefab"), ___chooseIslandUI.transform).transform;
+                scramblerUI = UnityEngine.GameObject.Instantiate(AssetTools.bundle.LoadAsset<GameObject>("Assets/ScrambledSeas/ScramblerUI.prefab"), ___chooseIslandUI.transform).transform;
+                scramblerUI.transform.Translate(0f, 0.15f, 0f, Space.Self);
                 var oldCheckbox = scramblerUI.Find("checkbox").GetComponent<GPButtonSettingsCheckbo>();
                 var newCheckBox = oldCheckbox.gameObject.AddComponent<GPButtonCheckBox>();
                 newCheckBox.text = oldCheckbox.text;
                 newCheckBox.type = 0;
-                newCheckBox.extraToggle = scramblerUI.Find("sliders").gameObject;
+                newCheckBox.extraToggleOn = scramblerUI.Find("controls").gameObject;
                 Component.Destroy(oldCheckbox);
                 newCheckBox.Initialize();
 
-/*                var oldCheckbox2 = scramblerUI.Find("checkbox (1)").GetComponent<GPButtonSettingsCheckbo>();
+                var oldCheckbox2 = scramblerUI.Find("controls/checkbox (1)").GetComponent<GPButtonSettingsCheckbo>();
                 var newCheckBox2 = oldCheckbox2.gameObject.AddComponent<GPButtonCheckBox>();
                 newCheckBox2.text = oldCheckbox2.text;
                 newCheckBox2.type = 1;
+                newCheckBox2.extraToggleOff = scramblerUI.Find("controls/sliders").gameObject;
+                newCheckBox2.extraToggleOn = scramblerUI.Find("controls/load_options").gameObject;
                 Component.Destroy(oldCheckbox2);
-                newCheckBox2.Initialize();*/
+                newCheckBox2.Initialize();
 
-                var oldSlider1 = scramblerUI.Find("sliders/slider world scale").GetComponent<GPButtonSliderVolume>();
+/*                var oldCheckbox3 = scramblerUI.Find("controls/load_options/seed_only_box").GetComponent<GPButtonSettingsCheckbo>();
+                var newCheckBox3 = oldCheckbox3.gameObject.AddComponent<GPButtonCheckBox>();
+                newCheckBox3.text = oldCheckbox3.text;
+                newCheckBox3.type = 2;
+                newCheckBox3.extraToggleOff = scramblerUI.Find("controls/load_options/file_scale").gameObject;
+                newCheckBox3.extraToggleOn = scramblerUI.Find("controls/sliders").gameObject;
+                Component.Destroy(oldCheckbox3);
+                newCheckBox3.Initialize();*/
 
-                var oldSlider2 = scramblerUI.Find("sliders/slider arch scale").GetComponent<GPButtonSliderVolume>();
+                var oldSlider1 = scramblerUI.Find("controls/sliders/slider world scale").GetComponent<GPButtonSliderVolume>();
 
-                if (!Main.borderExpander)
-                {
-                    oldSlider1.gameObject.SetActive(false);
-                    oldSlider2.gameObject.SetActive(false);
-                    scramblerUI.Find("sliders/text (2)").gameObject.SetActive(false);
-                    scramblerUI.transform.Translate(0f, -0.15f, 0f, Space.Self);
-                }
-                else
-                {
-                    var newSlider1 = oldSlider1.gameObject.AddComponent<GPButtonSliderScale>();
-                    newSlider1.text = oldSlider1.text;
-                    newSlider1.extraText = oldSlider1.extraText;
-                    newSlider1.bar = oldSlider1.bar;
-                    newSlider1.type = 0;
-                    Component.Destroy(oldSlider1);
-                    newSlider1.Initialize();
+                var oldSlider2 = scramblerUI.Find("controls/sliders/slider arch scale").GetComponent<GPButtonSliderVolume>();
 
-                    var newSlider2 = oldSlider2.gameObject.AddComponent<GPButtonSliderScale>();
-                    newSlider2.text = oldSlider2.text;
-                    newSlider2.extraText = oldSlider2.extraText;
-                    newSlider2.bar = oldSlider2.bar;
-                    newSlider2.type = 1;
-                    Component.Destroy(oldSlider2);
-                    newSlider2.Initialize();
-                }
+                var newSlider1 = oldSlider1.gameObject.AddComponent<GPButtonSliderScale>();
+                newSlider1.text = oldSlider1.text;
+                newSlider1.extraText = oldSlider1.extraText;
+                newSlider1.bar = oldSlider1.bar;
+                newSlider1.type = 0;
+                Component.Destroy(oldSlider1);
+                newSlider1.Initialize();
+
+                var newSlider2 = oldSlider2.gameObject.AddComponent<GPButtonSliderScale>();
+                newSlider2.text = oldSlider2.text;
+                newSlider2.extraText = oldSlider2.extraText;
+                newSlider2.bar = oldSlider2.bar;
+                newSlider2.type = 1;
+                Component.Destroy(oldSlider2);
+                newSlider2.Initialize();
 
             }
+
+            [HarmonyPatch("EnableIslandMenu")]
+            [HarmonyPostfix]
+            private static void IslandMenuPatch()
+            {
+                if (Main.loadExternal)
+                {
+                }
+            }
+
         }
 
     }

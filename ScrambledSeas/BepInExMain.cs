@@ -31,11 +31,10 @@ namespace ScrambledSeas
         internal static ConfigEntry<bool> eastwindFix;
         internal static ConfigEntry<bool> saveScrambleExternal;
         internal static ConfigEntry<DestinationHint> destinationHint;
-        //internal static ConfigEntry<bool> saveCoordsToJSON_Instant;
         internal static ConfigEntry<int> cardinalPrecisionLevel;
 
         public static bool borderExpander;
-
+        public static bool loadExternal = false;
         public static bool pluginEnabled = true;
 
         public ScrambledSeasSaveContainer _saveContainer = new ScrambledSeasSaveContainer();
