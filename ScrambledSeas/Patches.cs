@@ -121,10 +121,6 @@ namespace ScrambledSeas
 
                 if (Main.pluginEnabled)
                 {
-                    Vector3 startAoffset = ___startApos.position - Refs.islands[3].position;
-                    Vector3 startEoffset = ___startEpos.position - Refs.islands[11].position;
-                    Vector3 startMoffset = ___startMpos.position - Refs.islands[21].position;
-
                     if (Main.loadExternal)
                     {
                         ScrambledSeasSaveContainer loaded = SaveFileHelper.Load<ScrambledSeasSaveContainer>("ScrambledSeas");
@@ -149,13 +145,9 @@ namespace ScrambledSeas
                     }
                     WorldScrambler.Move();
                     //Move player start positions to new island locations
-                    //___startApos.position += WorldScrambler.islandDisplacements[2];
-                    //___startEpos.position += WorldScrambler.islandDisplacements[10];
-                    //___startMpos.position += WorldScrambler.islandDisplacements[20];
-
-                    ___startApos.position = startAoffset + Refs.islands[3].position;
-                    ___startEpos.position = startAoffset + Refs.islands[11].position;
-                    ___startMpos.position = startAoffset + Refs.islands[21].position;
+                    ___startApos.Translate(Main.saveContainer.islandOffsets[2], Space.World);
+                    ___startEpos.Translate(Main.saveContainer.islandOffsets[10], Space.World);
+                    ___startMpos.Translate(Main.saveContainer.islandOffsets[20], Space.World);
 
                     ___animsPlaying++;
                     Transform transform = null;
