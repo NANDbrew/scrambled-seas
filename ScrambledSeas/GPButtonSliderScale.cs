@@ -71,19 +71,17 @@ namespace ScrambledSeas
             if (type == 0)
             {
                 int maxLat = Main.borderExpander ? 70 : 46;
-                //if (!Main.borderExpander && val > 1) val = 1;
+                int minLat = Main.borderExpander ? -70 : 26;
+
                 Main.saveContainer.worldLonMin = (int)(-12 * val);
                 Main.saveContainer.worldLonMax = (int)(32 * val);
-                Main.saveContainer.worldLatMin = (int)(26 - 10 * val);
+                Main.saveContainer.worldLatMin = (int)Mathf.Max(minLat, (26 - 10 * val));
                 Main.saveContainer.worldLatMax = (int)Mathf.Min(maxLat, (46 + 10 * val));
                 Main.saveContainer.minArchipelagoSeparation = (int)(30000 * val);
                 //Main.worldScale.Value = val;
             }
             else if (type == 1)
             {
-                //if (!Main.borderExpander && val > 3) val = 3;
-
-                //Main.archipelagoScale.Value = val;
                 Main.saveContainer.islandSpread = (int)(10000 * val);
                 Main.saveContainer.minIslandSeparation = (int)(Mathf.Max(1500 * val));
             }
