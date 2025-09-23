@@ -140,6 +140,11 @@ namespace ScrambledSeas
                 filename = $"<color=#660000>{filename}</color>";
                 errorMessage = "file not found";
             }
+            else if (fromFile.version != WorldScrambler.version)
+            {
+                error = true;
+                errorMessage = "file is not compatible with this version of Scrambled Seas";
+            }
             else if (fromFile.borderExpander == 1 && !Main.borderExpander)
             {
                 error = true;
