@@ -131,10 +131,10 @@ namespace ScrambledSeas
                         }
                         Main.saveContainer = loaded;
 
-/*                        if (Main.saveContainer.worldScramblerSeed != 0)
+                        if (Main.saveContainer.worldScramblerSeed != 0)
                         {
                             WorldScrambler.Scramble();
-                        }*/
+                        }
                     }
                     else
                     { 
