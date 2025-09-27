@@ -299,19 +299,20 @@ namespace ScrambledSeas
         [HarmonyPatch(typeof(PlayerReputation), "GetMaxDistance")]
         private static class ReputationPatch
         {
+            static float maxDist = 0;
             private static void Postfix(ref float __result)
             {
                 //Islands tend to be farther apart in this mod. Ensure that the returned value is at least 300 miles
                 if (Main.pluginEnabled)
                 {
-                    float islandSpread = Main.saveContainer.islandSpread;
-                    float minArchDist = Main.saveContainer.minArchipelagoSeparation;
-                    float maxDist = 150;
-                    Debug.Log("maxDist starts at " +  maxDist);
-                    maxDist *= islandSpread / 3000;
-                    Debug.Log("maxDist operation 1: " + maxDist);
-                    maxDist *= minArchDist / 30000;
-                    Debug.Log("max dist operation 2: " + maxDist);
+                    if (maxDist < 1)
+                    {
+                        float islDist = Main.saveContainer.islandSpread / 3000;
+                        float archDist = Main.saveContainer.minArchipelagoSeparation / 30000;
+                        maxDist = 150 * islDist;
+                        maxDist *= archDist;
+                    }
+
                     __result = Mathf.Max(100, maxDist);
                 }
             }

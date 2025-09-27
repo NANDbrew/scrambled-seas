@@ -265,25 +265,48 @@ namespace ScrambledSeas
             var islandOffsets = Main.saveContainer.islandOffsets;
             #region moving code
 
-            foreach (var region in regionDefs)
+            foreach (var regionDef in regionDefs)
             {
-                int regionId = region.index;
+                int regionId = regionDef.index;
                 //Move regions
-                if (regions.ContainsKey(region.index))
+                if (regions.ContainsKey(regionDef.index))
                 {
-                    regions[regionId].transform.Translate(regionOffsets[regionId], Space.World);
-                    if (Main.saveContainer.borderExpander == 1)
-                    {
-                        if (regionId != 5) // skip chronos region
-                        {
-                            regions[regionId].transform.localScale *= Main.saveContainer.islandSpread / 10000;
-                        }
-                    }
+                    Region region = regions[regionId];
+
                 }
                 //Move bottom planes
-                if (region.bottomPlane != string.Empty)
+                if (regionDef.bottomPlane != string.Empty)
                 {
-                    GameObject.Find(region.bottomPlane).transform.Translate(regionOffsets[regionId], Space.World);
+                    GameObject.Find(regionDef.bottomPlane).transform.Translate(regionOffsets[regionId], Space.World);
+                }
+            }
+
+            // fix region collider radii
+            foreach (var region in regions.Values)
+            {
+                if (region.gameObject.GetComponent<Collider>() is Collider col1)
+                {
+                    SphereCollider col2;
+                    if (col1 is SphereCollider)
+                    {
+                        col2 = col1 as SphereCollider;
+                    }
+                    else
+                    {
+                        col1.enabled = false;
+                        col2 = region.gameObject.AddComponent<SphereCollider>();
+                    }
+                    // fix radius?
+                    col2.radius = Mathf.Min(Main.saveContainer.minArchipelagoSeparation, Main.saveContainer.islandSpread * 3);
+                    float closestDist = 45000;
+                    foreach (var otherRegion in regions.Values)
+                    {
+                        if (otherRegion == region) continue;
+
+                        float dist = Vector3.Distance(region.transform.position, otherRegion.transform.position) / 2;
+                        if (dist < closestDist) closestDist = dist;
+                    }
+                    col2.radius = closestDist;
                 }
             }
 

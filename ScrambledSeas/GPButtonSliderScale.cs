@@ -83,7 +83,9 @@ namespace ScrambledSeas
             else if (type == 1)
             {
                 Main.saveContainer.islandSpread = (int)(10000 * val);
-                Main.saveContainer.minIslandSeparation = (int)(Mathf.Max(1500 * val));
+
+                // might adjust this later. leaving it for now for compatibility
+                Main.saveContainer.minIslandSeparation = (int)(Mathf.Max(1500 * val)); 
             }
             extraText.text = Math.Round(val, 2).ToString() + "x";
 
