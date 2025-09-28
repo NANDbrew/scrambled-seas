@@ -373,21 +373,9 @@ namespace ScrambledSeas
                     if (regionUpdateCooldown <= 0f)
                     {
                         regionUpdateCooldown = 100f;
-                        float minDist = 100000000f;
-                        Region closestRegion = null;
-                        foreach (Region region in WorldScrambler.regions.Values)
-                        {
-                            float dist = Vector3.Distance(___player.position, region.transform.position);
-                            if (dist < minDist)
-                            {
-                                minDist = dist;
-                                closestRegion = region;
-                            }
-                        }
-                        if (closestRegion != null)
-                        {
-                            ___currentTargetRegion = closestRegion;
-                        }
+
+                        ___currentTargetRegion = GetClosestRegion(___player.position);
+
                     }
                     else
                     {
@@ -466,5 +454,35 @@ namespace ScrambledSeas
 
         }
 
+        [HarmonyPatch(typeof(Shopkeeper), "GetLocalPrice")]
+        public static class ShopkeeperPatch
+        {
+            public static void Prefix(Shopkeeper __instance, ref Region ___parentRegion)
+            {
+                if (___parentRegion == null)
+                {
+                    ___parentRegion = GetClosestRegion(__instance.transform.position);
+                    //Region reg = WorldScrambler.regions.Values.OrderBy(r => Vector3.Distance(__instance.transform.position, r.transform.position)).FirstOrDefault();
+                }
+            }
+        }
+
+
+        public static Region GetClosestRegion(Vector3 position)
+        {
+            float minDist = 100000000f;
+            Region closestRegion = WorldScrambler.regions.Values.FirstOrDefault();
+            foreach (Region region in WorldScrambler.regions.Values)
+            {
+                float dist = Vector3.Distance(position, region.transform.position);
+                if (dist < minDist)
+                {
+                    minDist = dist;
+                    closestRegion = region;
+                }
+            }
+
+            return closestRegion;
+        }
     }
 }

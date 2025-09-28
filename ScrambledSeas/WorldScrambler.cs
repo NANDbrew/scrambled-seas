@@ -272,7 +272,7 @@ namespace ScrambledSeas
                 if (regions.ContainsKey(regionDef.index))
                 {
                     Region region = regions[regionId];
-
+                    region.transform.Translate(regionOffsets[regionId], Space.World);
                 }
                 //Move bottom planes
                 if (regionDef.bottomPlane != string.Empty)
@@ -293,12 +293,17 @@ namespace ScrambledSeas
                     }
                     else
                     {
+                        //Vector3 center = Vector3.zero;
+                        //if (col1 is BoxCollider bc) center = bc.center;
+                        //else if (col1 is CapsuleCollider cc) center = cc.center;
                         col1.enabled = false;
                         col2 = region.gameObject.AddComponent<SphereCollider>();
+                        col2.isTrigger = true;
+                        //col2.center = center;
                     }
                     // fix radius?
                     col2.radius = Mathf.Min(Main.saveContainer.minArchipelagoSeparation, Main.saveContainer.islandSpread * 3);
-                    float closestDist = 45000;
+                    float closestDist = 50000;
                     foreach (var otherRegion in regions.Values)
                     {
                         if (otherRegion == region) continue;
@@ -307,6 +312,8 @@ namespace ScrambledSeas
                         if (dist < closestDist) closestDist = dist;
                     }
                     col2.radius = closestDist;
+                    region.transform.localScale = Vector3.one;
+                    Debug.Log($"radius for {region.name} set to {closestDist}");
                 }
             }
 

@@ -117,7 +117,7 @@ namespace ScrambledSeas
        
         }
 
-        public void OnEnable()
+/*        public void OnEnable()
         {
             if (type == 1 && on)
             {
@@ -125,7 +125,7 @@ namespace ScrambledSeas
             }
 
             UpdateButton();
-        }
+        }*/
 
         public void LoadSave()
         {
