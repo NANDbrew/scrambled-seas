@@ -22,10 +22,9 @@ namespace ScrambledSeas
     {
         public const string GUID = "com.nandbrew.scrambledseas";
         public const string NAME = "Scrambled Seas: NAND edition";
-        public const string VERSION = "7.1.8";
+        public const string VERSION = "7.1.9";
 
         internal static ConfigEntry<bool> random_Enabled;
-        //internal static ConfigEntry<bool> hideDestinationCoords_Enabled;
         internal static ConfigEntry<bool> saveCoordsToJSON_Enabled;
         internal static ConfigEntry<bool> eastwindFix;
         internal static ConfigEntry<bool> saveScrambleExternal;
@@ -34,7 +33,6 @@ namespace ScrambledSeas
         internal static ConfigEntry<int> coordinatePrecisionLevel;
 
         public static bool borderExpander;
-        public static bool loadExternal = false;
         public static bool pluginEnabled = true;
 
         public ScrambledSeasSaveContainer _saveContainer = new ScrambledSeasSaveContainer();
@@ -50,8 +48,8 @@ namespace ScrambledSeas
             instance = this;
             logSource = Logger;
             Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), GUID);
+
             random_Enabled = Config.Bind("Settings", "randomEN", true, "enable random.\nalso controlled by checkbox in 'new game' menu");
-            //hideDestinationCoords_Enabled = Config.Bind("Settings", "hideDestinationCoords", true, "hide destination coords in mission screen.\nalso controlled by checkbox in 'new game' menu");
             saveCoordsToJSON_Enabled = Config.Bind("Settings", "saveCoordsToJSON", true, "save islands coords to JSON file for online map\nwrites the file when a save is started or loaded");
             eastwindFix = Config.Bind("World", "Eastwind Fix", true, new ConfigDescription("fix eastwind market position"));
             saveScrambleExternal = Config.Bind("Settings", "ExternalSave", false, new ConfigDescription("save and load island/archipelago offsets to xml file to allow manual editing"));
