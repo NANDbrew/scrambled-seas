@@ -33,6 +33,7 @@ namespace ScrambledSeas
         internal static ConfigEntry<int> coordinatePrecisionLevel;
 
         public static bool borderExpander;
+        public static bool loadExternal = false;
         public static bool pluginEnabled = true;
 
         public ScrambledSeasSaveContainer _saveContainer = new ScrambledSeasSaveContainer();
