@@ -316,13 +316,13 @@ namespace ScrambledSeas
 
                     if (level == 1)
                     {
-                        __result = 800f * worldScale;
+                        __result = Mathf.Max(100f * archScale, 800f * worldScale);
                         return;
                     }
 
                     if (level < 5)
                     {
-                        __result = 1600f * worldScale;
+                        __result = Mathf.Max(200f * archScale, 1600f * worldScale);
                         return;
                     }
 
@@ -466,15 +466,6 @@ namespace ScrambledSeas
                 Component.Destroy(oldSlider2);
                 newSlider2.Initialize();
 
-            }
-
-            [HarmonyPatch("EnableIslandMenu")]
-            [HarmonyPostfix]
-            private static void IslandMenuPatch()
-            {
-                if (Main.loadExternal)
-                {
-                }
             }
 
         }
