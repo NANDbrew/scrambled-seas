@@ -17,7 +17,6 @@ using static OVRHaptics;
 namespace ScrambledSeas
 {
     [BepInPlugin(GUID, NAME, VERSION)]
-    //[BepInDependency(SailwindModdingHelperMain.GUID, "2.0.0")]
     [BepInDependency("com.nandbrew.borderexpander", BepInDependency.DependencyFlags.SoftDependency)]
     public class Main : BaseUnityPlugin
     {
@@ -26,12 +25,13 @@ namespace ScrambledSeas
         public const string VERSION = "7.1.7";
 
         internal static ConfigEntry<bool> random_Enabled;
-        internal static ConfigEntry<bool> hideDestinationCoords_Enabled;
+        //internal static ConfigEntry<bool> hideDestinationCoords_Enabled;
         internal static ConfigEntry<bool> saveCoordsToJSON_Enabled;
         internal static ConfigEntry<bool> eastwindFix;
         internal static ConfigEntry<bool> saveScrambleExternal;
         internal static ConfigEntry<DestinationHint> destinationHint;
         internal static ConfigEntry<int> cardinalPrecisionLevel;
+        internal static ConfigEntry<int> coordinatePrecisionLevel;
 
         public static bool borderExpander;
         public static bool loadExternal = false;
@@ -51,12 +51,13 @@ namespace ScrambledSeas
             logSource = Logger;
             Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), GUID);
             random_Enabled = Config.Bind("Settings", "randomEN", true, "enable random.\nalso controlled by checkbox in 'new game' menu");
-            hideDestinationCoords_Enabled = Config.Bind("Settings", "hideDestinationCoords", true, "hide destination coords in mission screen.\nalso controlled by checkbox in 'new game' menu");
+            //hideDestinationCoords_Enabled = Config.Bind("Settings", "hideDestinationCoords", true, "hide destination coords in mission screen.\nalso controlled by checkbox in 'new game' menu");
             saveCoordsToJSON_Enabled = Config.Bind("Settings", "saveCoordsToJSON", true, "save islands coords to JSON file for online map\nwrites the file when a save is started or loaded");
             eastwindFix = Config.Bind("World", "Eastwind Fix", true, new ConfigDescription("fix eastwind market position"));
             saveScrambleExternal = Config.Bind("Settings", "ExternalSave", false, new ConfigDescription("save and load island/archipelago offsets to xml file to allow manual editing"));
             destinationHint = Config.Bind("Settings", "Destination Hint", DestinationHint.None, new ConfigDescription(""));
             cardinalPrecisionLevel = Config.Bind("Settings", "Number of ordinal directions", 16, new ConfigDescription("Number of ordinal heading directions given in the mission screen.", new AcceptableValueList<int>(8, 16, 32)));
+            coordinatePrecisionLevel = Config.Bind("Settings", "Coordinate precision", 0, new ConfigDescription("Number of decimal places in destination coordinates", new AcceptableValueRange<int>(0, 2)));
             borderExpander = BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.nandbrew.borderexpander");
 
             AssetTools.LoadAssetBundles();

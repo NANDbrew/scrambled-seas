@@ -330,12 +330,13 @@ namespace ScrambledSeas
                     if (Main.destinationHint.Value == DestinationHint.Coords)
                     {
                         Vector3 globeCoords = FloatingOriginManager.instance.GetGlobeCoords(___currentMission.destinationPort.transform);
-                        float num = globeCoords.x;
-                        float num2 = globeCoords.z; // Mathf.RoundToInt(globeCoords.z);
+                        float num = (float)Math.Round(globeCoords.x, Main.coordinatePrecisionLevel.Value);
+                        float num2 = (float)Math.Round(globeCoords.z, Main.coordinatePrecisionLevel.Value); // Mathf.RoundToInt(globeCoords.z);
                         string text = ((num < 0) ? "W" : "E");
                         string text2 = ((num2 < 0) ? "S" : "N");
+
                         //___locationText.text = "(map unavailable) (visited " + WorldScrambler.marketVisited[___currentMission.destinationPort.portIndex] + ")\n\napproximate location:\n" + num2.ToString("0.00") + " " + text2 + ", " + num.ToString("0.00") + " " + text;
-                        ___locationText.text = "(map unavailable)\n\napproximate location:\n" + num2.ToString("0.00") + " " + text2 + ", " + num.ToString("0.00") + " " + text;
+                        ___locationText.text = "(map unavailable)\n\napproximate location:\n" + num2.ToString() + " " + text2 + ", " + num.ToString() + " " + text;
                     }
                     else if (Main.destinationHint.Value == DestinationHint.Heading)
                     {
