@@ -68,6 +68,7 @@ namespace ScrambledSeas
             var step = (max - min) / 20;
             val = Mathf.Round(val / step) * step;
             val = (float)Math.Round(val, 1);
+
             if (type == 0)
             {
                 int maxLat = Main.borderExpander ? 70 : 46;
@@ -82,10 +83,10 @@ namespace ScrambledSeas
             }
             else if (type == 1)
             {
-                Main.saveContainer.islandSpread = (int)(10000 * val);
+                Main.saveContainer.islandSpread = (int)(5000 * val);
 
                 // might adjust this later. leaving it for now for compatibility
-                Main.saveContainer.minIslandSeparation = (int)(Mathf.Max(1500 * val)); 
+                Main.saveContainer.minIslandSeparation = (int)(Mathf.Max(1500 * val));
             }
             extraText.text = Math.Round(val, 2).ToString() + "x";
 

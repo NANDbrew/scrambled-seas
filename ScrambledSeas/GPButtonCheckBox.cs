@@ -143,7 +143,7 @@ namespace ScrambledSeas
                 }
                 else
                 {
-                    message = $"scramble will be recreated from seed: {fromFile.worldScramblerSeed}\n";
+                    message = $"scramble will be recreated\nfrom seed: {fromFile.worldScramblerSeed}\n";
                 }
                 if (fromFile.version != WorldScrambler.version)
                 {
@@ -176,7 +176,7 @@ namespace ScrambledSeas
             Patches.StartMenuPatch.scramblerUI.Find("controls/load_options/filename").GetComponent<TextMesh>().text = filename;
             Patches.StartMenuPatch.scramblerUI.Find("controls/load_options/error_text").GetComponent<TextMesh>().text = message + errorMessage;
             //Patches.StartMenuPatch.scramblerUI.Find("controls/load_options/seed").GetComponent<TextMesh>().text = seed;
-            Patches.StartMenuPatch.scramblerUI.Find("controls/load_options/file_scale/file_scale_num").GetComponent<TextMesh>().text = $"{((float)fromFile.minArchipelagoSeparation / 30000).ToString("0.0")}x\n\n{((float)fromFile.islandSpread / 10000).ToString("0.0")}x";
+            Patches.StartMenuPatch.scramblerUI.Find("controls/load_options/file_scale/file_scale_num").GetComponent<TextMesh>().text = $"{((float)fromFile.minArchipelagoSeparation / 30000).ToString("0.0")}x\n\n{((float)fromFile.islandSpread / 5000).ToString("0.0")}x";
 
 
         }
