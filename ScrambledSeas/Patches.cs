@@ -299,23 +299,47 @@ namespace ScrambledSeas
         [HarmonyPatch(typeof(PlayerReputation), "GetMaxDistance")]
         private static class ReputationPatch
         {
-            static float maxDist = 0;
-            private static void Postfix(ref float __result)
+            private static void Postfix(ref float __result, PortRegion region)
             {
                 //Islands tend to be farther apart in this mod. Ensure that the returned value is at least 300 miles
                 if (Main.pluginEnabled)
                 {
-                    if (maxDist < 1)
+                    float archScale = (float)Main.saveContainer.islandSpread / 5000;
+                    float worldScale = (float)Main.saveContainer.minArchipelagoSeparation / 30000;
+
+                    int level = PlayerReputation.GetRepLevel(region);
+                    if (level == 0)
                     {
-                        float islDist = Main.saveContainer.islandSpread / 3000;
-                        float archDist = Main.saveContainer.minArchipelagoSeparation / 30000;
-                        maxDist = 150 * islDist;
-                        maxDist *= archDist;
+                        __result = 100f * archScale;
+                        return;
                     }
 
-                    __result = Mathf.Max(100, maxDist);
+                    if (level == 1)
+                    {
+                        __result = 800f * worldScale;
+                        return;
+                    }
+
+                    if (level < 5)
+                    {
+                        __result = 1600f * worldScale;
+                        return;
+                    }
+
+                    __result = 999999f;
                 }
             }
+            //private static void Postfix(ref float __result)
+            //{
+            //    //Islands tend to be farther apart in this mod. Ensure that the returned value is at least 300 miles
+            //    if (Main.pluginEnabled)
+            //    {
+
+            //        float scale = Mathf.Max(1, Main.saveContainer.islandSpread / 5000, Main.saveContainer.minArchipelagoSeparation / 20000);
+
+            //        __result *= scale;
+            //    }
+            //}
         }
 
         [HarmonyPatch(typeof(MissionDetailsUI), "UpdateMap")]
