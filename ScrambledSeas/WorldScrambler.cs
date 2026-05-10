@@ -1,4 +1,5 @@
-﻿using JetBrains.Annotations;
+﻿using HarmonyLib;
+using JetBrains.Annotations;
 using OculusSampleFramework;
 using OVRSimpleJSON;
 //using Newtonsoft.Json;
@@ -343,6 +344,15 @@ namespace ScrambledSeas
                 recovery.gameObject.transform.Translate(islandOffsets[homeIndx], Space.World);
             }
 
+            //Resize local fish regions
+            LocalFishesRegion[] localFishesRegions = (LocalFishesRegion[])AccessTools.Field(typeof(OceanFishes), "localFishesRegions").GetValue(OceanFishes.instance);
+            float fishRegionScale = Main.GetArchipelagoScale();
+            for (int f = 0; f < localFishesRegions.Length; f++)
+            {
+                localFishesRegions[f].innerRadius *= fishRegionScale;
+                localFishesRegions[f].outerRadius *= fishRegionScale;
+            }
+
             if (Main.eastwindFix.Value)
             {
                 Main.Log("check Markets positions");
@@ -597,6 +607,7 @@ namespace ScrambledSeas
             // Fire Fish Lagoon
             regionToName.Add(6, "Region Emerald Lagoon");
             regionToIslandIdxs.Add(6, new List<int>() { 26, 27, 28, 29, 30, 31 });
+            bottomToRegion.Add("island 26 lagoon parent terrain (-1)", 6);
             // Rock of Despair
             regionToIslandIdxs.Add(7, new List<int>() { 30 });
             // Hideout
