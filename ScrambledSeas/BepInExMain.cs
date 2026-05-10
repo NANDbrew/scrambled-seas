@@ -22,7 +22,11 @@ namespace ScrambledSeas
     {
         public const string GUID = "com.nandbrew.scrambledseas";
         public const string NAME = "Scrambled Seas: NAND edition";
-        public const string VERSION = "7.1.9";
+        public const string VERSION = "7.1.10";
+
+        internal const int defaultMinArchipelagoSeparation = 30000;
+        internal const int defaultIslandSpread = 5000;
+        internal const int defaultMinIslandSeparation = 1500;
 
         internal static ConfigEntry<bool> random_Enabled;
         internal static ConfigEntry<bool> saveCoordsToJSON_Enabled;
@@ -66,6 +70,16 @@ namespace ScrambledSeas
         {
             Main.logSource.LogInfo(msg);
         }
+
+        internal static float GetWorldScale()
+        {
+            return saveContainer.minArchipelagoSeparation / defaultMinArchipelagoSeparation;
+        }
+        internal static float GetArchipelagoScale()
+        {
+            return saveContainer.islandSpread / defaultIslandSpread;
+        }
+
     }
     internal enum DestinationHint
     {

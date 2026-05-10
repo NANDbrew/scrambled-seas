@@ -78,15 +78,15 @@ namespace ScrambledSeas
                 Main.saveContainer.worldLonMax = (int)(32 * val);
                 Main.saveContainer.worldLatMin = (int)Mathf.Max(minLat, (26 - 10 * val));
                 Main.saveContainer.worldLatMax = (int)Mathf.Min(maxLat, (46 + 10 * val));
-                Main.saveContainer.minArchipelagoSeparation = (int)(30000 * val);
+                Main.saveContainer.minArchipelagoSeparation = (int)(Main.defaultMinArchipelagoSeparation * val);
                 //Main.worldScale.Value = val;
             }
             else if (type == 1)
             {
-                Main.saveContainer.islandSpread = (int)(5000 * val);
+                Main.saveContainer.islandSpread = (int)(Main.defaultIslandSpread * val);
 
                 // might adjust this later. leaving it for now for compatibility
-                Main.saveContainer.minIslandSeparation = (int)(Mathf.Max(1500 * val));
+                Main.saveContainer.minIslandSeparation = (int)(Main.defaultMinIslandSeparation * val);
             }
             extraText.text = Math.Round(val, 2).ToString() + "x";
 

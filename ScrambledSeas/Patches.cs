@@ -51,11 +51,11 @@ namespace ScrambledSeas
         {
             private static void Postfix()
             {
-                if (Main.pluginEnabled)
+/*                if (Main.pluginEnabled)
                 {
                     Main.saveContainer.version = WorldScrambler.version;
                     SaveFileHelper.Save(Main.saveContainer, "ScrambledSeas");
-                }
+                }*/
             }
         }
 
@@ -170,6 +170,13 @@ namespace ScrambledSeas
 
                     __instance.InvokePrivateMethod("DisableIslandMenu");
                     __instance.StartCoroutine(MovePlayerToStartPos(__instance, transform, ___playerObserver, ___playerController));
+
+                    // save stuff here so we don't have to do it with every autosave
+                    if (Main.pluginEnabled)
+                    {
+                        Main.saveContainer.version = WorldScrambler.version;
+                        SaveFileHelper.Save(Main.saveContainer, "ScrambledSeas");
+                    }
 
                     return false;
                 }
@@ -304,10 +311,12 @@ namespace ScrambledSeas
                 //Islands tend to be farther apart in this mod. Ensure that the returned value is at least 300 miles
                 if (Main.pluginEnabled)
                 {
-                    float archScale = (float)Main.saveContainer.islandSpread / 5000;
-                    float worldScale = (float)Main.saveContainer.minArchipelagoSeparation / 30000;
+                    float archScale = Mathf.Max(Main.GetArchipelagoScale(), 1);
+                    float worldScale = Mathf.Max(Main.GetWorldScale(), 1);
 
-                    int level = PlayerReputation.GetRepLevel(region);
+                    __result *= (archScale * worldScale);
+
+/*                    int level = PlayerReputation.GetRepLevel(region);
                     if (level == 0)
                     {
                         __result = 100f * archScale;
@@ -326,7 +335,7 @@ namespace ScrambledSeas
                         return;
                     }
 
-                    __result = 999999f;
+                    __result = 999999f;*/
                 }
             }
             //private static void Postfix(ref float __result)
@@ -360,19 +369,18 @@ namespace ScrambledSeas
                         string text2 = ((num2 < 0) ? "S" : "N");
 
                         //___locationText.text = "(map unavailable) (visited " + WorldScrambler.marketVisited[___currentMission.destinationPort.portIndex] + ")\n\napproximate location:\n" + num2.ToString("0.00") + " " + text2 + ", " + num.ToString("0.00") + " " + text;
-                        ___locationText.text = "(map unavailable)\n\napproximate location:\n" + num2.ToString() + " " + text2 + ", " + num.ToString() + " " + text;
+                        ___locationText.text = $"(map unavailable)\n\napproximate location:\n{num2.ToString()} {text2}, {num.ToString()} {text}";
                     }
                     else if (Main.destinationHint.Value == DestinationHint.Heading)
                     {
                         Vector2 origin = new Vector2(___currentMission.originPort.transform.position.x, ___currentMission.originPort.transform.position.z);
                         Vector2 destination = new Vector2(___currentMission.destinationPort.transform.position.x, ___currentMission.destinationPort.transform.position.z);
-                        //float heading = Vector3.SignedAngle(___currentMission.originPort.transform.position, ___currentMission.destinationPort.transform.position, Vector3.up);
+
                         float heading = Vector2.SignedAngle((origin - destination).normalized, Vector2.down);
-                        if (heading < 0f) heading += 360;                        //___locationText.text = "(map unavailable)\n\nheading: " + heading.ToString();
-                        string text = "(map unavailable)\n\napproximate location:\n" +
-                                ___currentMission.distance.ToString("0") + " miles\n" +
-                                RadRefinements.CompassRose.GetCardinalDirection(heading, Main.cardinalPrecisionLevel.Value).ToLower() +
-                                "\n";
+                        if (heading < 0f) heading += 360;
+                        string cardinalHeading = RadRefinements.CompassRose.GetCardinalDirection(heading, Main.cardinalPrecisionLevel.Value).ToLower();
+
+                        string text = $"(map unavailable)\n\napproximate heading:\n{cardinalHeading}\n";
 
                         ___locationText.text = text;
                     }
@@ -393,7 +401,7 @@ namespace ScrambledSeas
 
             private static void Prefix(ref Region ___currentTargetRegion, ref Transform ___player)
             {
-                if (Main.pluginEnabled && !Main.borderExpander)
+                if (Main.pluginEnabled && !Main.borderExpander && GameState.playing)
                 {
                     if (regionUpdateCooldown <= 0f)
                     {
