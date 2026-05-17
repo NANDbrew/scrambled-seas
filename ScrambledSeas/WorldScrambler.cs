@@ -2,7 +2,6 @@
 using JetBrains.Annotations;
 using OculusSampleFramework;
 using OVRSimpleJSON;
-//using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -12,7 +11,6 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
-using UnityEngine.Profiling;
 
 namespace ScrambledSeas
 {
@@ -410,6 +408,8 @@ namespace ScrambledSeas
         { 
             try
             {
+                Tuple<string[], string[]> prettyNames = ReadIslandNames("islandNames.json");
+
                 JSONObject json = new JSONObject();
                     
                 JSONNode empty = new JSONArray();
@@ -434,39 +434,22 @@ namespace ScrambledSeas
                         string point_color = "bluepoint";
                         string island_name = "";
                         bool skip = false;
+                        int index = Int32.Parse(name_array[1]);
 
-                        if (name_array.Length < 3)
+                        if (prettyNames != null && index < prettyNames.Item1.Length && prettyNames.Item1[index] != null)
                         {
-/*                            if (name_array[1] == "36")
-                            {
-                                point_color = "bluepoint";
-                                island_name = "island 36";
-                                skip = true;
-                            }
-*//*                                else if (name_array[1] == "42")
-                            {
-                                point_color = "yellowpoint";
-                                island_name = "island 42";
-                                skip = true;
-                            }*//*
-                            else
-                            {*/
-                                island_name = name;
-                                skip = true;
-                            //}
+                            point_color = prettyNames.Item2[index];
+                            island_name = prettyNames.Item1[index];
+                            skip = true;
+                        }
+                        else if (name_array.Length < 3)
+                        {
+                            island_name = name;
+                            skip = true;
                         }
                         else if (arch_colors.ContainsKey(name_array[2]))
                         {
                             point_color = arch_colors[name_array[2]];
-                        }
-                        else
-                        {
-                            point_color = "bluepoint";
-                            if (name_array[2] == "rock")
-                            {
-                                island_name = "Rock Of Despair";
-                                skip = true;
-                            }
                         }
 
                         if (!skip)
@@ -481,9 +464,9 @@ namespace ScrambledSeas
                             {
                                 island_name = name_array[3];
                             }
+                            island_name = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(island_name.ToLower());
                         }
-                        island_name = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(island_name.ToLower());
-                        var isle = Refs.islands[Int32.Parse(name_array[1])].GetComponent<IslandHorizon>();
+                        var isle = Refs.islands[index]?.GetComponent<IslandHorizon>();
                         Transform center = isle.overrideCenter != null ? isle.overrideCenter.transform : isle.transform;
                         //Vector3 latlon = FloatingOriginManager.instance.GetGlobeCoords(GameObject.Find(name).transform);
                         Vector3 latlon = FloatingOriginManager.instance.GetGlobeCoords(center);
@@ -642,6 +625,7 @@ namespace ScrambledSeas
 
         }*/
 
+
         public static void WriteRegionDefs(List<RegionDefinition> regions)
         {
             JSONArray arr = new JSONArray();
@@ -694,8 +678,34 @@ namespace ScrambledSeas
 
             return output;
         }
+
+
+        public static Tuple<string[], string[]> ReadIslandNames(string filename)
+        {
+            string filepath = Path.Combine(Directory.GetParent(Main.instance.Info.Location).FullName, filename);
+            if (!File.Exists(filepath)) { Debug.LogError("missing file"); return null; }
+
+            string json = File.ReadAllText(filepath);
+            var array = JSON.Parse(json).AsArray;
+
+            string[] names = new string[Refs.islands.Length];
+            string[] colors = new string[names.Length];
+
+            int index = 0;
+            foreach (var island in array)
+            {
+                var f = island.Value.Linq;
+                foreach (var f2 in f)
+                {
+                    if (f2.Key == "index") index = int.Parse(f2.Value);
+                    if (index > names.Length) continue;
+                    else if (f2.Key == "name") names[index] = f2.Value;
+                    else if (f2.Key == "colour") colors[index] = f2.Value;
+                }
+            }
+
+            return new Tuple<string[], string[]>(names, colors);
+        }
     }
-
-
 
 }
