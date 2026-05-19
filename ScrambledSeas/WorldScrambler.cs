@@ -342,6 +342,7 @@ namespace ScrambledSeas
                 recovery.gameObject.transform.Translate(islandOffsets[homeIndx], Space.World);
             }
 
+            #region fish_handling
             //Resize local fish regions
             LocalFishesRegion[] localFishesRegions = (LocalFishesRegion[])AccessTools.Field(typeof(OceanFishes), "localFishesRegions").GetValue(OceanFishes.instance);
             float fishRegionScale = Main.GetArchipelagoScale();
@@ -350,6 +351,28 @@ namespace ScrambledSeas
                 localFishesRegions[f].innerRadius *= fishRegionScale;
                 localFishesRegions[f].outerRadius *= fishRegionScale;
             }
+
+            //Spread ocean fish latitudes
+            //string logText = "old fish latitudes = ";
+            float[] peakLatitudes = (float[])AccessTools.Field(typeof(OceanFishes), "peakLatitude").GetValue(OceanFishes.instance);
+            float average = peakLatitudes[0];
+            for (int i = 1; i < peakLatitudes.Length; i++)
+            {
+                //logText += peakLatitudes[i] + ", ";
+                average += peakLatitudes[i];
+            }
+            average /= peakLatitudes.Length;
+            //Debug.Log(logText + "-- average = " + average);
+            float scale = (Main.saveContainer.worldLatMax - Main.saveContainer.worldLatMin) / 20f;
+            //logText = "new fish latitudes = ";
+            for (int i = 1; i < peakLatitudes.Length; i++)
+            {
+                peakLatitudes[i] = (peakLatitudes[i] - average) * scale + average;
+                //logText += peakLatitudes[i] + ", ";
+            }
+            //Debug.Log(logText + "-- average = " + average);
+
+            #endregion
 
             if (Main.eastwindFix.Value)
             {
