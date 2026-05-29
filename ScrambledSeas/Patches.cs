@@ -478,6 +478,19 @@ namespace ScrambledSeas
 
         }
 
+        [HarmonyPatch(typeof(ShipItemFoldable), "OnLoad")]
+        public static class MapPatch
+        {
+            public static void Prefix(ShipItemFoldable __instance)
+            {
+                if (!Main.pluginEnabled) return;
+                if (AssetTools.mapTextures.TryGetValue(__instance.GetPrefabIndex(), out var mapTexture))
+                {
+                    __instance.transform.GetChild(0).GetComponent<Renderer>().material.mainTexture = mapTexture;
+                }
+            }
+        }
+
         [HarmonyPatch(typeof(Shopkeeper), "GetLocalPrice")]
         public static class ShopkeeperPatch
         {

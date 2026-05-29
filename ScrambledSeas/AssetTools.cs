@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using BepInEx;
+using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 namespace ScrambledSeas
@@ -7,6 +9,9 @@ namespace ScrambledSeas
     {
         public static AssetBundle bundle;
         const string assetFile = "scrambledseas.assets";
+
+        internal static Dictionary<int, Texture2D> mapTextures;
+
 
         public static void LoadAssetBundles()    //Load the bundle
         {
@@ -20,6 +25,21 @@ namespace ScrambledSeas
                 Debug.LogError(Main.NAME + ": Bundle not loaded! Did you place it in the correct folder?");
             }
             else { Debug.Log(Main.NAME + ": loaded bundle " + bundle.ToString()); }
+
+            // blank maps
+            string[] mapPaths = { Path.Combine(dataPath, "map_ocean.png"), Path.Combine(dataPath, "map_alankh.png"), Path.Combine(dataPath, "map_emerald.png"), Path.Combine(dataPath, "map_aestrin.png"), Path.Combine(dataPath, "map_alankh.png") };
+            mapTextures = new Dictionary<int, Texture2D>();
+            for (int m = 0; m < mapPaths.Length; m++)
+            {
+                if (!File.Exists(mapPaths[m])) { continue; }
+                //if (PrefabsDirectory.instance.directory[m + 115] == null) { continue; }
+
+                Texture2D tex = new Texture2D(1, 1);
+                tex.LoadImage(File.ReadAllBytes(mapPaths[m]));
+                mapTextures[m + 115] = tex;
+                //PrefabsDirectory.instance.directory[m + 115].transform.GetChild(0).GetComponent<Renderer>().material.mainTexture = tex;
+
+            }
         }
     }
 }
