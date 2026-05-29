@@ -308,7 +308,6 @@ namespace ScrambledSeas
         {
             private static void Postfix(ref float __result, PortRegion region)
             {
-                //Islands tend to be farther apart in this mod. Ensure that the returned value is at least 300 miles
                 if (Main.pluginEnabled)
                 {
                     float archScale = Mathf.Max(Main.GetArchipelagoScale(), 1);
@@ -316,45 +315,15 @@ namespace ScrambledSeas
 
                     __result *= (archScale * worldScale);
 
-/*                    int level = PlayerReputation.GetRepLevel(region);
-                    if (level == 0)
-                    {
-                        __result = 100f * archScale;
-                        return;
-                    }
-
-                    if (level == 1)
-                    {
-                        __result = Mathf.Max(100f * archScale, 800f * worldScale);
-                        return;
-                    }
-
-                    if (level < 5)
-                    {
-                        __result = Mathf.Max(200f * archScale, 1600f * worldScale);
-                        return;
-                    }
-
-                    __result = 999999f;*/
                 }
             }
-            //private static void Postfix(ref float __result)
-            //{
-            //    //Islands tend to be farther apart in this mod. Ensure that the returned value is at least 300 miles
-            //    if (Main.pluginEnabled)
-            //    {
 
-            //        float scale = Mathf.Max(1, Main.saveContainer.islandSpread / 5000, Main.saveContainer.minArchipelagoSeparation / 20000);
-
-            //        __result *= scale;
-            //    }
-            //}
         }
 
         [HarmonyPatch(typeof(MissionDetailsUI), "UpdateMap")]
         private static class MissionMapPatch
         {
-            private static void Postfix(ref Mission ___currentMission, ref Renderer ___mapRenderer, ref TextMesh ___locationText)
+            private static void Postfix(ref Mission ___currentMission, ref Renderer ___mapRenderer, ref TextMesh ___locationText, TextMesh ___distance, TextMesh ___goldPerMile)
             {
                 if (Main.pluginEnabled)
                 {
@@ -388,7 +357,11 @@ namespace ScrambledSeas
                     {
                         ___locationText.text = "(map unavailable)\n\nlocation unknown\n";
                     }
-                    
+                    if (Main.hideMissionDistance.Value)
+                    {
+                        ___distance.text = "";
+                        ___goldPerMile.text = "";
+                    }
                 }
 
             }

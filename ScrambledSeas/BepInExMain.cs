@@ -35,6 +35,7 @@ namespace ScrambledSeas
         internal static ConfigEntry<DestinationHint> destinationHint;
         internal static ConfigEntry<int> cardinalPrecisionLevel;
         internal static ConfigEntry<int> coordinatePrecisionLevel;
+        internal static ConfigEntry<bool> hideMissionDistance;
 
         public static bool borderExpander;
         public static bool loadExternal = false;
@@ -61,6 +62,8 @@ namespace ScrambledSeas
             destinationHint = Config.Bind("Settings", "Destination Hint", DestinationHint.None, new ConfigDescription(""));
             cardinalPrecisionLevel = Config.Bind("Settings", "Number of ordinal directions", 16, new ConfigDescription("Number of ordinal heading directions given in the mission screen.", new AcceptableValueList<int>(8, 16, 32)));
             coordinatePrecisionLevel = Config.Bind("Settings", "Coordinate precision", 0, new ConfigDescription("Number of decimal places in destination coordinates", new AcceptableValueRange<int>(0, 2)));
+            hideMissionDistance = Config.Bind("Settings", "Hide mission distance", false, new ConfigDescription("Intended for use with Destination Hint"));
+
             borderExpander = BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.nandbrew.borderexpander");
 
             AssetTools.LoadAssetBundles();
