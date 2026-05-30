@@ -401,17 +401,17 @@ namespace ScrambledSeas
             {
                 scramblerUI = UnityEngine.GameObject.Instantiate(AssetTools.bundle.LoadAsset<GameObject>("Assets/ScrambledSeas/ScramblerUI.prefab"), ___chooseIslandUI.transform).transform;
                 scramblerUI.transform.Translate(0f, 0.15f, 0f, Space.Self);
-                var oldCheckbox = scramblerUI.Find("checkbox").GetComponent<GPButtonSettingsCheckbo>();
+                var oldCheckbox = scramblerUI.Find("checkbox");
                 var newCheckBox = oldCheckbox.gameObject.AddComponent<GPButtonCheckBox>();
-                newCheckBox.text = oldCheckbox.text;
+                newCheckBox.text = oldCheckbox.GetChild(0).GetComponent<TextMesh>();
                 newCheckBox.type = 0;
                 newCheckBox.extraToggleOn = scramblerUI.Find("controls").gameObject;
                 Component.Destroy(oldCheckbox);
                 newCheckBox.Initialize();
 
-                var oldCheckbox2 = scramblerUI.Find("controls/checkbox (1)").GetComponent<GPButtonSettingsCheckbo>();
+                var oldCheckbox2 = scramblerUI.Find("controls/checkbox (1)");
                 var newCheckBox2 = oldCheckbox2.gameObject.AddComponent<GPButtonCheckBox>();
-                newCheckBox2.text = oldCheckbox2.text;
+                newCheckBox2.text = oldCheckbox2.GetChild(0).GetComponent<TextMesh>();
                 newCheckBox2.type = 1;
                 newCheckBox2.extraToggleOff = scramblerUI.Find("controls/sliders").gameObject;
                 newCheckBox2.extraToggleOn = scramblerUI.Find("controls/load_options").gameObject;
@@ -427,22 +427,22 @@ namespace ScrambledSeas
                 Component.Destroy(oldCheckbox3);
                 newCheckBox3.Initialize();*/
 
-                var oldSlider1 = scramblerUI.Find("controls/sliders/slider world scale").GetComponent<GPButtonSliderVolume>();
+                var oldSlider1 = scramblerUI.Find("controls/sliders/slider world scale");
 
-                var oldSlider2 = scramblerUI.Find("controls/sliders/slider arch scale").GetComponent<GPButtonSliderVolume>();
+                var oldSlider2 = scramblerUI.Find("controls/sliders/slider arch scale");
 
                 var newSlider1 = oldSlider1.gameObject.AddComponent<GPButtonSliderScale>();
-                newSlider1.text = oldSlider1.text;
-                newSlider1.extraText = oldSlider1.extraText;
-                newSlider1.bar = oldSlider1.bar;
+                newSlider1.text = oldSlider1.Find("text scale").GetComponent<TextMesh>();
+                newSlider1.extraText = oldSlider1.Find("text world scale").GetComponent<TextMesh>();
+                //newSlider1.bar = "|";
                 newSlider1.type = 0;
                 Component.Destroy(oldSlider1);
                 newSlider1.Initialize();
 
                 var newSlider2 = oldSlider2.gameObject.AddComponent<GPButtonSliderScale>();
-                newSlider2.text = oldSlider2.text;
-                newSlider2.extraText = oldSlider2.extraText;
-                newSlider2.bar = oldSlider2.bar;
+                newSlider2.text = oldSlider2.Find("text scale").GetComponent<TextMesh>();
+                newSlider2.extraText = oldSlider2.Find("text arch scale").GetComponent<TextMesh>();
+                //newSlider2.bar = "|";
                 newSlider2.type = 1;
                 Component.Destroy(oldSlider2);
                 newSlider2.Initialize();

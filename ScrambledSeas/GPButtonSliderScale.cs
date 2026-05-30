@@ -14,7 +14,7 @@ namespace ScrambledSeas
         public int type = 0;
         public TextMesh text;
 
-        public string bar;
+        public string bar = "▋";
 
         public TextMesh extraText;
 
@@ -60,12 +60,12 @@ namespace ScrambledSeas
 
         private void SetBar(float val)
         {
-            SetBarDirect(Mathf.RoundToInt(val * 20));
+            SetBarDirect(Mathf.RoundToInt(val * 35));
         }
 
         private void SetValue(float val)
         {
-            var step = (max - min) / 20;
+            var step = (max - min) / 35;
             val = Mathf.Round(val / step) * step;
             val = (float)Math.Round(val, 1);
 
