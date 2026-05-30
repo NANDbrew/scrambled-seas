@@ -1,9 +1,7 @@
-﻿#if BepInEx
-using BepInEx;
+﻿using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
-//using SailwindModdingHelper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -91,4 +89,3 @@ namespace ScrambledSeas
         Coords = 2,
     }
 }
-#endif
