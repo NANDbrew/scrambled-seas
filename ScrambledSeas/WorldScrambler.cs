@@ -31,7 +31,7 @@ namespace ScrambledSeas
         public static List<RecoveryPort> recoveryArray = new List<RecoveryPort>();
         public static Dictionary<int, bool> marketVisited = new Dictionary<int,bool>();
         public static List<PurchasableBoat> boatArray = new List<PurchasableBoat>();
-        static List<RegionDefinition> regionDefs = new List<RegionDefinition>();
+        public static List<RegionDefinition> regionDefs = new List<RegionDefinition>();
 
         private static int eastwindIndx = 19;
         private static Vector3 eastwindMarketOffset = Vector3.zero;
@@ -605,17 +605,17 @@ namespace ScrambledSeas
             // Oasis
             regionToIslandIdxs.Add(3, new List<int>() { 20, 41, 42 });
             // Happy Bay
-            regionToIslandIdxs.Add(4, new List<int>() { 18 });
+            regionToIslandIdxs.Add(4, new List<int>() { 18, 30 }); // move RoD near HB
             // Chronos
             regionToName.Add(5, "Region Medi East");
             regionToIslandIdxs.Add(5, new List<int>() { 25 });
             bottomToRegion.Add("bottom plane chronos", 5);
             // Fire Fish Lagoon
             regionToName.Add(6, "Region Emerald Lagoon");
-            regionToIslandIdxs.Add(6, new List<int>() { 26, 27, 28, 29, 30, 31 });
+            regionToIslandIdxs.Add(6, new List<int>() { 26, 27, 28, 29, 31 });
             bottomToRegion.Add("island 26 lagoon parent terrain (-1)", 6);
             // Rock of Despair
-            regionToIslandIdxs.Add(7, new List<int>() { 30 });
+            //regionToIslandIdxs.Add(7, new List<int>() { 30 });
             // Hideout
             regionToIslandIdxs.Add(8, new List<int>() { 32 });
 
