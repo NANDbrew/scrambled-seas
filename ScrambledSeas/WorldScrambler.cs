@@ -142,16 +142,16 @@ namespace ScrambledSeas
                     found2.islands.Add(i);
                 }
             }
-
+            if (Main.borderExpander)
+            {
+                Main.saveContainer.borderExpander = 1;
+            }
             setupRan = true;
         }
         public static void Scramble()
         {
             if (!setupRan) Setup();
-            if (Main.borderExpander)
-            {
-                Main.saveContainer.borderExpander = 1;
-            }
+
             #region scrambling
             //Convert stored ints to floats
             float islandSpread = Main.saveContainer.islandSpread;
@@ -377,25 +377,26 @@ namespace ScrambledSeas
             if (Main.eastwindFix.Value)
             {
                 Main.Log("check Markets positions");
+                //marketVisited = new Dictionary<int, bool>();
                 for (int i = 0; i < Port.ports.Length; i++)
                 {
                     if (Port.ports[i] == null) continue;
                     Port port = Port.ports[i];
                     //Main.Log("---");
-                    Vector3 pos = FloatingOriginManager.instance.GetGlobeCoords(port.gameObject.transform);
+                    //Vector3 pos = FloatingOriginManager.instance.GetGlobeCoords(port.gameObject.transform);
                     //Main.Log("market pos: x:" + pos.x + " z: " + pos.z);
-                    pos = FloatingOriginManager.instance.GetGlobeCoords(port.transform);
+                    //Vector3 pos = FloatingOriginManager.instance.GetGlobeCoords(port.transform);
                     //Main.Log("port pos: " + port.GetPortName() + " pos x:" + pos.x + " z: " + pos.z);
 
                     // make a mark for this that it not visited for now;
-                    marketVisited.Add(port.portIndex, false);
+                    marketVisited[port.portIndex] = false;
 
                     if (Main.eastwindFix.Value && port.portIndex == eastwindIndx)
                     {
                         Main.Log("Move Eastwind market to correct position");
                         port.gameObject.transform.SetPositionAndRotation(Refs.islands[19].position, new Quaternion());
                         port.gameObject.transform.Translate(eastwindMarketOffset, Space.World);
-                        pos = FloatingOriginManager.instance.GetGlobeCoords(Refs.islands[19]);
+                        Vector3 pos = FloatingOriginManager.instance.GetGlobeCoords(Refs.islands[19]);
                         Main.Log("move market to " + pos.x + " " + pos.z);
                         pos = FloatingOriginManager.instance.GetGlobeCoords(port.gameObject.transform);
                         Main.Log("market new pos " + pos.x + " " + pos.z);
