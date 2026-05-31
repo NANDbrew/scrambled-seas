@@ -512,5 +512,92 @@ namespace ScrambledSeas
                 }
             }
         }
+
+        [HarmonyPatch(typeof(ShipItemFoldable), "OnLoad")]
+        private static class SaffronMapPatch
+        {
+            private static void Postfix(ShipItemFoldable __instance)
+            {
+                if (!Main.random_Enabled.Value) return;
+                if (__instance.GetPrefabIndex() == 139)
+                {
+                    var source = __instance.transform.GetChild(0);
+                    var lighthouse = GameObject.Instantiate(source, source);
+                    lighthouse.localScale = new Vector3(0.1f, 0.2f, 1);
+                    lighthouse.GetComponent<Renderer>().material.mainTextureScale = new Vector2(0.1f, 0.2f);
+                    lighthouse.GetComponent<Renderer>().material.mainTextureOffset = new Vector2(-0.824f, 0.045f);
+
+                    var mirage = GameObject.Instantiate(lighthouse, source);
+                    mirage.localScale = new Vector3(0.16f, 0.18f, 1);
+                    mirage.GetComponent<Renderer>().material.mainTextureScale = new Vector2(0.16f, 0.18f);
+                    mirage.GetComponent<Renderer>().material.mainTextureOffset = new Vector2(0.51f, 0.165f);
+
+                    var flower = GameObject.Instantiate(lighthouse, source);
+                    flower.localScale = new Vector3(0.22f, 0.22f, 1);
+                    flower.GetComponent<Renderer>().material.mainTextureScale = new Vector2(0.22f, 0.22f);
+                    flower.GetComponent<Renderer>().material.mainTextureOffset = new Vector2(0.69f, 0.785f);
+
+                    var north = GameObject.Instantiate(lighthouse, source);
+                    north.localScale = new Vector3(0.2f, 0.2f, 1);
+                    north.GetComponent<Renderer>().material.mainTextureScale = new Vector2(0.2f, 0.2f);
+                    north.GetComponent<Renderer>().material.mainTextureOffset = new Vector2(0.28f, 0.54f);
+                    north.localPosition = new Vector3(-0.4f, 0.4f, 0);
+
+                    source.GetComponent<Renderer>().enabled = false;
+
+
+                    Vector2[] locs = { SwapYZ(Port.ports[6].transform.position), SwapYZ(Port.ports[32].transform.position), SwapYZ(Port.ports[33].transform.position) };
+
+                    float xMax = 0;
+                    float yMax = 0;
+                    int xBounds1 = 0;
+                    int xBounds2 = 0;
+                    int yBounds1 = 0;
+                    int yBounds2 = 0;
+
+                    for (int t1 = 0; t1 < locs.Length; t1++)
+                    {
+                        for (int t2 = 0; t2 < locs.Length; t2++)
+                        {
+                            if (t1 == t2) continue;
+
+                            float xDist = locs[t1].x - locs[t2].x;
+                            if (xDist > xMax)
+                            {
+                                xMax = xDist;
+                                xBounds1 = t1;
+                                xBounds2 = t2;
+                            }
+
+                            float yDist = locs[t1].y - locs[t2].y;
+                            if (yDist > yMax)
+                            {
+                                yMax = yDist;
+                                yBounds1 = t1;
+                                yBounds2 = t2;
+                            }
+                        }
+                    }
+
+                    Vector2 xyAvg = new Vector2((locs[xBounds1].x + locs[xBounds2].x) / 2, (locs[yBounds1].y + locs[yBounds2].y) / 2);
+                    float div = Mathf.Max(xMax, yMax) * 1.4f;
+
+                    lighthouse.localPosition = (locs[0] - xyAvg) / div;
+                    mirage.localPosition = (locs[1] - xyAvg) / div;
+                    flower.localPosition = (locs[2] - xyAvg) / div;
+
+                    if (Vector2.Distance(lighthouse.localPosition, north.localPosition) < 0.25f || Vector2.Distance(mirage.localPosition, north.localPosition) < 0.25f || Vector2.Distance(flower.localPosition, north.localPosition) < 0.25f)
+                    {
+                        north.gameObject.SetActive(false);
+                        //north.Translate(0.4f, -0.4f, 0f);
+                    }
+                }
+            }
+            private static Vector3 SwapYZ(Vector3 input)
+            {
+                return new Vector3(input.x, input.z, input.y);
+            }
+
+        }
     }
 }

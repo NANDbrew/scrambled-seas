@@ -1,5 +1,4 @@
-﻿using ScrambledSeas;
-using System;
+﻿using System;
 using UnityEngine;
 
 namespace ScrambledSeas
