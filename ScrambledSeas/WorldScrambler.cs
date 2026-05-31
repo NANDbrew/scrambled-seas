@@ -633,22 +633,10 @@ namespace ScrambledSeas
             {
                 regionDefinitions[kv.Value].bottomPlane = kv.Key;
             }
-            //string json = JsonConvert.SerializeObject(regionDefinitions);
-            //File.WriteAllText(path, json);
-
-
-
 
             #endregion
             return regionDefinitions;
         }
-/*        private static void ExportDefs(List<RegionDefinition> regionDefinitions)
-        {
-            string json = JsonConvert.SerializeObject(regionDefinitions);
-            File.WriteAllText(path, json);
-
-        }*/
-
 
         public static void WriteRegionDefs(List<RegionDefinition> regions)
         {
@@ -669,7 +657,7 @@ namespace ScrambledSeas
             }
             //Debug.Log(arr.ToString());
             string json2 = arr.ToString();
-            File.WriteAllText(Path.Combine(Directory.GetParent(Main.instance.Info.Location).FullName, $"regions.json"), arr.ToString());
+            File.WriteAllText(Path.Combine(Directory.GetParent(Main.instance.Info.Location).FullName, $"regions.json"), arr.ToString(4));
         }
         public static List<RegionDefinition> ReadRegionDefs(string path)
         {
