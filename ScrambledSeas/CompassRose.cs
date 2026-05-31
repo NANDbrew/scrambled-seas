@@ -1,10 +1,20 @@
-﻿using System;
+﻿using ScrambledSeas;
+using System;
+using UnityEngine;
 
-namespace RadRefinements
+namespace ScrambledSeas
 {
     // "Borrowed" from RadRefinements by Raddude aka bryon82 per MIT license https://github.com/bryon82/SailwindRadRefinements/
     public static class CompassRose
     {
+        public static float GetHeadingDegrees(Vector3 origin, Vector3 target)
+        {
+            float heading = Vector2.SignedAngle((new Vector2(origin.x, origin.z) - new Vector2(target.x, target.z)).normalized, Vector2.down);
+            if (heading < 0f) heading += 360;
+            return heading;
+
+        }
+
         public static string GetCardinalDirection(float degrees, int precision)
         {
             if (precision == 4)

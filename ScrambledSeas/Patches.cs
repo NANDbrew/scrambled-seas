@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -342,12 +343,7 @@ namespace ScrambledSeas
                     }
                     else if (Main.destinationHint.Value == DestinationHint.Heading)
                     {
-                        Vector2 origin = new Vector2(___currentMission.originPort.transform.position.x, ___currentMission.originPort.transform.position.z);
-                        Vector2 destination = new Vector2(___currentMission.destinationPort.transform.position.x, ___currentMission.destinationPort.transform.position.z);
-
-                        float heading = Vector2.SignedAngle((origin - destination).normalized, Vector2.down);
-                        if (heading < 0f) heading += 360;
-                        string cardinalHeading = RadRefinements.CompassRose.GetCardinalDirection(heading, Main.cardinalPrecisionLevel.Value).ToLower();
+                        string cardinalHeading = CompassRose.GetCardinalDirection(CompassRose.GetHeadingDegrees(___currentMission.originPort.transform.position, ___currentMission.destinationPort.transform.position), Main.cardinalPrecisionLevel.Value).ToLower();
 
                         string text = $"(map unavailable)\n\napproximate heading:\n{cardinalHeading}\n";
 
@@ -493,6 +489,28 @@ namespace ScrambledSeas
             }
 
             return closestRegion;
+        }
+
+        [HarmonyPatch(typeof(TavernRumorsDude), "OnTriggerEnter")]
+        private static class TavernRumorsPatch
+        {
+            private static void Postfix(Collider other, TavernRumorsDude __instance)
+            {
+                if (!Main.random_Enabled.Value) return;
+                if (other.CompareTag("Player") && __instance.portIndex == 6)
+                {
+                    var targetIsland = Refs.islands[32];
+                    Vector3 target = targetIsland.GetComponent<IslandHorizon>().overrideCenter?.position ?? targetIsland.transform.position;
+                    float heading = CompassRose.GetHeadingDegrees(Port.ports[__instance.portIndex].transform.position, target);
+                    string cardinalHeading = CompassRose.GetCardinalDirection(heading, Main.cardinalPrecisionLevel.Value).ToLower();
+
+                    for (int i = 0; i < __instance.specialRumors.Length; i++)
+                    {
+                        __instance.specialRumors[i] = __instance.specialRumors[i].Replace("towards the setting sun", cardinalHeading);
+                    }
+
+                }
+            }
         }
     }
 }
