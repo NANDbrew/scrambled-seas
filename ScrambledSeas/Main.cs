@@ -2,9 +2,10 @@
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
-using SailwindConsole;
 using System.Reflection;
-
+#if DEBUG
+using SailwindConsole;
+#endif
 
 namespace ScrambledSeas
 {
