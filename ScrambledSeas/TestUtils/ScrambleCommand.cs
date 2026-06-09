@@ -1,6 +1,7 @@
 ﻿#if DEBUG
 using SailwindConsole;
 using SailwindConsole.Commands;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -74,10 +75,31 @@ namespace ScrambledSeas
             }
 
             ModConsoleLog.Log(Main.instance.Info, "Scrambling world with seed " + save.worldScramblerSeed);
+
+            Vector3[] sourceArchOffsets = new Vector3[Main.saveContainer.archOffsets.Length]; 
+            Array.Copy(Main.saveContainer.archOffsets, sourceArchOffsets, Main.saveContainer.archOffsets.Length);
+
+            Vector3[] sourceIslandOffsets = new Vector3[Main.saveContainer.islandOffsets.Length];
+            Array.Copy(Main.saveContainer.islandOffsets, sourceIslandOffsets, Main.saveContainer.islandOffsets.Length);
+
             Main.saveContainer = save;
 
             WorldScrambler.Scramble();
+
+            for (int a = 0; a < Main.saveContainer.archOffsets.Length; a++)
+            {
+                Main.saveContainer.archOffsets[a] -= sourceArchOffsets[a];
+            }
+            for (int i = 0; i < Main.saveContainer.islandOffsets.Length; i++)
+            {
+                Main.saveContainer.islandOffsets[i] -= sourceIslandOffsets[i];
+            }
+
             WorldScrambler.Move();
+
+            Main.saveContainer.version = WorldScrambler.version;
+            SaveFileHelper.Save(Main.saveContainer, "ScrambledSeas");
+
         }
 
     }
