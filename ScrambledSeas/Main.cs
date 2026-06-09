@@ -18,7 +18,7 @@ namespace ScrambledSeas
     {
         public const string GUID = "com.nandbrew.scrambledseas";
         public const string NAME = "Scrambled Seas: NAND edition";
-        public const string VERSION = "7.2.0";
+        public const string VERSION = "7.2.1";
 
         internal const int defaultMinArchipelagoSeparation = 30000;
         internal const int defaultIslandSpread = 5000;
