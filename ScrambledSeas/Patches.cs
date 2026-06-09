@@ -447,19 +447,6 @@ namespace ScrambledSeas
 
         }
 
-        [HarmonyPatch(typeof(ShipItemFoldable), "OnLoad")]
-        public static class MapPatch
-        {
-            public static void Prefix(ShipItemFoldable __instance)
-            {
-                if (!Main.pluginEnabled) return;
-                if (AssetTools.mapTextures.TryGetValue(__instance.GetPrefabIndex(), out var mapTexture))
-                {
-                    __instance.transform.GetChild(0).GetComponent<Renderer>().material.mainTexture = mapTexture;
-                }
-            }
-        }
-
         [HarmonyPatch(typeof(Shopkeeper), "GetLocalPrice")]
         public static class ShopkeeperPatch
         {
@@ -496,7 +483,7 @@ namespace ScrambledSeas
         {
             private static void Postfix(Collider other, TavernRumorsDude __instance)
             {
-                if (!Main.random_Enabled.Value) return;
+                if (!Main.pluginEnabled) return;
                 if (other.CompareTag("Player") && __instance.portIndex == 6)
                 {
                     var targetIsland = Refs.islands[32];
@@ -514,11 +501,18 @@ namespace ScrambledSeas
         }
 
         [HarmonyPatch(typeof(ShipItemFoldable), "OnLoad")]
-        private static class SaffronMapPatch
+        private static class MapPatches
         {
             private static void Postfix(ShipItemFoldable __instance)
             {
-                if (!Main.random_Enabled.Value) return;
+                //if (!Main.random_Enabled.Value) return;
+
+                if (!Main.pluginEnabled) return;
+                if (AssetTools.mapTextures.TryGetValue(__instance.GetPrefabIndex(), out var mapTexture))
+                {
+                    __instance.transform.GetChild(0).GetComponent<Renderer>().material.mainTexture = mapTexture;
+                }
+
                 if (__instance.GetPrefabIndex() == 139)
                 {
                     var source = __instance.transform.GetChild(0);
