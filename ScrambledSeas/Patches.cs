@@ -343,6 +343,10 @@ namespace ScrambledSeas
                     }
                     else if (Main.destinationHint.Value == DestinationHint.Heading)
                     {
+                        //float distance = (___currentMission.distance / 90) * (Sun.sun.initialTimescale / 0.008f);
+                        //string distanceText = $"{Mathf.RoundToInt(distance)} {(Mathf.RoundToInt(distance) == 1 ? "day" : "days")}";
+
+
                         string cardinalHeading = CompassRose.GetCardinalDirection(CompassRose.GetHeadingDegrees(___currentMission.originPort.transform.position, ___currentMission.destinationPort.transform.position), Main.cardinalPrecisionLevel.Value).ToLower();
 
                         string text = $"(map unavailable)\n\napproximate heading:\n{cardinalHeading}\n";
@@ -402,7 +406,7 @@ namespace ScrambledSeas
                 newCheckBox.text = oldCheckbox.GetChild(0).GetComponent<TextMesh>();
                 newCheckBox.type = 0;
                 newCheckBox.extraToggleOn = scramblerUI.Find("controls").gameObject;
-                Component.Destroy(oldCheckbox);
+                
                 newCheckBox.Initialize();
 
                 var oldCheckbox2 = scramblerUI.Find("controls/checkbox (1)");
@@ -411,7 +415,7 @@ namespace ScrambledSeas
                 newCheckBox2.type = 1;
                 newCheckBox2.extraToggleOff = scramblerUI.Find("controls/sliders").gameObject;
                 newCheckBox2.extraToggleOn = scramblerUI.Find("controls/load_options").gameObject;
-                Component.Destroy(oldCheckbox2);
+                
                 newCheckBox2.Initialize();
 
 /*                var oldCheckbox3 = scramblerUI.Find("controls/load_options/seed_only_box").GetComponent<GPButtonSettingsCheckbo>();
@@ -432,7 +436,7 @@ namespace ScrambledSeas
                 newSlider1.extraText = oldSlider1.Find("text world scale").GetComponent<TextMesh>();
                 //newSlider1.bar = "|";
                 newSlider1.type = 0;
-                Component.Destroy(oldSlider1);
+                
                 newSlider1.Initialize();
 
                 var newSlider2 = oldSlider2.gameObject.AddComponent<GPButtonSliderScale>();
@@ -440,7 +444,7 @@ namespace ScrambledSeas
                 newSlider2.extraText = oldSlider2.Find("text arch scale").GetComponent<TextMesh>();
                 //newSlider2.bar = "|";
                 newSlider2.type = 1;
-                Component.Destroy(oldSlider2);
+                
                 newSlider2.Initialize();
 
             }
