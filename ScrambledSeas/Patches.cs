@@ -400,7 +400,8 @@ namespace ScrambledSeas
             private static void Postfix(GameObject ___chooseIslandUI)
             {
                 scramblerUI = UnityEngine.GameObject.Instantiate(AssetTools.bundle.LoadAsset<GameObject>("Assets/ScrambledSeas/ScramblerUI.prefab"), ___chooseIslandUI.transform).transform;
-                scramblerUI.transform.Translate(0f, 0.15f, 0f, Space.Self);
+                //scramblerUI.transform.Translate(0f, 0.15f, 0f, Space.Self);
+                //scramblerUI.transform.localPosition = new Vector3(scramblerUI.transform.localPosition.x, 0.14f, scramblerUI.transform.localPosition.z);
                 var oldCheckbox = scramblerUI.Find("checkbox");
                 var newCheckBox = oldCheckbox.gameObject.AddComponent<GPButtonCheckBox>();
                 newCheckBox.text = oldCheckbox.GetChild(0).GetComponent<TextMesh>();

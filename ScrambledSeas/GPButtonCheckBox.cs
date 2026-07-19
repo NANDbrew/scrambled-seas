@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace ScrambledSeas
 {
@@ -22,16 +23,23 @@ namespace ScrambledSeas
         public GameObject extraToggleOff;
 
         public Material offMat;
-
         private Material onMat;
 
+        public Transform menu;
+        private Vector3 menuOpenPos;
+        private Vector3 menuClosedPos;
 
+        private JuiceboxTween tweenType = JuiceboxTween.quadraticInOut;
 
         public void Initialize()
         {
             if (type == 0)
             {
                 on = Main.random_Enabled.Value;
+                menu = transform.parent;
+                menuClosedPos = menu.localPosition;
+                menuOpenPos = new Vector3(menuClosedPos.x, menuClosedPos.y + 0.6f, menuClosedPos.z);
+
             }
             else if (type == 1)
             {
@@ -47,6 +55,11 @@ namespace ScrambledSeas
 
         }
 
+        public void OnEnable()
+        {
+            UpdateButton();
+        }
+
         private void UpdateButton()
         {
             if (error)
@@ -55,38 +68,25 @@ namespace ScrambledSeas
             }
             else
             {
-                if (on)
-                {
-                    text.text = "X";
-                }
-                else
-                {
-                    text.text = "";
-                }
+                text.text = on ? "X" : "";
             }
             if (offMat != null)
             {
+                GetComponent<Renderer>().sharedMaterial = on ? onMat : offMat;
+            }
+            extraToggleOn?.SetActive(on);
+            extraToggleOff?.SetActive(!on);
+
+            if (type == 0)
+            {
+                Juicebox.juice.TweenLocalPosition(menu.gameObject, on ? menuOpenPos : menuClosedPos, 0.2f, tweenType);
+            }
+            else if (type == 1)
+            {
                 if (on)
                 {
-                    GetComponent<Renderer>().sharedMaterial = onMat;
+                    LoadSave();
                 }
-                else
-                {
-                    GetComponent<Renderer>().sharedMaterial = offMat;
-                }
-            }
-            SwapToggles(on);
-        }
-
-        public void SwapToggles(bool on)
-        {
-            if (extraToggleOn != null)
-            {
-                extraToggleOn.SetActive(on);
-            }
-            if (extraToggleOff != null)
-            {
-                extraToggleOff.SetActive(!on);
             }
         }
 
@@ -100,11 +100,6 @@ namespace ScrambledSeas
             else if (type == 1)
             {
                 Main.loadExternal = on;
-                if (on)
-                {
-                    //Main.saveScrambleExternal.Value = on;
-                    LoadSave();
-                }
             }
         }
 
@@ -116,16 +111,6 @@ namespace ScrambledSeas
             UpdateButton();
        
         }
-
-/*        public void OnEnable()
-        {
-            if (type == 1 && on)
-            {
-                LoadSave();
-            }
-
-            UpdateButton();
-        }*/
 
         public void LoadSave()
         {
