@@ -10,6 +10,8 @@ NANDbrew edition
 - save can be put in a file for manual editing of island positions
   - these are offsets in meters from the vanilla positions
 - includes vitalijbeam's JSON export for MoffKalast map
+- console mod integration (pre-release)
+  - see below for commands and usages
 
 ## Settings
 - randomEN
@@ -35,3 +37,14 @@ NANDbrew edition
 - Decimal Precision
   - Number of decimal places in destination coordinates
   - Accepts 0, 1 or 2
+
+## Console Commands (pre-release)
+- GetScrambleInfo
+  - Show scramble data, such as world seed, scale, lat/lon range, etc.
+- GetWorldStats
+  - Show distance stats for islands and archipelagos
+- TestMissionDist
+  - Test mission availability/count for your current reputation level. Use with SetLevel from NANDCommand for most complete info
+  - usage: TestMissionDist [port or region]
+  - uses last visited port if unspecified
+  - alias: TMD
