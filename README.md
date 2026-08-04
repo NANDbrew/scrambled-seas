@@ -45,6 +45,12 @@ NANDbrew edition
   - Show distance stats for islands and archipelagos
 - TestMissionDist
   - Test mission availability/count for your current reputation level. Use with SetLevel from NANDCommand for most complete info
-  - usage: TestMissionDist [port or region]
+  - usage: `TestMissionDist [port or region]`
   - uses last visited port if unspecified
-  - alias: TMD
+  - alias: `TMD`
+- Scramble
+  - Scramble the world with ScrambledSeas. FOR TESTING ONLY!
+ - usage: `Scramble <world scale> <archipelago scale> [seed] [borderExpander(-be, +be)]`
+ - `+be` = scramble as if BorderExpander is installed
+ - `-be` = scramble as if BorderExpander is **not** installed
+
