@@ -23,6 +23,7 @@ namespace ScrambledSeas
 
         public void Initialize()
         {
+            //GetComponent<BoxCollider>().size = new Vector3(1, 1, 0.0001f);
             //bar = text.text[0].ToString();
             if (type == 0) max = Main.borderExpander ? 4 : 1;
             else if (type == 1) max = Main.borderExpander ? 4 : 3;
@@ -33,19 +34,19 @@ namespace ScrambledSeas
             SetBar(Mathf.InverseLerp(min, max, value));
             SetValue(value);
         }
+
         public override void OnActivateHit(RaycastHit hit)
         {
             UISoundPlayer.instance.PlayUISound(UISounds.buttonClick, 1f, 1.4f);
-            Vector3 point = hit.point;
-            float num = base.transform.InverseTransformPoint(point).x / base.transform.localScale.x;
-            num *= 1.2f;
-            num += 0.5f;
+            float linearPoint = base.transform.InverseTransformPoint(hit.point).x;
+            linearPoint *= 1.1f;
+            linearPoint += 0.5f;
 
-            num = Mathf.Clamp01(num);
+            linearPoint = Mathf.Clamp01(linearPoint);
 
-            var val = Mathf.Lerp(min, max, num);
+            var val = Mathf.Lerp(min, max, linearPoint);
 
-            SetBar(num);
+            SetBar(linearPoint);
             SetValue(val);
         }
 
