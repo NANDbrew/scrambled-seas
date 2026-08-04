@@ -1,5 +1,4 @@
-﻿#if DEBUG
-using SailwindConsole;
+﻿using SailwindConsole;
 using SailwindConsole.Commands;
 using System.Collections.Generic;
 using System.Linq;
@@ -163,4 +162,3 @@ namespace ScrambledSeas
         }
     }
 }
-#endif

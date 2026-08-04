@@ -1,11 +1,6 @@
-﻿#if DEBUG
-using SailwindConsole;
+﻿using SailwindConsole;
 using SailwindConsole.Commands;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using UnityEngine;
 
 namespace ScrambledSeas
 {
@@ -27,6 +22,8 @@ namespace ScrambledSeas
             var scramble = Main.saveContainer;
             string text = $"Scrambler data, version {scramble.version}:";
             text += $"\n{tabs}seed: {scramble.worldScramblerSeed}";
+            text += $"\n{tabs}world scale: {Main.GetWorldScale()}";
+            text += $"\n{tabs}archipelago scale: {Main.GetArchipelagoScale()}";
             text += $"\n{tabs}island spread: {scramble.islandSpread}";
             text += $"\n{tabs}min island separation: {scramble.minIslandSeparation}";
             text += $"\n{tabs}min archipelago distance: {scramble.minArchipelagoSeparation}";
@@ -43,4 +40,3 @@ namespace ScrambledSeas
         
     }
 }
-#endif

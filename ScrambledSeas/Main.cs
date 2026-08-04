@@ -3,17 +3,15 @@ using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
 using System.Reflection;
-#if DEBUG
+using BepInEx.Bootstrap;
 using SailwindConsole;
-#endif
 
 namespace ScrambledSeas
 {
     [BepInPlugin(GUID, NAME, VERSION)]
     [BepInDependency("com.nandbrew.borderexpander", BepInDependency.DependencyFlags.SoftDependency)]
-#if DEBUG
-    [BepInDependency("com.app24.sailwindconsole", "1.0.1")]
-#endif
+    [BepInDependency("com.app24.sailwindconsole", BepInDependency.DependencyFlags.SoftDependency)]
+
     public class Main : BaseUnityPlugin
     {
         public const string GUID = "com.nandbrew.scrambledseas";
@@ -65,12 +63,20 @@ namespace ScrambledSeas
             borderExpander = BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.nandbrew.borderexpander");
 
             AssetTools.LoadAssetBundles();
-#if DEBUG
+
+            if (Chainloader.PluginInfos.ContainsKey("com.app24.sailwindconsole"))
+            {
+                AddConsoleCommands();
+            }
+
+        }
+
+        private void AddConsoleCommands()
+        {
             ModConsole.AddCommand(new TestMissionDistCommand());
             ModConsole.AddCommand(new GetScrambleInfoCommand());
             ModConsole.AddCommand(new ScrambleCommand());
             ModConsole.AddCommand(new GetWorldStatsCommand());
-#endif
         }
 
         public static void Log(string msg)
@@ -94,4 +100,5 @@ namespace ScrambledSeas
         Heading = 1,
         Coords = 2,
     }
+
 }

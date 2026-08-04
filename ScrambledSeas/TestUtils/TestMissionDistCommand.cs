@@ -1,10 +1,7 @@
-﻿#if DEBUG
-using SailwindConsole;
+﻿using SailwindConsole;
 using SailwindConsole.Commands;
 using System.Collections.Generic;
 using UnityEngine;
-using static ONSPPropagationMaterial;
-using static UnityEngine.GraphicsBuffer;
 
 namespace ScrambledSeas
 {
@@ -106,4 +103,3 @@ namespace ScrambledSeas
         }
     }
 }
-#endif
