@@ -16,7 +16,7 @@ namespace ScrambledSeas
 
         public override string Usage => "";
 
-        public override string Description => "";
+        public override string Description => "Show distance stats for islands and archipelagos";
 
         public override int MinArgs => 0;
 

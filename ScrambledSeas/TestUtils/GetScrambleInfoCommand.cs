@@ -12,7 +12,7 @@ namespace ScrambledSeas
 
         public override string Usage => "GetScrambleInfo";
 
-        public override string Description => "";
+        public override string Description => "Show ScrambledSeas scramble data, such as world seed, scale, lat/lon range, etc.";
 
         public override int MinArgs => 0;
 

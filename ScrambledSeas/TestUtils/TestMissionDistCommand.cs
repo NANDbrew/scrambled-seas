@@ -11,9 +11,9 @@ namespace ScrambledSeas
 
         public override string[] Aliases => new string[]{ "TMD" };
 
-        public override string Usage => "TestMissionDist [port]";
+        public override string Usage => "TestMissionDist [port or region]";
 
-        public override string Description => "";
+        public override string Description => "Test mission availability/count for your current reputation level. Use with SetLevel from NANDCommand for most complete info";
 
         public override int MinArgs => 0;
 

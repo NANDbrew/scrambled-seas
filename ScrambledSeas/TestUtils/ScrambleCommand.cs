@@ -15,7 +15,7 @@ namespace ScrambledSeas
 
         public override string Usage => "Scramble <world scale> <arch scale> [seed] [borderExpander(-be, +be)]";
 
-        public override string Description => "";
+        public override string Description => "Scramble the world with ScrambledSeas. FOR TESTING ONLY";
 
         public override int MinArgs => 2;
 
