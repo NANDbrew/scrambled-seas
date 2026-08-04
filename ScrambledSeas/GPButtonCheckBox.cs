@@ -51,7 +51,7 @@ namespace ScrambledSeas
                 onMat = GetComponent<Renderer>().sharedMaterial;
             }
 
-            UpdateButton();
+            //UpdateButton();
 
         }
 
@@ -100,6 +100,7 @@ namespace ScrambledSeas
             else if (type == 1)
             {
                 Main.loadExternal = on;
+                if (!on) Main.loadedScramble = null;
             }
         }
 
@@ -115,7 +116,7 @@ namespace ScrambledSeas
         public void LoadSave()
         {
             error = false;
-            ScrambledSeasSaveContainer fromFile = SaveFileHelper.Load<ScrambledSeasSaveContainer>("ScrambledSeas");
+            ScrambledSeasSaveContainer fromFile = SaveFileHelper.Load<ScrambledSeasSaveContainer>("ScrambledSeas", true);
             string filename = $"scramble_{SaveSlots.currentSlot}.xml";
             string errorMessage = "";
             string message = "";
@@ -149,6 +150,7 @@ namespace ScrambledSeas
                     }
 
                 }
+                Main.loadedScramble = fromFile;
             }
             else
             {

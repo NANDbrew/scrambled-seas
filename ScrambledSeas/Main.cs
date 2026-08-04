@@ -45,6 +45,8 @@ namespace ScrambledSeas
 
         internal static ManualLogSource logSource;
 
+        internal static ScrambledSeasSaveContainer loadedScramble;
+
         private void Awake()
         {
             instance = this;

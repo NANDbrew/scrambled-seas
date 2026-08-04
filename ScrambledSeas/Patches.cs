@@ -70,7 +70,7 @@ namespace ScrambledSeas
                     Main.pluginEnabled = true;
 
                     //Load entire ScrambledSeasSaveContainer from save file
-                    Main.saveContainer = SaveFileHelper.Load<ScrambledSeasSaveContainer>("ScrambledSeas");
+                    Main.saveContainer = SaveFileHelper.Load<ScrambledSeasSaveContainer>("ScrambledSeas", false);
 
                     if (Main.saveContainer.version < WorldScrambler.version)
                     { //TODO: update min version if save compatibility breaks again
@@ -124,13 +124,14 @@ namespace ScrambledSeas
                 {
                     if (Main.loadExternal)
                     {
-                        ScrambledSeasSaveContainer loaded = SaveFileHelper.Load<ScrambledSeasSaveContainer>("ScrambledSeas");
-                        if (loaded.version == 0)
+                        //ScrambledSeasSaveContainer loaded = SaveFileHelper.Load<ScrambledSeasSaveContainer>("ScrambledSeas", true);
+                        
+                        if (Main.loadedScramble == null)
                         {
                             NotificationUi.instance.ShowNotification("failed to load scramble");
                             return false;
                         }
-                        Main.saveContainer = loaded;
+                        Main.saveContainer = Main.loadedScramble;
 
                         if (Main.saveContainer.worldScramblerSeed != 0)
                         {
@@ -400,6 +401,7 @@ namespace ScrambledSeas
             private static void Postfix(GameObject ___chooseIslandUI)
             {
                 scramblerUI = UnityEngine.GameObject.Instantiate(AssetTools.bundle.LoadAsset<GameObject>("Assets/ScrambledSeas/ScramblerUI.prefab"), ___chooseIslandUI.transform).transform;
+                scramblerUI.gameObject.SetActive(false);
                 //scramblerUI.transform.Translate(0f, 0.15f, 0f, Space.Self);
                 //scramblerUI.transform.localPosition = new Vector3(scramblerUI.transform.localPosition.x, 0.14f, scramblerUI.transform.localPosition.z);
                 var oldCheckbox = scramblerUI.Find("checkbox");
@@ -447,6 +449,7 @@ namespace ScrambledSeas
                 newSlider2.type = 1;
                 
                 newSlider2.Initialize();
+                scramblerUI.gameObject.SetActive(true);
 
             }
 

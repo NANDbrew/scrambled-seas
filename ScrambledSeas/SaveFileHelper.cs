@@ -9,7 +9,7 @@ namespace ScrambledSeas
     {
         // How to use: 
         // Main.myModsSaveContainer = SaveFileHelper.Load<MyModsSaveContainer>("MyModName");
-        public static T Load<T>(this string modName) where T : new()
+        public static T Load<T>(this string modName, bool forceXML) where T : new()
         {
             string xmlStr;
 
