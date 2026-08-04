@@ -13,7 +13,7 @@ namespace ScrambledSeas
         {
             string xmlStr;
 
-            if (Main.saveScrambleExternal.Value)
+            if (Main.saveScrambleExternal.Value || forceXML)
             {
                 string path = Path.Combine(Directory.GetParent(Main.instance.Info.Location).FullName, $"scramble_{SaveSlots.currentSlot}.xml");
                 if (File.Exists(path))
