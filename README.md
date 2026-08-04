@@ -50,7 +50,7 @@ NANDbrew edition
   - alias: `TMD`
 - Scramble
   - Scramble the world with ScrambledSeas. FOR TESTING ONLY!
- - usage: `Scramble <world scale> <archipelago scale> [seed] [borderExpander(-be, +be)]`
- - `+be` = scramble as if BorderExpander is installed
- - `-be` = scramble as if BorderExpander is **not** installed
+  - usage: `Scramble <world scale> <archipelago scale> [seed] [borderExpander(-be, +be)]`
+  - `+be` = scramble as if BorderExpander is installed
+  - `-be` = scramble as if BorderExpander is **not** installed
 
