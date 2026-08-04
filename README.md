@@ -38,7 +38,7 @@ NANDbrew edition
   - Number of decimal places in destination coordinates
   - Accepts 0, 1 or 2
 
-## Console Commands (pre-release)
+## Console Commands
 - GetScrambleInfo
   - Show scramble data, such as world seed, scale, lat/lon range, etc.
 - GetWorldStats
