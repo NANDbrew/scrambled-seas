@@ -19,14 +19,15 @@ namespace ScrambledSeas
         {
             private static void Prefix(IslandHorizon __instance)
             {
-                if (Main.pluginEnabled && __instance.islandIndex > 0)
+                if (__instance.islandIndex > 0)
                 {
                     WorldScrambler.islandNames[__instance.islandIndex - 1] = __instance.gameObject.name;
                     WorldScrambler.islandOrigins[__instance.islandIndex - 1] = __instance.GetPosition();
-                    //WorldScrambler.islandOriginPos[__instance.islandIndex - 1] = __instance.gameObject.transform.localPosition; ; //gameObject.transform.localPosition;
+
+#if DEBUG
                     Main.Log("isl name" + __instance.gameObject.name + " ovr " + (bool)__instance.overrideCenter);
-                    //Main.Log("isl lpos x:" + __instance.gameObject.transform.localPosition.x / 9000.0f + " isl lpos z: " + ((__instance.gameObject.transform.localPosition.z / 9000.0f)+36.0f));
                     Main.Log("isl pos x:" + __instance.GetPosition().x / 9000.0f + " isl pos z: " + ((__instance.GetPosition().z / 9000.0f)+36.0f));
+#endif
                 }
             }
         }
@@ -52,11 +53,11 @@ namespace ScrambledSeas
         {
             private static void Postfix()
             {
-/*                if (Main.pluginEnabled)
+                if (Main.pluginEnabled)
                 {
                     Main.saveContainer.version = WorldScrambler.version;
                     SaveFileHelper.Save(Main.saveContainer, "ScrambledSeas");
-                }*/
+                }
             }
         }
 
