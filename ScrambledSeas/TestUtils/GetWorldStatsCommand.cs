@@ -1,5 +1,6 @@
 ﻿using SailwindConsole;
 using SailwindConsole.Commands;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -66,29 +67,29 @@ namespace ScrambledSeas
             }
 
             string isScrambled = GameState.modData.ContainsKey("ScrambledSeas") ? "yes" : "no";
-            string stats = "World stats:\n------------------------------------------------------------------------------";
-            stats += $"\n{tabs}scrambled: {isScrambled}";
-            stats += $"\n{tabs}outliers: min lat = {yMin}, max lat = {yMax}, min long = {xMin}, max long = {xMax}";
-            stats += $"\n{tabs}average local island dist: {intraAverage / div} miles, or {intraAverage / 9000} degrees";
-            stats += $"\n{tabs}shortest island dist: {globalNearFar.x / div} miles, or {globalNearFar.x / 9000} degrees";
-            stats += $"\n{tabs}longest island dist: {globalNearFar.y / div} miles, or {globalNearFar.y / 9000} degrees";
-            stats += $"\n{tabs}average island dist: {globalIsleAvg / div} miles, or {globalIsleAvg / 9000} degrees";
-            stats += $"\n{tabs}shortest region distance: {archNearFar.x / div} miles, or {archNearFar.x / 9000} degrees";
-            stats += $"\n{tabs}longest region distance: {archNearFar.y / div} miles, or {archNearFar.y / 9000} degrees";
-            stats += $"\n{tabs}average region distance: {globalArchAvg / div} miles, or {globalArchAvg / 9000} degrees";
-            stats += $"\n{tabs}archipelago stats:";
+            string stats = $"World stats:{Environment.NewLine}------------------------------------------------------------------------------";
+            stats += $"{Environment.NewLine + tabs}scrambled: {isScrambled}";
+            stats += $"{Environment.NewLine + tabs}outliers: min lat = {yMin}, max lat = {yMax}, min long = {xMin}, max long = {xMax}";
+            stats += $"{Environment.NewLine + tabs}average local island dist: {intraAverage} meters, or {intraAverage / div} miles, or {intraAverage / 9000} degrees";
+            stats += $"{Environment.NewLine + tabs}shortest island dist: {globalNearFar.x} meters, or {globalNearFar.x / div} miles, or {globalNearFar.x / 9000} degrees";
+            stats += $"{Environment.NewLine + tabs}longest island dist: {globalNearFar.y} meters, or {globalNearFar.y / div} miles, or {globalNearFar.y / 9000} degrees";
+            stats += $"{Environment.NewLine + tabs}average island dist: {globalIsleAvg} meters, or {globalIsleAvg / div} miles, or {globalIsleAvg / 9000} degrees";
+            stats += $"{Environment.NewLine + tabs}shortest region distance: {archNearFar.x} meters, or {archNearFar.x / div} miles, or {archNearFar.x / 9000} degrees";
+            stats += $"{Environment.NewLine + tabs}longest region distance: {archNearFar.y} meters, or {archNearFar.y / div} miles, or {archNearFar.y / 9000} degrees";
+            stats += $"{Environment.NewLine + tabs}average region distance: {globalArchAvg} meters, or {globalArchAvg / div} miles, or {globalArchAvg / 9000} degrees";
+            stats += $"{Environment.NewLine + tabs}archipelago stats:";
             foreach (var ar in intraMinMax)
             {
-                stats += $"\n{tabs}\t{ar.Key}:";
-                stats += $"\n{tabs}\t\tisland count: {ar.Value[0]}";
+                stats += $"{Environment.NewLine + tabs}\t{ar.Key}:";
+                stats += $"{Environment.NewLine + tabs}\t\tisland count: {ar.Value[0]}";
                 if (ar.Value[0] > 1)
                 {
-                    stats += $"\n{tabs}\t\tshortest dist: {ar.Value[2] / div} miles, or {ar.Value[2] / 9000} degrees";
-                    stats += $"\n{tabs}\t\tlongest dist: {ar.Value[3] / div} miles, or {ar.Value[3] / 9000} degrees";
-                    stats += $"\n{tabs}\t\taverage: {ar.Value[1] / div} miles, or {ar.Value[1] / 9000} degrees";
+                    stats += $"{Environment.NewLine + tabs}\t\tshortest dist: {ar.Value[2] / div} miles, or {ar.Value[2] / 9000} degrees";
+                    stats += $"{Environment.NewLine + tabs}\t\tlongest dist: {ar.Value[3] / div} miles, or {ar.Value[3] / 9000} degrees";
+                    stats += $"{Environment.NewLine + tabs}\t\taverage: {ar.Value[1] / div} miles, or {ar.Value[1] / 9000} degrees";
                 }
             }
-            stats += "\n------------------------------------------------------------------------------";
+            stats += Environment.NewLine + "------------------------------------------------------------------------------";
             ModConsoleLog.Log(Main.instance.Info, stats);
 
         }
@@ -99,8 +100,10 @@ namespace ScrambledSeas
             float farthest = 0;
             for (int i = 0; i < locations.Length; i++)
             {
+                if (locations[i] == Vector3.zero) { continue; }
                 for (int j = 0; j < locations.Length; j++)
                 {
+                    if (locations[j] == Vector3.zero) { continue; }
                     if (i != j)
                     {
                         float dist = Vector3.Distance(locations[i], locations[j]);
@@ -120,9 +123,10 @@ namespace ScrambledSeas
             int count = 0;
             for (int i = 0; i < locations.Length; i++)
             {
-
+                if (locations[i] == Vector3.zero) { continue; }
                 for (int j = 0; j < locations.Length; j++)
                 {
+                    if (locations[j] == Vector3.zero) { continue; }
                     if (i != j)
                     {
                         float dist = Vector3.Distance(locations[i], locations[j]);

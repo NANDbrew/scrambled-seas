@@ -1,5 +1,6 @@
 ﻿using SailwindConsole;
 using SailwindConsole.Commands;
+using System;
 using System.Collections.Generic;
 
 namespace ScrambledSeas
@@ -21,18 +22,18 @@ namespace ScrambledSeas
             string tabs = "\t\t\t\t\t\t\t\t\t\t";
             var scramble = Main.saveContainer;
             string text = $"Scrambler data, version {scramble.version}:";
-            text += $"\n{tabs}seed: {scramble.worldScramblerSeed}";
-            text += $"\n{tabs}world scale: {Main.GetWorldScale()}";
-            text += $"\n{tabs}archipelago scale: {Main.GetArchipelagoScale()}";
-            text += $"\n{tabs}island spread: {scramble.islandSpread}";
-            text += $"\n{tabs}min island separation: {scramble.minIslandSeparation}";
-            text += $"\n{tabs}min archipelago distance: {scramble.minArchipelagoSeparation}";
-            text += $"\n{tabs}latitude range: {scramble.worldLatMin} to {scramble.worldLatMax}";
-            text += $"\n{tabs}longitude range: {scramble.worldLonMin} to {scramble.worldLonMax}";
+            text += $"{Environment.NewLine + tabs}seed: {scramble.worldScramblerSeed}";
+            text += $"{Environment.NewLine + tabs}world scale: {Main.GetWorldScale()}";
+            text += $"{Environment.NewLine + tabs}archipelago scale: {Main.GetArchipelagoScale()}";
+            text += $"{Environment.NewLine + tabs}island spread: {scramble.islandSpread}";
+            text += $"{Environment.NewLine + tabs}min island separation: {scramble.minIslandSeparation}";
+            text += $"{Environment.NewLine + tabs}min archipelago distance: {scramble.minArchipelagoSeparation}";
+            text += $"{Environment.NewLine + tabs}latitude range: {scramble.worldLatMin} to {scramble.worldLatMax}";
+            text += $"{Environment.NewLine + tabs}longitude range: {scramble.worldLonMin} to {scramble.worldLonMax}";
             string be = scramble.borderExpander == 1 ? "yes" : "no";
-            text += $"\n{tabs}border expander: {be}";
+            text += $"{Environment.NewLine + tabs}border expander: {be}";
             string filename = Main.saveCoordsToJSON_Enabled.Value ? $"scramble_{SaveSlots.currentSlot}.json" : "unsaved";
-            text += $"\n{tabs}coordinates file: {filename}";
+            text += $"{Environment.NewLine + tabs}coordinates file: {filename}";
             ModConsoleLog.Log(Main.instance.Info, text);
 
 
