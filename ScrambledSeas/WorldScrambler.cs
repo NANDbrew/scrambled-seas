@@ -480,13 +480,13 @@ namespace ScrambledSeas
                         {
                             // search (island name)
                             Match island = Regex.Match(name, "(\\(.*\\))");
-                            if (island.Success)
+                            if (island.Success && island.Value.Trim(' ') != "(Clone)")
                             {
                                 island_name = island.Value.Trim(new Char[] { ' ', '(', ')' });
                             }
                             else
                             {
-                                island_name = name_array[3];
+                                island_name = name_array[2];
                             }
                             island_name = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(island_name.ToLower());
                         }
@@ -494,7 +494,9 @@ namespace ScrambledSeas
                         Transform center = isle.overrideCenter != null ? isle.overrideCenter.transform : isle.transform;
                         //Vector3 latlon = FloatingOriginManager.instance.GetGlobeCoords(GameObject.Find(name).transform);
                         Vector3 latlon = FloatingOriginManager.instance.GetGlobeCoords(center);
+#if DEBUG
                         Main.Log(name + "," + latlon.x + "," + latlon.z);
+#endif
                         JSONObject point = new JSONObject();
                         point.Add("description", new JSONString(island_name));
                         JSONArray pos = new JSONArray();
