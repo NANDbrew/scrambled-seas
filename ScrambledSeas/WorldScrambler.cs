@@ -230,7 +230,7 @@ namespace ScrambledSeas
             #endregion
 
             // write displacements to save
-            Vector3[] regionDispList = new Vector3[regionDefs.Count];
+            Vector3[] regionDispList = new Vector3[regionDefs.Last().index + 1];
             List<Vector3> isleDispList = new List<Vector3>();
             foreach (var region in regionDefs)
             {
