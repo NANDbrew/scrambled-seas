@@ -41,6 +41,21 @@ namespace ScrambledSeas
             return new T();
         }
 
+        public static T LoadXML<T>(string path) where T : new()
+        {
+            string xmlStr;
+            if (File.Exists(path))
+            {
+                xmlStr = File.ReadAllText(path);
+                System.Xml.Serialization.XmlSerializer xmlSerializer = new System.Xml.Serialization.XmlSerializer(typeof(T));
+                using (System.IO.StringReader textReader = new System.IO.StringReader(xmlStr))
+                {
+                    return (T)xmlSerializer.Deserialize(textReader);
+                }
+            }
+            return default(T);
+        }
+
         // How to use:
         // SaveFileHelper.Save(Main.myModsSaveContainer, "MyModName");
         public static void Save<T>(this T toSerialize, string modName)
