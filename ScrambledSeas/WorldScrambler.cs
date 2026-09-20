@@ -414,7 +414,7 @@ namespace ScrambledSeas
                 }
             }
             #endregion
-            if (Main.saveCoordsToJSON_Enabled.Value)
+/*            if (Main.saveCoordsToJSON_Enabled.Value)
             {
                 SaveCoordsToJSON($"scramble_{SaveSlots.currentSlot}");
             }
@@ -426,7 +426,7 @@ namespace ScrambledSeas
                 {
                     Main.saveContainer.islandDescriptions += islandNames[i] + ", ";//i + " = " + islandNames[i] + ", ";
                 }
-            }
+            }*/
         }
         public static void SaveCoordsToJSON(string fileName)
         { 
