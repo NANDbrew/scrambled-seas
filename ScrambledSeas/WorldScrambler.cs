@@ -268,13 +268,13 @@ namespace ScrambledSeas
             {
                 int regionId = regionDef.index;
                 //Move regions
-                if (regions.ContainsKey(regionDef.index))
+                if (regions.ContainsKey(regionId))
                 {
                     Region region = regions[regionId];
                     region.transform.Translate(regionOffsets[regionId], Space.World);
                 }
                 //Move bottom planes
-                if (regionDef.bottomPlane != string.Empty)
+                if (regionDef.bottomPlane != string.Empty && regionId < regionOffsets.Length)
                 {
                     GameObject.Find(regionDef.bottomPlane).transform.Translate(regionOffsets[regionId], Space.World);
                 }
