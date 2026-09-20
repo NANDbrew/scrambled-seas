@@ -504,7 +504,8 @@ namespace ScrambledSeas
                         point.Add("colour", point_color);
                         point.Add("day", 0);
                         point.Add("time", 0);
-                        point.Add("winddir", "NE");                            
+                        point.Add("winddir", "");
+                        point.Add("id", name_array[1]);
                         points.Add(point);
                     }
                 }
