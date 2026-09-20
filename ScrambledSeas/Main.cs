@@ -16,7 +16,7 @@ namespace ScrambledSeas
     {
         public const string GUID = "com.nandbrew.scrambledseas";
         public const string NAME = "Scrambled Seas: NAND edition";
-        public const string VERSION = "7.2.1";
+        public const string VERSION = "7.2.2";
 
         internal const int defaultMinArchipelagoSeparation = 30000;
         internal const int defaultIslandSpread = 5000;
@@ -77,6 +77,7 @@ namespace ScrambledSeas
             ModConsole.AddCommand(new GetScrambleInfoCommand());
             ModConsole.AddCommand(new ScrambleCommand());
             ModConsole.AddCommand(new GetWorldStatsCommand());
+            ModConsole.AddCommand(new SaveCoordsCommand());
         }
 
         public static void Log(string msg)

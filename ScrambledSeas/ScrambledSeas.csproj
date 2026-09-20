@@ -106,6 +106,7 @@
     <Compile Include="Patches.cs" />
     <Compile Include="SaveFileHelper.cs" />
     <Compile Include="ScrambledSeasSaveContainer.cs" />
+    <Compile Include="TestUtils\SaveCoordsCommand.cs" />
     <Compile Include="TestUtils\GetWorldStatsCommand.cs" />
     <Compile Include="TestUtils\ScrambleCommand.cs" />
     <Compile Include="TestUtils\GetScrambleInfoCommand.cs" />
