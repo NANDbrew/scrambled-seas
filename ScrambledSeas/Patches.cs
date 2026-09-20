@@ -84,21 +84,30 @@ namespace ScrambledSeas
 
                     //Re-generate world for the saved randomizer params
 
-                    if (Main.saveContainer.islandOffsets.Length + 1 < Refs.islands.Length && Main.saveContainer.worldScramblerSeed != 0)
+/*                    if (Main.saveContainer.islandOffsets.Length + 1 < Refs.islands.Length && Main.saveContainer.worldScramblerSeed != 0)
                     {
-                        var savedArchOffsets = Main.saveContainer.archOffsets;
-                        var savedIsleOffsets = Main.saveContainer.islandOffsets;
+                        Vector3[] savedArchOffsets = new Vector3[Main.saveContainer.archOffsets.Length];
+                        Array.Copy(Main.saveContainer.archOffsets, savedArchOffsets, Main.saveContainer.archOffsets.Length);
+                        Vector3[] savedIsleOffsets = new Vector3[Main.saveContainer.islandOffsets.Length];
+                        Array.Copy(Main.saveContainer.islandOffsets, savedIsleOffsets, Main.saveContainer.islandOffsets.Length);
+
                         WorldScrambler.Scramble();
                         for (int i = 0; i < savedArchOffsets.Length; i++)
                         {
-                            Main.saveContainer.archOffsets[i] = savedArchOffsets[i];
+                            if (savedArchOffsets[i] != Vector3.zero)
+                            {
+                                Main.saveContainer.archOffsets[i] = savedArchOffsets[i];
+                            }
                         }
                         for (int i = 0; i < savedIsleOffsets.Length; i++)
                         {
-                            Main.saveContainer.islandOffsets[i] = savedIsleOffsets[i];
+                            if (savedIsleOffsets[i] != Vector3.zero)
+                            {
+                                Main.saveContainer.islandOffsets[i] = savedIsleOffsets[i];
+                            }
                         }
                         Main.Log("Re-scrambled " + (Refs.islands.Length - savedIsleOffsets.Length) + " islands");
-                    }
+                    }*/
 
                     WorldScrambler.Move();
                     NotificationUi.instance.ShowNotification("Scrambled Seas:\nLoaded scrambled save", 5f);
