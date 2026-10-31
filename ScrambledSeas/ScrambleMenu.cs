@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BepInEx.Logging;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -131,9 +132,9 @@ namespace ScrambledSeas
             {
                 fromFile = SaveFileHelper.LoadXML<ScrambledSeasSaveContainer>(path);
             }
-            catch
+            catch (Exception ex) 
             {
-                Exception exception;
+                Main.logSource.Log(LogLevel.Warning, ex.Message);
                 error = true;
             }
 
