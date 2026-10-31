@@ -408,62 +408,52 @@ namespace ScrambledSeas
         [HarmonyPatch(typeof(StartMenu))]
         internal static class StartMenuPatch
         {
-            internal static Transform scramblerUI;
             [HarmonyPatch("Awake")]
             [HarmonyPostfix]
             private static void Postfix(GameObject ___chooseIslandUI)
             {
-                scramblerUI = UnityEngine.GameObject.Instantiate(AssetTools.bundle.LoadAsset<GameObject>("Assets/ScrambledSeas/ScramblerUI.prefab"), ___chooseIslandUI.transform).transform;
-                scramblerUI.gameObject.SetActive(false);
-                //scramblerUI.transform.Translate(0f, 0.15f, 0f, Space.Self);
-                //scramblerUI.transform.localPosition = new Vector3(scramblerUI.transform.localPosition.x, 0.14f, scramblerUI.transform.localPosition.z);
-                var oldCheckbox = scramblerUI.Find("checkbox");
+                var refUI = AssetTools.bundle.LoadAsset<GameObject>("Assets/ScrambledSeas/ScramblerUI.prefab").transform;
+                refUI.gameObject.AddComponent<ScrambleMenu>();
+                var fileListUI = refUI.Find("controls/file list ui");
+                fileListUI.Find("bg").GetComponent<Renderer>().material.renderQueue = 2452;
+                var load_options = refUI.Find("controls/load_options");
+                var sliders = refUI.Find("controls/sliders");
+
+                var oldCheckbox = refUI.Find("checkbox");
                 var newCheckBox = oldCheckbox.gameObject.AddComponent<GPButtonCheckBox>();
                 newCheckBox.text = oldCheckbox.GetChild(0).GetComponent<TextMesh>();
                 newCheckBox.type = 0;
-                newCheckBox.extraToggleOn = scramblerUI.Find("controls").gameObject;
+
+                var slider1 = sliders.transform.Find("slider world scale").gameObject.AddComponent<GPButtonSliderScale>();
+                slider1.text = slider1.transform.Find("text scale").GetComponent<TextMesh>();
+                slider1.extraText = slider1.transform.Find("text world scale").GetComponent<TextMesh>();
+                slider1.type = 0;
+
+                var slider2 = sliders.transform.Find("slider arch scale").gameObject.AddComponent<GPButtonSliderScale>();
+                slider2.text = slider2.transform.Find("text scale").GetComponent<TextMesh>();
+                slider2.extraText = slider2.transform.Find("text arch scale").GetComponent<TextMesh>();
+                slider2.type = 1;
+
+                var listButton = refUI.Find("controls/load file button").gameObject.AddComponent<ScrambleMenuButton>();
+                listButton.type = 0;
+                ScrambleMenuButton.showListButton = listButton;
+                var fileButton1 = fileListUI.Find("buttons").GetChild(0).gameObject.AddComponent<ScrambleMenuButton>();
+                fileButton1.type = 2;
+                fileButton1.index = 0;
+                //refUI.GetComponent<ScrambleMenu>().fileButtons = new List<ScrambleMenuButton> { fileButton1 };
                 
-                newCheckBox.Initialize();
 
-                var oldCheckbox2 = scramblerUI.Find("controls/checkbox (1)");
-                var newCheckBox2 = oldCheckbox2.gameObject.AddComponent<GPButtonCheckBox>();
-                newCheckBox2.text = oldCheckbox2.GetChild(0).GetComponent<TextMesh>();
-                newCheckBox2.type = 1;
-                newCheckBox2.extraToggleOff = scramblerUI.Find("controls/sliders").gameObject;
-                newCheckBox2.extraToggleOn = scramblerUI.Find("controls/load_options").gameObject;
-                
-                newCheckBox2.Initialize();
+                var clearButton = refUI.Find("controls/clear file button").gameObject.AddComponent<ScrambleMenuButton>();
+                clearButton.type = 1;
+                clearButton.clickableMat = listButton.GetComponent<Renderer>().sharedMaterial;
+                listButton.clickedMat = clearButton.GetComponent<Renderer>().sharedMaterial;
 
-/*                var oldCheckbox3 = scramblerUI.Find("controls/load_options/seed_only_box").GetComponent<GPButtonSettingsCheckbo>();
-                var newCheckBox3 = oldCheckbox3.gameObject.AddComponent<GPButtonCheckBox>();
-                newCheckBox3.text = oldCheckbox3.text;
-                newCheckBox3.type = 2;
-                newCheckBox3.extraToggleOff = scramblerUI.Find("controls/load_options/file_scale").gameObject;
-                newCheckBox3.extraToggleOn = scramblerUI.Find("controls/sliders").gameObject;
-                Component.Destroy(oldCheckbox3);
-                newCheckBox3.Initialize();*/
+                fileListUI.gameObject.SetActive(false);
+                load_options.gameObject.SetActive(false);
+                sliders.gameObject.SetActive(false);
 
-                var oldSlider1 = scramblerUI.Find("controls/sliders/slider world scale");
-
-                var oldSlider2 = scramblerUI.Find("controls/sliders/slider arch scale");
-
-                var newSlider1 = oldSlider1.gameObject.AddComponent<GPButtonSliderScale>();
-                newSlider1.text = oldSlider1.Find("text scale").GetComponent<TextMesh>();
-                newSlider1.extraText = oldSlider1.Find("text world scale").GetComponent<TextMesh>();
-                //newSlider1.bar = "|";
-                newSlider1.type = 0;
-                
-                newSlider1.Initialize();
-
-                var newSlider2 = oldSlider2.gameObject.AddComponent<GPButtonSliderScale>();
-                newSlider2.text = oldSlider2.Find("text scale").GetComponent<TextMesh>();
-                newSlider2.extraText = oldSlider2.Find("text arch scale").GetComponent<TextMesh>();
-                //newSlider2.bar = "|";
-                newSlider2.type = 1;
-                
-                newSlider2.Initialize();
-                scramblerUI.gameObject.SetActive(true);
-
+                var scramblerUI = UnityEngine.GameObject.Instantiate(refUI, ___chooseIslandUI.transform, false);
+                scramblerUI.transform.localPosition = scramblerUI.localPosition;
             }
 
         }

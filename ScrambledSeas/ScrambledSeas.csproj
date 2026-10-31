@@ -99,6 +99,8 @@
     <Compile Include="AssetTools.cs" />
     <Compile Include="CompassRose.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="ScrambleMenu.cs" />
+    <Compile Include="ScrambleMenuButton.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="GPButtonCheckBox.cs" />
     <Compile Include="GPButtonSliderScale.cs" />

@@ -21,7 +21,7 @@ namespace ScrambledSeas
         float min = 0.5f;
         float max = 4.0f;
 
-        public void Initialize()
+        public void Awake()
         {
             //GetComponent<BoxCollider>().size = new Vector3(1, 1, 0.0001f);
             //bar = text.text[0].ToString();
