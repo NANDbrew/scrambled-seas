@@ -263,7 +263,9 @@ namespace ScrambledSeas
             var regionOffsets = Main.saveContainer.archOffsets;
             var islandOffsets = Main.saveContainer.islandOffsets;
             #region moving code
-
+#if DEBUG
+Debug.Log("Starting scramble");
+#endif
             foreach (var regionDef in regionDefs)
             {
                 int regionId = regionDef.index;
@@ -272,13 +274,17 @@ namespace ScrambledSeas
                 {
                     Region region = regions[regionId];
                     region.transform.Translate(regionOffsets[regionId], Space.World);
-                }
-                //Move bottom planes
-                if (regionDef.bottomPlane != string.Empty && regionId < regionOffsets.Length)
-                {
-                    GameObject.Find(regionDef.bottomPlane).transform.Translate(regionOffsets[regionId], Space.World);
+
+                    //Move bottom planes
+                    if (regionDef.bottomPlane != string.Empty && regionId < regionOffsets.Length)
+                    {
+                        GameObject.Find(regionDef.bottomPlane).transform.Translate(regionOffsets[regionId], Space.World);
+                    }
                 }
             }
+#if DEBUG
+Debug.Log("Adjusting region triggers");
+#endif
 
             // fix region collider radii
             foreach (var region in regions.Values)
@@ -315,6 +321,9 @@ namespace ScrambledSeas
                     Debug.Log($"radius for {region.name} set to {closestDist}");
                 }
             }
+#if DEBUG
+Debug.Log("Moving islands");
+#endif
 
             //Move islands
             for (int i = 0; i < islandOffsets.Length; i++)
@@ -326,6 +335,9 @@ namespace ScrambledSeas
                 }
             }
 
+#if DEBUG
+Debug.Log("Moving recovery ports");
+#endif
 
             //Move recovery ports
             for (int i = 0; i < Refs.islands.Length; i++)
@@ -343,6 +355,10 @@ namespace ScrambledSeas
             }
 
             #region fish_handling
+#if DEBUG
+Debug.Log("Adjusting fish regions");
+#endif
+
             //Resize local fish regions
             LocalFishesRegion[] localFishesRegions = (LocalFishesRegion[])AccessTools.Field(typeof(OceanFishes), "localFishesRegions").GetValue(OceanFishes.instance);
             float fishRegionScale = Main.GetArchipelagoScale();
@@ -413,7 +429,7 @@ namespace ScrambledSeas
                     boat.gameObject.transform.Translate(islandOffsets[homeIsland], Space.World);
                 }
             }
-            #endregion
+#endregion
 /*            if (Main.saveCoordsToJSON_Enabled.Value)
             {
                 SaveCoordsToJSON($"scramble_{SaveSlots.currentSlot}");
