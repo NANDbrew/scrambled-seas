@@ -144,6 +144,27 @@ namespace ScrambledSeas
             fileContMax = new Vector3(fileContStart.x, Mathf.Max(fileContStart.y + buttonSpacing * 0.5f + (buttonSpacing * (files.Length - buttonsPerPage)), fileContStart.y), fileContStart.z);
         }
 
+        public void SetWorldScale(float scale)
+        {
+            SetWorldScale(scale, Main.saveContainer);
+        }
+
+        public void SetWorldScale(float scale, ScrambledSeasSaveContainer container)
+        {
+            float baseY = Main.borderExpander ? 30 : 20;
+            Rect rect = new Rect(-12, 26, 44 * scale, baseY * scale);
+            rect.center = new Vector2(10, 36);
+            if (rect.yMax > 70)
+            {
+                rect.y -= rect.yMax - 70;
+            }
+
+            container.worldLonMin = (int)rect.xMin;
+            container.worldLonMax = (int)rect.xMax;
+            container.worldLatMax = (int)rect.yMax;
+            container.worldLatMin = (int)rect.yMin;
+            container.minArchipelagoSeparation = (int)(Main.defaultMinArchipelagoSeparation * scale);
+        }
 
         public void PreLoadFile(int index)
         {

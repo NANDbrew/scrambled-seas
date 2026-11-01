@@ -63,19 +63,11 @@ namespace ScrambledSeas
         {
             var step = (max - min) / 35;
             val = Mathf.Round(val / step) * step;
-            val = (float)Math.Round(val, 1);
+            val = (float)Math.Round(val, 2);
 
             if (type == 0)
             {
-                int maxLat = Main.borderExpander ? 70 : 46;
-                int minLat = Main.borderExpander ? -70 : 26;
-
-                Main.saveContainer.worldLonMin = (int)(-12 * val);
-                Main.saveContainer.worldLonMax = (int)(32 * val);
-                Main.saveContainer.worldLatMin = (int)Mathf.Max(minLat, (26 - 10 * val));
-                Main.saveContainer.worldLatMax = (int)Mathf.Min(maxLat, (46 + 10 * val));
-                Main.saveContainer.minArchipelagoSeparation = (int)(Main.defaultMinArchipelagoSeparation * val);
-                //Main.worldScale.Value = val;
+                ScrambleMenu.Instance.SetWorldScale(val);
             }
             else if (type == 1)
             {
@@ -86,6 +78,7 @@ namespace ScrambledSeas
             }
             extraText.text = Math.Round(val, 2).ToString() + "x";
 
+            ScrambleMenu.Instance.UpdatePanes();
         }
 
     }

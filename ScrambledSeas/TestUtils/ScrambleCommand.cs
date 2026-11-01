@@ -47,14 +47,7 @@ namespace ScrambledSeas
 
             if (float.TryParse(args[0], out float scaleW))
             {
-                int maxLat = save.borderExpander == 1 ? 70 : 46;
-                int minLat = save.borderExpander == 1 ? -70 : 26;
-                save.worldLonMin = (int)(-12 * scaleW);
-                save.worldLonMax = (int)(32 * scaleW);
-                save.worldLatMin = (int)Mathf.Max(minLat, (26 - 10 * scaleW));
-                save.worldLatMax = (int)Mathf.Min(maxLat, (46 + 10 * scaleW));
-                save.minArchipelagoSeparation = (int)(Main.defaultMinArchipelagoSeparation * scaleW);
-                //Main.worldScale.Value = val;
+                ScrambleMenu.Instance.SetWorldScale(scaleW, save);
             }
             else
             {
