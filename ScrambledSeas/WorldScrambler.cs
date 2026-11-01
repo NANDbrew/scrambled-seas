@@ -259,7 +259,7 @@ namespace ScrambledSeas
             var islandOffsets = Main.saveContainer.islandOffsets;
             #region moving code
 #if DEBUG
-Debug.Log("Starting scramble");
+            Debug.Log("Starting scramble");
 #endif
             foreach (var regionDef in regionDefs)
             {
@@ -278,7 +278,7 @@ Debug.Log("Starting scramble");
                 }
             }
 #if DEBUG
-Debug.Log("Adjusting region triggers");
+            Debug.Log("Adjusting region triggers");
 #endif
 
             // fix region collider radii
@@ -317,7 +317,7 @@ Debug.Log("Adjusting region triggers");
                 }
             }
 #if DEBUG
-Debug.Log("Moving islands");
+            Debug.Log("Moving islands");
 #endif
 
             //Move islands
@@ -331,7 +331,7 @@ Debug.Log("Moving islands");
             }
 
 #if DEBUG
-Debug.Log("Moving recovery ports");
+            Debug.Log("Moving recovery ports");
 #endif
 
             //Move recovery ports
@@ -351,7 +351,7 @@ Debug.Log("Moving recovery ports");
 
             #region fish_handling
 #if DEBUG
-Debug.Log("Adjusting fish regions");
+            Debug.Log("Adjusting fish regions");
 #endif
 
             //Resize local fish regions
@@ -438,6 +438,9 @@ Debug.Log("Adjusting fish regions");
                     Main.saveContainer.islandDescriptions += islandNames[i] + ", ";//i + " = " + islandNames[i] + ", ";
                 }
             }*/
+
+            // get rid of menu to free up resources
+            //GameObject.Destroy(ScrambleMenu.Instance.gameObject);
         }
         public static void SaveCoordsToJSON(string fileName)
         { 

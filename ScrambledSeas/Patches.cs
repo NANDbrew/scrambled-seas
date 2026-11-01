@@ -413,10 +413,9 @@ namespace ScrambledSeas
                 var load_options = refUI.Find("controls/load_options");
                 var sliders = refUI.Find("controls/sliders");
 
-                var oldCheckbox = refUI.Find("checkbox");
-                var newCheckBox = oldCheckbox.gameObject.AddComponent<GPButtonCheckBox>();
-                newCheckBox.text = oldCheckbox.GetChild(0).GetComponent<TextMesh>();
-                newCheckBox.type = 0;
+                var checkbox = refUI.Find("checkbox").gameObject.AddComponent<GPButtonCheckBox>();
+                checkbox.text = checkbox.transform.GetChild(0).GetComponent<TextMesh>();
+                checkbox.type = 0;
 
                 var slider1 = sliders.transform.Find("slider world scale").gameObject.AddComponent<GPButtonSliderScale>();
                 slider1.text = slider1.transform.Find("text scale").GetComponent<TextMesh>();
@@ -434,8 +433,6 @@ namespace ScrambledSeas
                 var fileButton1 = fileListUI.Find("buttons").GetChild(0).gameObject.AddComponent<ScrambleMenuButton>();
                 fileButton1.type = 2;
                 fileButton1.index = 0;
-                //refUI.GetComponent<ScrambleMenu>().fileButtons = new List<ScrambleMenuButton> { fileButton1 };
-                
 
                 var clearButton = refUI.Find("controls/clear file button").gameObject.AddComponent<ScrambleMenuButton>();
                 clearButton.type = 1;
@@ -448,6 +445,8 @@ namespace ScrambledSeas
 
                 var scramblerUI = UnityEngine.GameObject.Instantiate(refUI, ___chooseIslandUI.transform, false);
                 scramblerUI.transform.localPosition = scramblerUI.localPosition;
+                
+                GameObject.Destroy(refUI.gameObject);
             }
 
         }
