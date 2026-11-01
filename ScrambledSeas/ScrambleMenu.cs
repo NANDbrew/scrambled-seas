@@ -27,9 +27,10 @@ namespace ScrambledSeas
         bool error;
         TextMesh fileScale;
         TextMesh fileName;
-        TextMesh errorText;
+        TextMesh extraText;
         GameObject upArrow;
         GameObject downArrow;
+        GameObject controls;
 
         ScrambledSeasSaveContainer fromFile;
 
@@ -39,14 +40,15 @@ namespace ScrambledSeas
             menuClosedPos = transform.localPosition;
             menuOpenPos = new Vector3(menuClosedPos.x, menuClosedPos.y + 0.6f, menuClosedPos.z);
 
-            sliders = transform.Find("controls/sliders").gameObject;
-            fileMenu = transform.Find("controls/file list ui").gameObject;
+            controls = transform.Find("controls").gameObject;
+            sliders = controls.transform.Find("sliders").gameObject;
+            fileMenu = controls.transform.Find("file list ui").gameObject;
             fileButtonContainer = fileMenu.transform.Find("buttons");
             fileContStart = fileButtonContainer.transform.localPosition;
             fileContMax = fileContStart;
-            loadOptions = transform.Find("controls/load_options").gameObject;
+            loadOptions = controls.transform.Find("load_options").gameObject;
             fileName = loadOptions.transform.Find("filename").GetComponent<TextMesh>();
-            errorText = loadOptions.transform.Find("error_text").GetComponent<TextMesh>();
+            extraText = controls.transform.Find("error_text").GetComponent<TextMesh>();
             fileScale = loadOptions.transform.Find("file_scale/file_scale_num").GetComponent<TextMesh>();
             upArrow = fileMenu.transform.Find("arrow up").gameObject;
             downArrow = fileMenu.transform.Find("arrow down").gameObject;
@@ -63,9 +65,17 @@ namespace ScrambledSeas
 
         public void UpdatePanes()
         {
-            sliders.SetActive(fromFile == null && Main.random_Enabled.Value);
-            loadOptions.SetActive(fromFile != null && Main.random_Enabled.Value);
+            controls.gameObject.SetActive(Main.random_Enabled.Value);
+            sliders.SetActive(fromFile == null);
+            loadOptions.SetActive(fromFile != null);
 
+            if (fromFile == null)
+            {
+                float latMin = Main.saveContainer.worldLatMin;
+                string minLat = latMin < 0 ? $"{Mathf.Abs(latMin)}° S" : $"{latMin}° N";
+                extraText.text = $"Latitude range: {minLat} to {Main.saveContainer.worldLatMax}° N\n" +
+                    $"Longitude range: {Mathf.Abs(Main.saveContainer.worldLonMin)}° W to {Main.saveContainer.worldLonMax}° E";
+            }
             Juicebox.juice.TweenLocalPosition(gameObject, Main.random_Enabled.Value ? menuOpenPos : menuClosedPos, 0.2f, JuiceboxTween.quadraticInOut);
         }
 
@@ -134,46 +144,53 @@ namespace ScrambledSeas
             fileContMax = new Vector3(fileContStart.x, Mathf.Max(fileContStart.y + buttonSpacing * 0.5f + (buttonSpacing * (files.Length - buttonsPerPage)), fileContStart.y), fileContStart.z);
         }
 
+
         public void PreLoadFile(int index)
         {
+            Main.loadExternal = true;
             string path = files[index];
             error = false;
             string filename = Path.GetFileName(path);
             string errorMessage = "";
             string message = "";
 
+            // set save container to null so we don't get carryover
+            Main.loadedScramble = null;
+
             fromFile = new ScrambledSeasSaveContainer();
             try
             {
                 fromFile = SaveFileHelper.LoadXML<ScrambledSeasSaveContainer>(path);
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 Main.logSource.Log(LogLevel.Warning, ex.Message);
                 error = true;
+                //file = null;
             }
 
             if (fromFile.version > 0)
             {
                 if (fromFile.worldScramblerSeed == 0)
                 {
-                    message = "island positions will be loaded directly\n";
+                    message = "island positions will be loaded directly";
                 }
                 else
                 {
-                    message = $"scramble will be recreated\nfrom seed: {fromFile.worldScramblerSeed}\n";
+                    message = $"scramble will be recreated\nfrom seed: {fromFile.worldScramblerSeed}";
                 }
+
                 if (fromFile.version != WorldScrambler.version)
                 {
                     error = true;
-                    errorMessage = "this file is not compatible with this\nversion of Scrambled Seas";
+                    errorMessage = "this file is not compatible with this version of Scrambled Seas";
                     message = "";
                 }
                 else if (fromFile.borderExpander == 1 && !Main.borderExpander)
                 {
                     if (fromFile.worldScramblerSeed == 0)
                     {
-                        errorMessage = "this file was made with Border Expander\nsome islands may be inaccessible";
+                        errorMessage = "this file was made with Border Expander.\nsome islands may be inaccessible";
                     }
                     else
                     {
@@ -187,23 +204,39 @@ namespace ScrambledSeas
             else
             {
                 error = true;
-                filename = $"<color=#660000>{filename}</color>";
-                errorMessage = "couldn't load file";
+                //filename = $"<color=#660000>{filename}</color>";
+                errorMessage = "invalid scramble file";
+                //Main.loadedScramble = null;
             }
-            errorMessage = $"<color=#660000>{errorMessage}</color>";
-            fileName.text = filename;
-            errorText.text = message + errorMessage;
-            fileScale.text = $"{((float)fromFile.minArchipelagoSeparation / Main.defaultMinArchipelagoSeparation).ToString("0.0")}x\n\n{((float)fromFile.islandSpread / Main.defaultIslandSpread).ToString("0.0")}x";
+            errorMessage = $"<color=#660000>{WrapLines(errorMessage, 45)}</color>";
+            fileName.text = Wrap(filename, 28);
+            extraText.text = WrapLines(message, 45) + "\n" + errorMessage;
+
+            string fromWorldScale = Main.loadedScramble == null ? "n/a" : Math.Round((float)Main.loadedScramble.minArchipelagoSeparation / Main.defaultMinArchipelagoSeparation, 2) + "x";
+            string fromArchScale = Main.loadedScramble == null ? "n/a" : Math.Round((float)Main.loadedScramble.islandSpread / Main.defaultIslandSpread, 2).ToString() + "x";
+            
+            fileScale.text = $"{fromWorldScale}\n\n{fromArchScale}";
 
             fileMenu.SetActive(false);
             UpdatePanes();
         }
 
+        private string WrapLines(string text, int lineLength)
+        {
+            string[] lines = text.Split('\n');
+            for (int i = 0; i < lines.Length; i++)
+            {
+                lines[i] = Wrap(lines[i], lineLength);
+            }
+            return string.Join("\n", lines);
+        }
         private string Wrap(string text, int lineLength)
         {
             if (text.Length > lineLength)
             {
-                return text.Insert(text.LastIndexOf(' ', lineLength), "\n");
+                int cut = text.LastIndexOfAny(new char[] { ' ', '-', '_' }, lineLength);
+                if (cut == -1) return text.Insert(lineLength, "\n");
+                return text.Insert(cut, "\n");
             }
             return text;
         }

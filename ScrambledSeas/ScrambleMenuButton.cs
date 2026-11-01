@@ -49,6 +49,7 @@ namespace ScrambledSeas
             {
                 ScrambleMenu.Instance.OpenFileMenu();
                 SetClicked(true);
+                cancelButton.SetClicked(false);
             }
             else if (type == 1) // cancel file load button
             {
