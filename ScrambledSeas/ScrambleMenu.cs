@@ -29,6 +29,8 @@ namespace ScrambledSeas
         TextMesh fileScale;
         TextMesh fileName;
         TextMesh errorText;
+        GameObject upArrow;
+        GameObject downArrow;
 
         ScrambledSeasSaveContainer fromFile;
 
@@ -42,11 +44,15 @@ namespace ScrambledSeas
             fileMenu = transform.Find("controls/file list ui").gameObject;
             fileButtonContainer = fileMenu.transform.Find("buttons");
             fileContStart = fileButtonContainer.transform.localPosition;
-            fileContMax = fileButtonContainer.transform.localPosition + new Vector3(0f, buttonSpacing * buttonsPerPage, 0f);
+            fileContMax = fileContStart;
             loadOptions = transform.Find("controls/load_options").gameObject;
             fileName = loadOptions.transform.Find("filename").GetComponent<TextMesh>();
             errorText = loadOptions.transform.Find("error_text").GetComponent<TextMesh>();
             fileScale = loadOptions.transform.Find("file_scale/file_scale_num").GetComponent<TextMesh>();
+            upArrow = fileMenu.transform.Find("arrow up").gameObject;
+            downArrow = fileMenu.transform.Find("arrow down").gameObject;
+            upArrow.GetComponent<Renderer>().sharedMaterial.renderQueue = 2452;
+
 
             fileButtons = new List<ScrambleMenuButton> { fileButtonContainer.GetComponentInChildren<ScrambleMenuButton>() };
         }
@@ -69,10 +75,16 @@ namespace ScrambledSeas
             if (fileMenu.activeInHierarchy)
             {
                 float scroll = -GameInput.GetScrollAxis() * 0.5f;
-
                 fileButtonContainer.Translate(0f, scroll, 0f, Space.Self);
-                if (fileButtonContainer.localPosition.y < fileContStart.y) fileButtonContainer.localPosition = fileContStart;
-                else if (fileButtonContainer.localPosition.y > fileContMax.y) fileButtonContainer.localPosition = fileContMax;
+                if (fileButtonContainer.localPosition.y < fileContStart.y)
+                {
+                    fileButtonContainer.localPosition = fileContStart;
+                    //upArrow.SetActive(false);
+                }
+                else if (fileButtonContainer.localPosition.y > fileContMax.y)
+                {
+                    fileButtonContainer.localPosition = fileContMax;
+                }
                 ButtonScroll();
             }
         }
@@ -83,6 +95,9 @@ namespace ScrambledSeas
             {
                 button.gameObject.SetActive(y <= button.index * buttonSpacing && y + (buttonSpacing * buttonsPerPage) >= button.index * buttonSpacing);
             }
+            upArrow.SetActive(fileButtonContainer.localPosition.y > fileContStart.y + 0.1f);
+            downArrow.SetActive(fileButtonContainer.localPosition.y < fileContMax.y - 0.1f);
+
         }
         public ScrambleMenuButton AddFileButton()
         {
@@ -114,9 +129,10 @@ namespace ScrambledSeas
                 ScrambleMenuButton button = i < fileButtons.Count ? fileButtons[i] : AddFileButton();
 
                 //button.files = files;
-                button.SetText(Path.GetFileName(files[i]));
+                button.SetText(Wrap(Path.GetFileName(files[i]), 25));
                 ButtonScroll();
             }
+            fileContMax = new Vector3(fileContStart.x, Mathf.Max(fileContStart.y + buttonSpacing * 0.5f + (buttonSpacing * (files.Length - buttonsPerPage)), fileContStart.y), fileContStart.z);
         }
 
         public void PreLoadFile(int index)
@@ -182,6 +198,15 @@ namespace ScrambledSeas
 
             fileMenu.SetActive(false);
             UpdatePanes();
+        }
+
+        private string Wrap(string text, int lineLength)
+        {
+            if (text.Length > lineLength)
+            {
+                return text.Insert(text.LastIndexOf(' ', lineLength), "\n");
+            }
+            return text;
         }
     }
 }

@@ -46,6 +46,7 @@ namespace ScrambledSeas
             }
             else if (type == 2)
             {
+                GetComponent<Renderer>().sharedMaterial.renderQueue = 2450;
                 text.GetComponent<Renderer>().sharedMaterial.renderQueue = 2451;
             }
         }
