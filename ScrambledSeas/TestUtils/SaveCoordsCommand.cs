@@ -16,7 +16,7 @@ namespace ScrambledSeas
 
         public override string Description => "Export the current scramble (or vanilla island coords) to either an xml for editing or a json for the online map. If filename is unspecified, file will be named \"scramble_(save slot)\"";
 
-        public override int MinArgs => 0;
+        public override int MinArgs => 1;
 
         public override void OnRun(List<string> args)
         {
@@ -34,10 +34,14 @@ namespace ScrambledSeas
                         ModConsoleLog.Log(Main.instance.Info, "Saved file to: " + path);
                     }
                 }
-                if (args[0].ToLower() == "json")
+                else if (args[0].ToLower() == "json")
                 {
                     WorldScrambler.SaveCoordsToJSON(filename);
                     ModConsoleLog.Log(Main.instance.Info, Path.Combine(Directory.GetParent(Main.instance.Info.Location).FullName, $"{filename}.json"));
+                }
+                else
+                {
+                    ModConsoleLog.Error(Main.instance.Info, "file type required");
                 }
             }
             catch (Exception e)
