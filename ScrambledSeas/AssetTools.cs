@@ -1,5 +1,4 @@
-﻿using BepInEx;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
@@ -11,7 +10,6 @@ namespace ScrambledSeas
         const string assetFile = "scrambledseas.assets";
 
         internal static Dictionary<int, Texture2D> mapTextures;
-
 
         public static void LoadAssetBundles()    //Load the bundle
         {
