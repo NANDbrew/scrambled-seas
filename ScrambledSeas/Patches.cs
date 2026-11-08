@@ -30,10 +30,7 @@ namespace ScrambledSeas
         {
             private static void Prefix(PurchasableBoat __instance)
             {
-                if (__instance.GetComponent<Rigidbody>())
-                {
-                    WorldScrambler.boatArray.Add(__instance);
-                }
+                WorldScrambler.boatArray.Add(__instance);
             }
         }
         [HarmonyPatch(typeof(Recovery), "RegisterPort")]
