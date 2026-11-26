@@ -6,6 +6,8 @@ namespace ScrambledSeas
     {
         public static ScrambleMenuButton showListButton;
         public static ScrambleMenuButton cancelButton;
+        
+        // overloaded in scroll buttons for scroll multiplier/direction
         public int index;
 
         public int type = -1;
@@ -44,24 +46,26 @@ namespace ScrambledSeas
         public override void OnActivate()
         {
             UISoundPlayer.instance.PlayUISound(UISounds.buttonClick, 1f, 1.4f);
-
-            if (type == 0) // show file menu button
+            switch(type)
             {
-                ScrambleMenu.Instance.OpenFileMenu();
-                SetClicked(true);
-                cancelButton.SetClicked(false);
-            }
-            else if (type == 1) // cancel file load button
-            {
-                ScrambleMenu.Instance.CancelFileLoad();
-                showListButton.SetClicked(false);
-                SetClicked(true);
-            }
-            if (type == 2) // load file button
-            {
-                ScrambleMenu.Instance.PreLoadFile(index);
-                showListButton.SetClicked(false);
-                cancelButton.SetClicked(false);
+                case 0: // show file menu button
+                    ScrambleMenu.Instance.OpenFileMenu();
+                    SetClicked(true);
+                    cancelButton.SetClicked(false);
+                    break;
+                case 1: // cancel file load button
+                    ScrambleMenu.Instance.CancelFileLoad();
+                    showListButton.SetClicked(false);
+                    SetClicked(true);
+                    break;
+                case 2: // load file button
+                    ScrambleMenu.Instance.PreLoadFile(index);
+                    showListButton.SetClicked(false);
+                    cancelButton.SetClicked(false);
+                    break;
+                case 3: // scroll up/down button
+                    ScrambleMenu.Instance.OnScroll(Time.deltaTime * index);
+                    break;
             }
         }
 

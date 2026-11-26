@@ -83,20 +83,26 @@ namespace ScrambledSeas
         {
             if (fileMenu.activeInHierarchy)
             {
-                float scroll = -GameInput.GetScrollAxis() * 0.5f;
-                fileButtonContainer.Translate(0f, scroll, 0f, Space.Self);
-                if (fileButtonContainer.localPosition.y < fileContStart.y)
-                {
-                    fileButtonContainer.localPosition = fileContStart;
-                    //upArrow.SetActive(false);
-                }
-                else if (fileButtonContainer.localPosition.y > fileContMax.y)
-                {
-                    fileButtonContainer.localPosition = fileContMax;
-                }
-                ButtonScroll();
+                OnScroll(-GameInput.GetScrollAxis() * 0.5f);
+                
             }
         }
+
+        public void OnScroll(float input)
+        {
+            fileButtonContainer.Translate(0f, input, 0f, Space.Self);
+            if (fileButtonContainer.localPosition.y < fileContStart.y)
+            {
+                fileButtonContainer.localPosition = fileContStart;
+                //upArrow.SetActive(false);
+            }
+            else if (fileButtonContainer.localPosition.y > fileContMax.y)
+            {
+                fileButtonContainer.localPosition = fileContMax;
+            }
+            ButtonScroll();
+        }
+
         public void ButtonScroll()
         {
             float y = fileButtonContainer.localPosition.y - buttonSpacing * 0.5f;

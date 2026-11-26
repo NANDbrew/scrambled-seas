@@ -406,7 +406,7 @@ namespace ScrambledSeas
                 var refUI = AssetTools.bundle.LoadAsset<GameObject>("Assets/ScrambledSeas/ScramblerUI.prefab").transform;
                 refUI.gameObject.AddComponent<ScrambleMenu>();
                 var fileListUI = refUI.Find("controls/file list ui");
-                fileListUI.Find("bg").GetComponent<Renderer>().material.renderQueue = 2452;
+                fileListUI.Find("scroll_open").GetComponent<Renderer>().material.renderQueue = 2452;
                 var load_options = refUI.Find("controls/load_options");
                 var sliders = refUI.Find("controls/sliders");
 
@@ -435,6 +435,14 @@ namespace ScrambledSeas
                 clearButton.type = 1;
                 clearButton.clickableMat = listButton.GetComponent<Renderer>().sharedMaterial;
                 listButton.clickedMat = clearButton.GetComponent<Renderer>().sharedMaterial;
+
+                var scrollUp = fileListUI.transform.Find("arrow up").gameObject.AddComponent<ScrambleMenuButton>();
+                scrollUp.type = 3;
+                scrollUp.index = -4;
+                var scrollDown = fileListUI.transform.Find("arrow down").gameObject.AddComponent<ScrambleMenuButton>();
+                scrollDown.type = 3;
+                scrollDown.index = 4;
+
 
                 fileListUI.gameObject.SetActive(false);
                 load_options.gameObject.SetActive(false);
