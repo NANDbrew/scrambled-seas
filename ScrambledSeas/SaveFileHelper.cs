@@ -71,6 +71,10 @@ namespace ScrambledSeas
                 {
                     File.WriteAllText(Path.Combine(Directory.GetParent(Main.instance.Info.Location).FullName, $"scramble_{SaveSlots.currentSlot}.xml"), textWriter.ToString());
                 }
+                if (Main.saveCoordsToJSON_Enabled.Value)
+                {
+                    WorldScrambler.SaveCoordsToJSON(SaveSlots.currentSlot.ToString());
+                }
             }
         }
     }

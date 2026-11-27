@@ -425,11 +425,11 @@ namespace ScrambledSeas
                 }
             }
 #endregion
-/*            if (Main.saveCoordsToJSON_Enabled.Value)
+            if (Main.saveCoordsToJSON_Enabled.Value)
             {
                 SaveCoordsToJSON($"scramble_{SaveSlots.currentSlot}");
             }
-            if (Main.saveScrambleExternal.Value)
+/*            if (Main.saveScrambleExternal.Value)
             {
                 Main.saveContainer.archDescriptions = "archOffsets are meters from vanilla position. x is east, z is north. Regions: 0 = Al'ankh, 1 = Emerald, 2 = Aestrin, 3 = Oasis, 6 = FireFish";
                 Main.saveContainer.islandDescriptions = "islandOffsets are meters from vanilla position. x is longitude, z is latitude.\nIslands: ";
