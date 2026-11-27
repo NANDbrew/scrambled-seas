@@ -36,7 +36,7 @@ namespace ScrambledSeas
                 }
                 else if (args[0].ToLower() == "json")
                 {
-                    WorldScrambler.SaveCoordsToJSON(filename);
+                    SaveFileHelper.SaveCoordsToJSON(filename);
                     ModConsoleLog.Log(Main.instance.Info, Path.Combine(Directory.GetParent(Main.instance.Info.Location).FullName, $"{filename}.json"));
                 }
                 else

@@ -424,25 +424,26 @@ namespace ScrambledSeas
                     boat.gameObject.transform.Translate(islandOffsets[homeIsland], Space.World);
                 }
             }
-#endregion
-            if (Main.saveCoordsToJSON_Enabled.Value)
-            {
-                SaveCoordsToJSON($"scramble_{SaveSlots.currentSlot}");
-            }
-/*            if (Main.saveScrambleExternal.Value)
-            {
-                Main.saveContainer.archDescriptions = "archOffsets are meters from vanilla position. x is east, z is north. Regions: 0 = Al'ankh, 1 = Emerald, 2 = Aestrin, 3 = Oasis, 6 = FireFish";
-                Main.saveContainer.islandDescriptions = "islandOffsets are meters from vanilla position. x is longitude, z is latitude.\nIslands: ";
-                for (int i = 0; i < Refs.islands.Length; i++) 
-                {
-                    Main.saveContainer.islandDescriptions += islandNames[i] + ", ";//i + " = " + islandNames[i] + ", ";
-                }
-            }*/
+            #endregion
+            SaveFileHelper.Save(Main.saveContainer, "ScrambledSeas");
+            /*            if (Main.saveCoordsToJSON_Enabled.Value)
+                        {
+                            SaveCoordsToJSON($"scramble_{SaveSlots.currentSlot}");
+                        }
+                        if (Main.saveScrambleExternal.Value)
+                        {
+                            Main.saveContainer.archDescriptions = "archOffsets are meters from vanilla position. x is east, z is north. Regions: 0 = Al'ankh, 1 = Emerald, 2 = Aestrin, 3 = Oasis, 6 = FireFish";
+                            Main.saveContainer.islandDescriptions = "islandOffsets are meters from vanilla position. x is longitude, z is latitude.\nIslands: ";
+                            for (int i = 0; i < Refs.islands.Length; i++) 
+                            {
+                                Main.saveContainer.islandDescriptions += islandNames[i] + ", ";//i + " = " + islandNames[i] + ", ";
+                            }
+                        }*/
 
             // get rid of menu to free up resources
             //GameObject.Destroy(ScrambleMenu.Instance.gameObject);
         }
-        public static void SaveCoordsToJSON(string fileName)
+        public static string CoordsToJSON()
         { 
             try
             {
@@ -529,17 +530,18 @@ namespace ScrambledSeas
                 json.Add("points", points);
                 json.Add("goals", empty);
 
-                string jsonString = json.ToString();
+                return json.ToString();
 
                 //Main.Log(jsonString);
-                File.WriteAllText(Path.Combine(Directory.GetParent(Main.instance.Info.Location).FullName, $"{fileName}.json"), jsonString);
                 //Main.saveCoordsToJSON_Instant.Value = false;
+                //SaveFileHelper.Save(Main.saveContainer, "ScrambledSeas");
             }
             catch(Exception ex)
             {
                 
                 Main.Log(ex.Message);
                 Main.Log(ex.InnerException.Message);
+                return "";
             }
 
         }

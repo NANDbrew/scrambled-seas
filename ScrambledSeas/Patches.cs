@@ -111,7 +111,7 @@ namespace ScrambledSeas
                 {
                     Main.pluginEnabled = false;
                     NotificationUi.instance.ShowNotification("Scrambled Seas:\nThis save is unscrambled", 5f);
-                    WorldScrambler.SaveCoordsToJSON("islandCoords");
+                    SaveFileHelper.SaveCoordsToJSON("islandCoords");
 
                 }
             }

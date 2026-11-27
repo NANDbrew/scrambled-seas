@@ -1,4 +1,5 @@
 ﻿using OVRSimpleJSON;
+using System;
 using System.IO;
 using UnityEngine;
 
@@ -69,13 +70,44 @@ namespace ScrambledSeas
 
                 if (Main.saveScrambleExternal.Value)
                 {
-                    File.WriteAllText(Path.Combine(Directory.GetParent(Main.instance.Info.Location).FullName, $"scramble_{SaveSlots.currentSlot}.xml"), textWriter.ToString());
+                    string path = Path.Combine(Directory.GetParent(Main.instance.Info.Location).FullName, $"scramble_{SaveSlots.currentSlot}.xml");
+                    BackUpFile(path);
+                    File.WriteAllText(path, textWriter.ToString());
                 }
-                if (Main.saveCoordsToJSON_Enabled.Value)
+
+            }
+            if (Main.saveCoordsToJSON_Enabled.Value)
+            {
+                SaveCoordsToJSON($"scramble_{SaveSlots.currentSlot}");
+            }        
+        }
+
+        public static void SaveCoordsToJSON(string fileName)
+        {
+            string path = Path.Combine(Directory.GetParent(Main.instance.Info.Location).FullName, $"{fileName}.json");
+            BackUpFile(path);
+            File.WriteAllText(path, WorldScrambler.CoordsToJSON());
+
+        }
+        
+        public static bool BackUpFile(string path)
+        {
+            if (File.Exists(path))
+            {
+                try
                 {
-                    WorldScrambler.SaveCoordsToJSON(SaveSlots.currentSlot.ToString());
+                    string fileName = Path.GetFileNameWithoutExtension(path);
+                    string ext = Path.GetExtension(path);
+                    File.Move(path, Path.Combine(Path.GetDirectoryName(path), fileName + "_prev" + ext));
+                    return true;
+                }
+                catch (Exception e)
+                {
+                    Main.Log(e.Message);
                 }
             }
+            return false;
+
         }
     }
 }
